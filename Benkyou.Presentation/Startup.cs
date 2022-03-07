@@ -35,6 +35,7 @@ public class Startup
         services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
         services.AddScoped<IRefreshTokenService, JwtRefreshTokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITokenValidationService, TokenValidationService>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");

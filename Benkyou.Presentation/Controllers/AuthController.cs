@@ -10,11 +10,13 @@ namespace Benkyou_backend.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly ITokenValidationService _tokenValidationService;
     private readonly IUserService _userService;
 
-    public AuthController(IUserService userService)
+    public AuthController(IUserService userService, ITokenValidationService tokenValidationService)
     {
         _userService = userService;
+        _tokenValidationService = tokenValidationService;
     }
 
     [HttpPost]
@@ -22,10 +24,8 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
     {
         var tokensResponse = await _userService.LoginAsync(loginModel);
-        if (tokensResponse.AccessToken==string.Empty || tokensResponse.RefreshToken==string.Empty)
-        {
+        if (tokensResponse.AccessToken == string.Empty || tokensResponse.RefreshToken == string.Empty)
             return NotFound();
-        }
 
         return Ok(tokensResponse);
     }
@@ -38,5 +38,22 @@ public class AuthController : ControllerBase
         if (!isRegistrationSuccessful) return Conflict();
 
         return Ok("Please, verify your email address");
+    }
+
+    [HttpPost]
+    [Route("refresh")]
+    public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
+    {
+        try
+        {
+            var userId =
+                await _tokenValidationService.GetUserIdIfRefreshTokenValidAsync(refreshTokenRequest.RefreshToken);
+            var tokensResponse = await _userService.GetNewTokens(userId);
+            return Ok(tokensResponse);
+        }
+        catch (Exception e)
+        {
+            return BadRequest("Refresh token is incorrect");
+        }
     }
 }

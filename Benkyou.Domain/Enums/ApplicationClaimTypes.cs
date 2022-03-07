@@ -2,7 +2,8 @@
 
 public static class ApplicationClaimTypes
 {
-    public const string Role = "Role";
-    public const string Name = "Name";
-    public const string Email = "Email";
+    public const string Role = "role";
+    public const string Name = "name";
+    public const string Email = "email";
+    public const string Uid = "uid";
 }

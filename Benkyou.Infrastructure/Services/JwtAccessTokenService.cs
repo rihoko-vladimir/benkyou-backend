@@ -24,7 +24,8 @@ public class JwtAccessTokenService : IAccessTokenService
         {
             new(ApplicationClaimTypes.Role, user.Role),
             new(ApplicationClaimTypes.Name, user.FirstName),
-            new(ApplicationClaimTypes.Email, user.Email)
+            new(ApplicationClaimTypes.Email, user.Email),
+            new(ApplicationClaimTypes.Uid, user.Id.ToString())
         };
         var token = _tokenGenerator.GenerateToken(_jwtProperties.AccessSecret, _jwtProperties.Issuer,
             _jwtProperties.Audience, _jwtProperties.AccessTokenExpirationTime, claims);

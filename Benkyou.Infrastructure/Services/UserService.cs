@@ -63,4 +63,24 @@ public class UserService : IUserService
             AccessToken = accessToken
         };
     }
+
+    public async Task<TokensResponse> GetNewTokens(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var accessToken = _accessTokenService.GetToken(user);
+        var refreshToken = _refreshTokenService.GetToken(user);
+        user.RefreshToken = refreshToken;
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return new TokensResponse
+            {
+                AccessToken = string.Empty,
+                RefreshToken = string.Empty
+            };
+        return new TokensResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+    }
 }
