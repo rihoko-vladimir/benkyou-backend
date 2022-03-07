@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using Benkyou.Application.Common;
-using Benkyou.Application.Services;
+using Benkyou.Application.Services.Common;
 using Benkyou.Domain.Entities;
 using Benkyou.Domain.Enums;
-using Benkyou.Domain.Models;
+using Benkyou.Domain.Properties;
 
 namespace Benkyou.Infrastructure.Services;
 
@@ -22,9 +22,9 @@ public class JwtAccessTokenService : IAccessTokenService
     {
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Role, Roles.User),
-            new(ClaimTypes.Name, user.FirstName),
-            new(ClaimTypes.Email, user.Email)
+            new(ApplicationClaimTypes.Role, user.Role),
+            new(ApplicationClaimTypes.Name, user.FirstName),
+            new(ApplicationClaimTypes.Email, user.Email)
         };
         var token = _tokenGenerator.GenerateToken(_jwtProperties.AccessSecret, _jwtProperties.Issuer,
             _jwtProperties.Audience, _jwtProperties.AccessTokenExpirationTime, claims);

@@ -1,7 +1,7 @@
 ﻿using Benkyou.Application.Common;
-using Benkyou.Application.Services;
+using Benkyou.Application.Services.Common;
 using Benkyou.Domain.Entities;
-using Benkyou.Domain.Models;
+using Benkyou.Domain.Properties;
 
 namespace Benkyou.Infrastructure.Services;
 

@@ -2,6 +2,8 @@
 
 public class UserStatistic
 {
+    public Guid Id { get; set; }
+
     public int CardsCreatedCount { get; set; }
 
     public DateTime LastTimeStudied { get; set; }

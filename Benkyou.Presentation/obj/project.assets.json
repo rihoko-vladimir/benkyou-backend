@@ -963,6 +963,28 @@
           }
         }
       },
+      "Benkyou.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "AutoMapper": "11.0.1",
+          "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
+          "Benkyou.Domain": "1.0.0",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.2",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.2",
+          "Microsoft.EntityFrameworkCore": "7.0.0-preview.1.22076.6",
+          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.0-preview.1.22076.6"
+        },
+        "compile": {
+          "bin/placeholder/Benkyou.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Benkyou.Application.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Benkyou.Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
@@ -979,6 +1001,28 @@
         },
         "runtime": {
           "bin/placeholder/Benkyou.Domain.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
+      "Benkyou.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "AutoMapper": "11.0.1",
+          "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
+          "Benkyou.Application": "1.0.0",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.2",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.2",
+          "Microsoft.EntityFrameworkCore": "7.0.0-preview.1.22076.6",
+          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.0-preview.1.22076.6"
+        },
+        "compile": {
+          "bin/placeholder/Benkyou.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Benkyou.Infrastructure.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
@@ -3272,10 +3316,20 @@
         "version.txt"
       ]
     },
+    "Benkyou.Application/1.0.0": {
+      "type": "project",
+      "path": "../Benkyou.Application/Benkyou.Application.csproj",
+      "msbuildProject": "../Benkyou.Application/Benkyou.Application.csproj"
+    },
     "Benkyou.Domain/1.0.0": {
       "type": "project",
       "path": "../Benkyou.Domain/Benkyou.Domain.csproj",
       "msbuildProject": "../Benkyou.Domain/Benkyou.Domain.csproj"
+    },
+    "Benkyou.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../Benkyou.Infrastructure/Benkyou.Infrastructure.csproj",
+      "msbuildProject": "../Benkyou.Infrastructure/Benkyou.Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -3283,6 +3337,7 @@
       "AutoMapper >= 11.0.1",
       "AutoMapper.Extensions.Microsoft.DependencyInjection >= 11.0.0",
       "Benkyou.Domain >= 1.0.0",
+      "Benkyou.Infrastructure >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 6.0.2",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.2",
       "Microsoft.EntityFrameworkCore >= 7.0.0-preview.1.22076.6",
@@ -3317,6 +3372,9 @@
           "projectReferences": {
             "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\Benkyou.Domain.csproj": {
               "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\Benkyou.Domain.csproj"
+            },
+            "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Infrastructure\\Benkyou.Infrastructure.csproj": {
+              "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Infrastructure\\Benkyou.Infrastructure.csproj"
             }
           }
         }

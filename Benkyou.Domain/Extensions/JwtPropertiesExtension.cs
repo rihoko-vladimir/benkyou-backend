@@ -1,4 +1,4 @@
-﻿using Benkyou.Domain.Models;
+﻿using Benkyou.Domain.Properties;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,7 +6,7 @@ namespace Benkyou.Domain.Extensions;
 
 public static class JwtPropertiesExtension
 {
-    public static IServiceCollection AddJwtProperties(this IServiceCollection serviceCollection,
+    public static JwtProperties AddJwtProperties(this IServiceCollection serviceCollection,
         IConfiguration configuration)
     {
         var audience = configuration.GetSection("JWT")["Audience"] ??
@@ -31,6 +31,6 @@ public static class JwtPropertiesExtension
             RefreshTokenExpirationTime = int.Parse(refreshExpiration)
         };
         serviceCollection.AddSingleton(jwtProperties);
-        return serviceCollection;
+        return jwtProperties;
     }
 }

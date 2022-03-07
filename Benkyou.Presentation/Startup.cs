@@ -1,9 +1,12 @@
 using System;
 using System.Text;
+using Benkyou.Application.Common;
+using Benkyou.Application.Services.Common;
 using Benkyou.Domain.Database;
 using Benkyou.Domain.Entities;
 using Benkyou.Domain.Extensions;
-using Benkyou.Domain.Models;
+using Benkyou.Infrastructure.Generators;
+using Benkyou.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,15 +20,24 @@ namespace Benkyou_backend;
 
 public class Startup
 {
-    public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public void ConfigureServices(IServiceCollection services)
     {
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        services.AddJwtProperties(configuration);
-        var provider = services.BuildServiceProvider();
+        services.AddScoped<ITokenGenerator, TokenGenerator>();
+        services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
+        services.AddScoped<IRefreshTokenService, JwtRefreshTokenService>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("SqlServerConnectionString") ?? "");
+            options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");
         });
+        var jwtParams = services.AddJwtProperties(_configuration);
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,18 +47,18 @@ public class Startup
         {
             options.SaveToken = true;
             options.RequireHttpsMetadata = true;
-            var jwtParams = provider.GetService<JwtProperties>();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtParams!.AccessSecret));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtParams.AccessSecret));
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtParams!.Issuer,
-                ValidAudience = jwtParams!.Audience,
+                ValidIssuer = jwtParams.Issuer,
+                ValidAudience = jwtParams.Audience,
                 IssuerSigningKey = key,
                 ClockSkew = TimeSpan.Zero
             };
+            options.TokenValidationParameters = validationParameters;
         });
         services.AddIdentityCore<User>().AddEntityFrameworkStores<ApplicationDbContext>();
         services.AddControllers();

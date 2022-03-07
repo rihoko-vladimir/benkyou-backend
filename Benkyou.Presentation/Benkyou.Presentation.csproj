@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Benkyou.Domain\Benkyou.Domain.csproj"/>
+        <ProjectReference Include="..\Benkyou.Infrastructure\Benkyou.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Benkyou.Application.Services;
+﻿namespace Benkyou.Application.Services.Common;
 
 public interface IRefreshTokenService : ITokenService
 {

@@ -9,7 +9,7 @@ namespace Benkyou.Infrastructure.Generators;
 public class TokenGenerator : ITokenGenerator
 {
     public string GenerateToken(string secret, string issuer, string audience,
-        int expiresInMinutes, ICollection<Claim>? claims)
+        int expiresInMinutes, ICollection<Claim>? claims = null)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

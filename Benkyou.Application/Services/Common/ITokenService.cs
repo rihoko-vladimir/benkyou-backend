@@ -1,6 +1,6 @@
 ﻿using Benkyou.Domain.Entities;
 
-namespace Benkyou.Application.Services;
+namespace Benkyou.Application.Services.Common;
 
 public interface ITokenService
 {
