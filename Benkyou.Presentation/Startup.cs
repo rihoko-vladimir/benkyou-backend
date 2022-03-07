@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using Benkyou.Application.Common;
 using Benkyou.Application.Services.Common;
+using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Database;
 using Benkyou.Domain.Entities;
 using Benkyou.Domain.Extensions;
@@ -33,6 +34,7 @@ public class Startup
         services.AddScoped<ITokenGenerator, TokenGenerator>();
         services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
         services.AddScoped<IRefreshTokenService, JwtRefreshTokenService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");

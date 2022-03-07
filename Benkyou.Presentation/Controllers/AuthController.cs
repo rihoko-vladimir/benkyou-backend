@@ -1,10 +1,7 @@
-﻿using System.Threading.Tasks;
-using AutoMapper;
-using Benkyou.Application.Services.Common;
-using Benkyou.Domain.Entities;
-using Benkyou.Domain.Enums;
+﻿using System;
+using System.Threading.Tasks;
+using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Benkyou_backend.Controllers;
@@ -13,42 +10,33 @@ namespace Benkyou_backend.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAccessTokenService _accessTokenService;
-    private readonly IMapper _mapper;
-    private readonly IRefreshTokenService _refreshTokenService;
-    private readonly UserManager<User> _userManager;
+    private readonly IUserService _userService;
 
-    public AuthController(UserManager<User> userManager, IAccessTokenService accessTokenService,
-        IRefreshTokenService refreshTokenService, IMapper mapper)
+    public AuthController(IUserService userService)
     {
-        _userManager = userManager;
-        _accessTokenService = accessTokenService;
-        _refreshTokenService = refreshTokenService;
-        _mapper = mapper;
+        _userService = userService;
     }
 
     [HttpPost]
     [Route("login")]
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
     {
-        return Ok();
+        var tokensResponse = await _userService.LoginAsync(loginModel);
+        if (tokensResponse.AccessToken==string.Empty || tokensResponse.RefreshToken==string.Empty)
+        {
+            return NotFound();
+        }
+
+        return Ok(tokensResponse);
     }
 
     [HttpPost]
     [Route("register")]
     public async Task<ActionResult> Register([FromBody] RegisterModel registerModel)
     {
-        var user = _mapper.Map<RegisterModel, User>(registerModel);
-        //var result = await _userManager.CreateAsync(user, registerModel.Password);
-        //if (!result.Succeeded) return BadRequest();
-        user.FirstName = "vladimir";
-        user.Role = Roles.Administrator;
-        var accessToken = _accessTokenService.GetToken(user);
-        var refreshToken = _refreshTokenService.GetToken(user);
-        return Ok(new TokensResponse
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
-        });
+        var isRegistrationSuccessful = await _userService.RegisterAsync(registerModel);
+        if (!isRegistrationSuccessful) return Conflict();
+
+        return Ok("Please, verify your email address");
     }
 }

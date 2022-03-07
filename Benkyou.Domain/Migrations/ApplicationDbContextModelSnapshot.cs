@@ -119,7 +119,6 @@ namespace Benkyou.Domain.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("About")
-                        .IsRequired()
                         .HasMaxLength(350)
                         .HasColumnType("nvarchar(350)");
 
@@ -127,11 +126,10 @@ namespace Benkyou.Domain.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AvatarUrl")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("Birthday")
+                    b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -183,7 +181,6 @@ namespace Benkyou.Domain.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("RefreshToken")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")

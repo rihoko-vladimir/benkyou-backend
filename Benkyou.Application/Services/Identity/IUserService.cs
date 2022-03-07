@@ -4,6 +4,6 @@ namespace Benkyou.Application.Services.Identity;
 
 public interface IUserService
 {
-    public Task<bool> Register(RegisterModel registerModel);
-    public TokensResponse Login(LoginModel loginModel);
+    public Task<bool> RegisterAsync(RegisterModel registerModel);
+    public Task<TokensResponse> LoginAsync(LoginModel loginModel);
 }

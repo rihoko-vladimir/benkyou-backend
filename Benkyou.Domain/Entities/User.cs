@@ -15,12 +15,11 @@ public class User : IdentityUser<Guid>
     [Required(ErrorMessage = "Last Name must be set")]
     public string LastName { get; set; } = null!;
 
-    [Required(ErrorMessage = "Birth day must be set")]
-    public DateTime Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
 
-    [MaxLength(350)] public string About { get; set; } = null!;
+    [MaxLength(350)] public string? About { get; set; } = null!;
 
-    [MaxLength(100)] public string AvatarUrl { get; set; } = null!;
+    [MaxLength(100)] public string? AvatarUrl { get; set; } = null!;
 
     [MaxLength(35)]
     [Required(ErrorMessage = "Email address must be set")]
@@ -28,9 +27,9 @@ public class User : IdentityUser<Guid>
 
     public UserStatistic UserStatistic { get; set; } = null!;
 
-    public ICollection<Card> Cards { get; set; } = null!;
+    public ICollection<Card>? Cards { get; set; } = null!;
 
-    public string RefreshToken { get; set; } = null!;
+    public string? RefreshToken { get; set; } = null!;
 
     [Required(ErrorMessage = "Role must be set")]
     public string Role { get; set; } = null!;
