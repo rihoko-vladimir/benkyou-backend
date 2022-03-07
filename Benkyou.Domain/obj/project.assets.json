@@ -962,27 +962,6 @@
             "rid": "win"
           }
         }
-      },
-      "Benkyou.Domain/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "dependencies": {
-          "AutoMapper": "11.0.1",
-          "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.2",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.2",
-          "Microsoft.EntityFrameworkCore": "7.0.0-preview.1.22076.6",
-          "Microsoft.EntityFrameworkCore.SqlServer": "7.0.0-preview.1.22076.6"
-        },
-        "compile": {
-          "bin/placeholder/Benkyou.Domain.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Benkyou.Domain.dll": {}
-        },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
       }
     }
   },
@@ -3271,18 +3250,12 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
-    },
-    "Benkyou.Domain/1.0.0": {
-      "type": "project",
-      "path": "../Benkyou.Domain/Benkyou.Domain.csproj",
-      "msbuildProject": "../Benkyou.Domain/Benkyou.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
       "AutoMapper >= 11.0.1",
       "AutoMapper.Extensions.Microsoft.DependencyInjection >= 11.0.0",
-      "Benkyou.Domain >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 6.0.2",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.2",
       "Microsoft.EntityFrameworkCore >= 7.0.0-preview.1.22076.6",
@@ -3296,11 +3269,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\Benkyou.Presentation.csproj",
-      "projectName": "Benkyou.Presentation",
-      "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\Benkyou.Presentation.csproj",
+      "projectUniqueName": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\Benkyou.Domain.csproj",
+      "projectName": "Benkyou.Domain",
+      "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\Benkyou.Domain.csproj",
       "packagesPath": "C:\\Users\\vovak\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\obj\\",
+      "outputPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\vovak\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -3314,11 +3287,7 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {
-            "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\Benkyou.Domain.csproj": {
-              "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Domain\\Benkyou.Domain.csproj"
-            }
-          }
+          "projectReferences": {}
         }
       },
       "warningProperties": {

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OM3EOAZ4AMRHJ8rp5KPozG6J2UAnaP9mlhlKC8YXcv53zmAXPA9Jecyr0ZZjOCLaC7ZCOBL3bohfazifQd/Pig==",
+  "dgSpecHash": "dgPqVGes7Fyui+TYvO5v7AGPhmgDu6rw4mKrXLXZzDIEOxMgfkYDWFi2K4D+wEgvL3Q8thBEVQWJC2jwf7FP/Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\Benkyou.Presentation.csproj",
+  "projectFilePath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Application\\Benkyou.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\vovak\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\vovak\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",

@@ -3296,11 +3296,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\Benkyou.Presentation.csproj",
-      "projectName": "Benkyou.Presentation",
-      "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\Benkyou.Presentation.csproj",
+      "projectUniqueName": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Application\\Benkyou.Application.csproj",
+      "projectName": "Benkyou.Application",
+      "projectPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Application\\Benkyou.Application.csproj",
       "packagesPath": "C:\\Users\\vovak\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Presentation\\obj\\",
+      "outputPath": "C:\\Users\\vovak\\RiderProjects\\Benkyou-backend\\Benkyou.Application\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\vovak\\AppData\\Roaming\\NuGet\\NuGet.Config"

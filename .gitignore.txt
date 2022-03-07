@@ -1,0 +1,2 @@
+.idea
+/Benkyou.Presentation/appsettings.Development.json
