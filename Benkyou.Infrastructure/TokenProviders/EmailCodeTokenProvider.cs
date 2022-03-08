@@ -7,7 +7,7 @@ public class EmailCodeTokenProvider : IUserTwoFactorTokenProvider<User>
 {
     public async Task<string> GenerateAsync(string purpose, UserManager<User> manager, User user)
     {
-        if (purpose != Domain.Enums.TokenProviders.EmailCodeTokenProviderName)
+        if (purpose != UserManager<User>.ConfirmEmailTokenPurpose)
             throw new ArgumentException("This provider can only generate email codes");
         const string chars = "0123456789";
         var random = new Random();
@@ -20,12 +20,13 @@ public class EmailCodeTokenProvider : IUserTwoFactorTokenProvider<User>
 
     public async Task<bool> ValidateAsync(string purpose, string token, UserManager<User> manager, User user)
     {
-        if (purpose != Domain.Enums.TokenProviders.EmailCodeTokenProviderName)
+        if (purpose != UserManager<User>.ConfirmEmailTokenPurpose)
             throw new ArgumentException("This provider can only verify email codes");
         var userCode = user.EmailConfirmationCode;
         if (!token.Equals(userCode)) return false;
         user.EmailConfirmationCode = "";
         user.EmailConfirmed = true;
+        user.LockoutEnabled = false;
         await manager.UpdateAsync(user);
         return true;
 

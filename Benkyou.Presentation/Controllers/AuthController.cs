@@ -75,4 +75,12 @@ public class AuthController : ControllerBase
         if (isCorrect) return Ok("Email confirmed");
         return BadRequest("Email code is incorrect");
     }
+
+    [HttpPost]
+    [Authorize]
+    [Route("test")]
+    public ActionResult Test()
+    {
+        return Ok("Hello secret world!");
+    }
 }

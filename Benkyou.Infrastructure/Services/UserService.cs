@@ -51,6 +51,12 @@ public class UserService : IUserService
                 AccessToken = string.Empty,
                 RefreshToken = string.Empty
             };
+        if (!await _userManager.IsEmailConfirmedAsync(user))
+            return new TokensResponse
+            {
+                AccessToken = string.Empty,
+                RefreshToken = string.Empty
+            };
         var accessToken = _accessTokenService.GetToken(user);
         var refreshToken = _refreshTokenService.GetToken(user);
         user.RefreshToken = refreshToken;
