@@ -36,4 +36,6 @@ public class User : IdentityUser<Guid>
 
     [Required(ErrorMessage = "No terms accepted value")]
     public bool IsTermsAccepted { get; set; }
+
+    public string EmailConfirmationCode { get; set; }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace Benkyou_backend.Controllers;
 
@@ -11,12 +14,14 @@ namespace Benkyou_backend.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ITokenValidationService _tokenValidationService;
+    private readonly IAccessTokenService _accessTokenService;
     private readonly IUserService _userService;
 
-    public AuthController(IUserService userService, ITokenValidationService tokenValidationService)
+    public AuthController(IUserService userService, ITokenValidationService tokenValidationService, IAccessTokenService accessTokenService)
     {
         _userService = userService;
         _tokenValidationService = tokenValidationService;
+        _accessTokenService = accessTokenService;
     }
 
     [HttpPost]
@@ -34,10 +39,15 @@ public class AuthController : ControllerBase
     [Route("register")]
     public async Task<ActionResult> Register([FromBody] RegisterModel registerModel)
     {
-        var isRegistrationSuccessful = await _userService.RegisterAsync(registerModel);
-        if (!isRegistrationSuccessful) return Conflict();
-
-        return Ok("Please, verify your email address");
+        try
+        {
+            var userId = await _userService.RegisterAsync(registerModel);
+            return Ok(userId);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpPost]
@@ -55,5 +65,14 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Refresh token is incorrect");
         }
+    }
+
+    [HttpPost]
+    [Route("verify-email")]
+    public async Task<ActionResult> VerifyEmailAddress([FromBody] VerifyEmailCodeRequest emailCodeRequest)
+    { 
+        var isCorrect = await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId,emailCodeRequest.EmailCode);
+        if (isCorrect) return Ok("Email confirmed");
+        return BadRequest("Email code is incorrect");
     }
 }

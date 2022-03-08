@@ -5,9 +5,11 @@ using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Database;
 using Benkyou.Domain.Entities;
+using Benkyou.Domain.Enums;
 using Benkyou.Domain.Extensions;
 using Benkyou.Infrastructure.Generators;
 using Benkyou.Infrastructure.Services;
+using Benkyou.Infrastructure.TokenProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -63,7 +65,14 @@ public class Startup
             };
             options.TokenValidationParameters = validationParameters;
         });
-        services.AddIdentityCore<User>().AddEntityFrameworkStores<ApplicationDbContext>();
+        services.AddIdentityCore<User>(options =>
+        {
+            options.SignIn.RequireConfirmedEmail = true;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = false;
+        }).AddEntityFrameworkStores<ApplicationDbContext>().AddTokenProvider(TokenProviders.EmailCodeTokenProviderName,typeof(EmailCodeTokenProvider));
         services.AddControllers();
     }
 

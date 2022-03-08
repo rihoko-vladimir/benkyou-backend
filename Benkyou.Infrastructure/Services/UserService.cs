@@ -3,6 +3,7 @@ using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Entities;
 using Benkyou.Domain.Enums;
+using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 
@@ -24,12 +25,15 @@ public class UserService : IUserService
         _refreshTokenService = refreshTokenService;
     }
 
-    public async Task<bool> RegisterAsync(RegisterModel registerModel)
+    public async Task<Guid> RegisterAsync(RegisterModel registerModel)
     {
         var user = _mapper.Map<RegisterModel, User>(registerModel);
         user.Role = Roles.Administrator;
         var result = await _userManager.CreateAsync(user, registerModel.Password);
-        return result.Succeeded;
+        if (!result.Succeeded) throw new UserRegistrationException("User already exists or there were error while creating him");
+        var token = await _userManager.GenerateUserTokenAsync(user, Domain.Enums.TokenProviders.EmailCodeTokenProviderName, UserManager<User>.ConfirmEmailTokenPurpose);
+        Console.WriteLine(token);
+        return user.Id;
     }
 
     public async Task<TokensResponse> LoginAsync(LoginModel loginModel)
@@ -62,6 +66,14 @@ public class UserService : IUserService
             RefreshToken = refreshToken,
             AccessToken = accessToken
         };
+    }
+
+    public async Task<bool> ValidateEmailCodeAsync(Guid userId, string emailCode)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        var result = await _userManager.VerifyUserTokenAsync(user, Domain.Enums.TokenProviders.EmailCodeTokenProviderName,
+            UserManager<User>.ConfirmEmailTokenPurpose, emailCode);
+        return result;
     }
 
     public async Task<TokensResponse> GetNewTokens(Guid userId)

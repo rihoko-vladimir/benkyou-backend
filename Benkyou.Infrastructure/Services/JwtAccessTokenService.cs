@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Benkyou.Application.Common;
 using Benkyou.Application.Services.Common;
 using Benkyou.Domain.Entities;
