@@ -14,15 +14,17 @@ public class UserService : IUserService
     private readonly IAccessTokenService _accessTokenService;
     private readonly IMapper _mapper;
     private readonly IRefreshTokenService _refreshTokenService;
+    private readonly IEmailSenderService _emailSenderService;
     private readonly UserManager<User> _userManager;
 
     public UserService(UserManager<User> userManager, IMapper mapper, IAccessTokenService accessTokenService,
-        IRefreshTokenService refreshTokenService)
+        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
+        _emailSenderService = emailSenderService;
     }
 
     public async Task<Guid> RegisterAsync(RegisterModel registerModel)
@@ -32,7 +34,7 @@ public class UserService : IUserService
         var result = await _userManager.CreateAsync(user, registerModel.Password);
         if (!result.Succeeded) throw new UserRegistrationException("User already exists or there were error while creating him");
         var token = await _userManager.GenerateUserTokenAsync(user, Domain.Enums.TokenProviders.EmailCodeTokenProviderName, UserManager<User>.ConfirmEmailTokenPurpose);
-        Console.WriteLine(token);
+        await _emailSenderService.SendEmailConfirmationCodeAsync(token, user.Email);
         return user.Id;
     }
 

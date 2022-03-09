@@ -11,6 +11,7 @@
           "AutoMapper": "11.0.1",
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
           "Benkyou.Domain": "1.0.0",
+          "MailKit": "3.1.1",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.2",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.2",
           "Microsoft.EntityFrameworkCore": "7.0.0-preview.1.22076.6",
@@ -83,6 +84,17 @@
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.13.0.0",
             "fileVersion": "2.13.14.5656"
+          }
+        }
+      },
+      "MailKit/3.1.1": {
+        "dependencies": {
+          "MimeKit": "3.1.1"
+        },
+        "runtime": {
+          "lib/net6.0/MailKit.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.1.0"
           }
         }
       },
@@ -494,6 +506,26 @@
           }
         }
       },
+      "MimeKit/3.1.1": {
+        "dependencies": {
+          "Portable.BouncyCastle": "1.9.0",
+          "System.Security.Cryptography.Pkcs": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/MimeKit.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.1.0"
+          }
+        }
+      },
+      "Portable.BouncyCastle/1.9.0": {
+        "runtime": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "assemblyVersion": "1.9.0.0",
+            "fileVersion": "1.9.0.1"
+          }
+        }
+      },
       "System.Buffers/4.5.1": {},
       "System.Collections.Immutable/7.0.0-preview.1.22076.8": {
         "dependencies": {
@@ -554,7 +586,7 @@
           }
         }
       },
-      "System.Formats.Asn1/5.0.0": {},
+      "System.Formats.Asn1/6.0.0": {},
       "System.Globalization/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
@@ -651,7 +683,12 @@
       },
       "System.Security.Cryptography.Cng/5.0.0": {
         "dependencies": {
-          "System.Formats.Asn1": "5.0.0"
+          "System.Formats.Asn1": "6.0.0"
+        }
+      },
+      "System.Security.Cryptography.Pkcs/6.0.0": {
+        "dependencies": {
+          "System.Formats.Asn1": "6.0.0"
         }
       },
       "System.Security.Cryptography.ProtectedData/5.0.0": {
@@ -728,6 +765,7 @@
         "dependencies": {
           "AutoMapper": "11.0.1",
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
+          "MailKit": "3.1.1",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "6.0.2",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.2",
           "Microsoft.EntityFrameworkCore": "7.0.0-preview.1.22076.6",
@@ -779,6 +817,13 @@
       "sha512": "sha512-icZ3IcfmoIn5bQvYiZChRZ6jPn1HpjxQ+XzE5JFh8hp3MyvF1MmKvnc6htPBdW/FSmCotRzzRV6/tptjq/Aylw==",
       "path": "humanizer.core/2.13.14",
       "hashPath": "humanizer.core.2.13.14.nupkg.sha512"
+    },
+    "MailKit/3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NprdMF0ABNWOqQUuqz45X5YkJK6f3vtYwwvqR6nGVdmrZ7HkahNbSATpOZ5Rj3W1cgDGf/iD8vs/oCyZ4wUO7g==",
+      "path": "mailkit/3.1.1",
+      "hashPath": "mailkit.3.1.1.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authentication.JwtBearer/6.0.2": {
       "type": "package",
@@ -1032,6 +1077,20 @@
       "path": "microsoft.win32.systemevents/5.0.0",
       "hashPath": "microsoft.win32.systemevents.5.0.0.nupkg.sha512"
     },
+    "MimeKit/3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-aY2fuCucJ0S5gWeak8o7aSZXm19Vr/rJj746+RlvUrPKzUESDyXKLoxqW6rs7z4DA0qJ1AQxEAO2MnWxZncLGA==",
+      "path": "mimekit/3.1.1",
+      "hashPath": "mimekit.3.1.1.nupkg.sha512"
+    },
+    "Portable.BouncyCastle/1.9.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eZZBCABzVOek+id9Xy04HhmgykF0wZg9wpByzrWN7q8qEI0Qen9b7tfd7w8VA3dOeesumMG7C5ZPy0jk7PSRHw==",
+      "path": "portable.bouncycastle/1.9.0",
+      "hashPath": "portable.bouncycastle.1.9.0.nupkg.sha512"
+    },
     "System.Buffers/4.5.1": {
       "type": "package",
       "serviceable": true,
@@ -1067,12 +1126,12 @@
       "path": "system.drawing.common/5.0.0",
       "hashPath": "system.drawing.common.5.0.0.nupkg.sha512"
     },
-    "System.Formats.Asn1/5.0.0": {
+    "System.Formats.Asn1/6.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-MTvUIktmemNB+El0Fgw9egyqT9AYSIk6DTJeoDSpc3GIHxHCMo8COqkWT1mptX5tZ1SlQ6HJZ0OsSvMth1c12w==",
-      "path": "system.formats.asn1/5.0.0",
-      "hashPath": "system.formats.asn1.5.0.0.nupkg.sha512"
+      "sha512": "sha512-T6fD00dQ3NTbPDy31m4eQUwKW84s03z0N2C8HpOklyeaDgaJPa/TexP4/SkORMSOwc7WhKifnA6Ya33AkzmafA==",
+      "path": "system.formats.asn1/6.0.0",
+      "hashPath": "system.formats.asn1.6.0.0.nupkg.sha512"
     },
     "System.Globalization/4.3.0": {
       "type": "package",
@@ -1164,6 +1223,13 @@
       "sha512": "sha512-jIMXsKn94T9JY7PvPq/tMfqa6GAaHpElRDpmG+SuL+D3+sTw2M8VhnibKnN8Tq+4JqbPJ/f+BwtLeDMEnzAvRg==",
       "path": "system.security.cryptography.cng/5.0.0",
       "hashPath": "system.security.cryptography.cng.5.0.0.nupkg.sha512"
+    },
+    "System.Security.Cryptography.Pkcs/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-elM3x+xSRhzQysiqo85SbidJJ2YbZlnvmh+53TuSZHsD7dNuuEWser+9EFtY+rYupBwkq2avc6ZCO3/6qACgmg==",
+      "path": "system.security.cryptography.pkcs/6.0.0",
+      "hashPath": "system.security.cryptography.pkcs.6.0.0.nupkg.sha512"
     },
     "System.Security.Cryptography.ProtectedData/5.0.0": {
       "type": "package",

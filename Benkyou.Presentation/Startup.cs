@@ -38,6 +38,7 @@ public class Startup
         services.AddScoped<IRefreshTokenService, JwtRefreshTokenService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITokenValidationService, TokenValidationService>();
+        services.AddScoped<IEmailSenderService, EmailSenderService>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");

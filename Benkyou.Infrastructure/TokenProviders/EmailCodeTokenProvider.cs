@@ -24,7 +24,7 @@ public class EmailCodeTokenProvider : IUserTwoFactorTokenProvider<User>
             throw new ArgumentException("This provider can only verify email codes");
         var userCode = user.EmailConfirmationCode;
         if (!token.Equals(userCode)) return false;
-        user.EmailConfirmationCode = "";
+        user.EmailConfirmationCode = null;
         user.EmailConfirmed = true;
         user.LockoutEnabled = false;
         await manager.UpdateAsync(user);
