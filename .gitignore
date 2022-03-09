@@ -1,0 +1,10 @@
+﻿/Benkyou.Application/obj/
+/Benkyou.Domain/bin/
+/Benkyou.Domain/obj/
+/Benkyou.Infrastructure/bin/
+/Benkyou.Infrastructure/obj/
+/Benkyou.Presentation/bin/
+/Benkyou.Presentation/obj/
+/Benkyou.Application/bin/
+/.idea/
+/Benkyou-backend/
