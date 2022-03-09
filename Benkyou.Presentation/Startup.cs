@@ -13,6 +13,7 @@ using Benkyou.Infrastructure.TokenProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,7 +75,7 @@ public class Startup
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = false;
         }).AddEntityFrameworkStores<ApplicationDbContext>().AddTokenProvider(TokenProviders.EmailCodeTokenProviderName,
-            typeof(EmailCodeTokenProvider));
+            typeof(EmailCodeTokenProvider)).AddDefaultTokenProviders();
         services.AddControllers();
     }
 

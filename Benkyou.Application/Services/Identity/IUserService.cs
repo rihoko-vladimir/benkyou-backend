@@ -9,9 +9,13 @@ public interface IUserService
 
     public Task<bool> ValidateEmailCodeAsync(Guid userId, string emailCode);
 
-    public Task<TokensResponse> GetNewTokens(Guid userId);
+    public Task<TokensResponse> GetNewTokensAsync(Guid userId);
 
     public Guid GetUserGuidFromAccessToken(string accessToken);
 
-    public Task<bool> IsEmailConfirmed(Guid userId);
+    public Task<bool> IsEmailConfirmedAsync(Guid userId);
+
+    public Task ResetPasswordAsync(string emailAddress);
+
+    public Task SetNewUserPasswordAsync(string email, string newPassword, string token);
 }

@@ -19,11 +19,11 @@ public class EmailSenderService : IEmailSenderService
     {
         var emailMessage = new MimeMessage();
         var emailSection = _configuration.GetSection("Email");
-        var emailAddress = emailSection["Login"];
+        var emailLogin = emailSection["Login"];
         var emailServer = emailSection["Server"];
         var emailPort = emailSection["ServerPort"];
         var emailPassword = emailSection["Password"];
-        emailMessage.From.Add(new MailboxAddress("Benkyou! Bot", emailAddress));
+        emailMessage.From.Add(new MailboxAddress("Benkyou! Bot", emailLogin));
         emailMessage.Subject = "Benkyou! Confirmation code";
         emailMessage.Body = new TextPart
         {
@@ -34,7 +34,31 @@ public class EmailSenderService : IEmailSenderService
         using var smtpClient = new SmtpClient();
 
         await smtpClient.ConnectAsync(emailServer, int.Parse(emailPort!), SecureSocketOptions.StartTls);
-        await smtpClient.AuthenticateAsync(emailAddress, emailPassword);
+        await smtpClient.AuthenticateAsync(emailLogin, emailPassword);
+        await smtpClient.SendAsync(emailMessage);
+        await smtpClient.DisconnectAsync(true);
+    }
+
+    public async Task SendEmailResetLinkAsync(string emailAddress, string passwordResetToken)
+    {
+        var emailMessage = new MimeMessage();
+        var emailSection = _configuration.GetSection("Email");
+        var emailLogin = emailSection["Login"];
+        var emailServer = emailSection["Server"];
+        var emailPort = emailSection["ServerPort"];
+        var emailPassword = emailSection["Password"];
+        emailMessage.From.Add(new MailboxAddress("Benkyou! Bot", emailLogin));
+        emailMessage.Subject = "Benkyou! Password reset";
+        //TODO paste link instead of token here!
+        emailMessage.Body = new TextPart
+        {
+            Text = $"To reset your password, please, click on the link {passwordResetToken}"
+        };
+        emailMessage.To.Add(MailboxAddress.Parse(emailAddress));
+        using var smtpClient = new SmtpClient();
+
+        await smtpClient.ConnectAsync(emailServer, int.Parse(emailPort!), SecureSocketOptions.StartTls);
+        await smtpClient.AuthenticateAsync(emailLogin, emailPassword);
         await smtpClient.SendAsync(emailMessage);
         await smtpClient.DisconnectAsync(true);
     }
