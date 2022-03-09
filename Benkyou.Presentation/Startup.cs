@@ -73,7 +73,8 @@ public class Startup
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = false;
-        }).AddEntityFrameworkStores<ApplicationDbContext>().AddTokenProvider(TokenProviders.EmailCodeTokenProviderName,typeof(EmailCodeTokenProvider));
+        }).AddEntityFrameworkStores<ApplicationDbContext>().AddTokenProvider(TokenProviders.EmailCodeTokenProviderName,
+            typeof(EmailCodeTokenProvider));
         services.AddControllers();
     }
 

@@ -86,3 +86,4 @@ C:\Users\vovak\RiderProjects\Benkyou-backend\Benkyou.Presentation\obj\Debug\net6
 C:\Users\vovak\RiderProjects\Benkyou-backend\Benkyou.Presentation\bin\Debug\net6.0\MailKit.dll
 C:\Users\vovak\RiderProjects\Benkyou-backend\Benkyou.Presentation\bin\Debug\net6.0\MimeKit.dll
 C:\Users\vovak\RiderProjects\Benkyou-backend\Benkyou.Presentation\bin\Debug\net6.0\BouncyCastle.Crypto.dll
+C:\Users\vovak\RiderProjects\Benkyou-backend\Benkyou.Presentation\obj\Debug\net6.0\Benkyou.Presentation.MvcApplicationPartsAssemblyInfo.cs

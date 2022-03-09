@@ -2,4 +2,5 @@
 
 public interface IAccessTokenService : ITokenService
 {
+    public Guid GetGuidFromAccessToken(string accessToken);
 }

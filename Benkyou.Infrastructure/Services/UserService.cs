@@ -12,9 +12,9 @@ namespace Benkyou.Infrastructure.Services;
 public class UserService : IUserService
 {
     private readonly IAccessTokenService _accessTokenService;
+    private readonly IEmailSenderService _emailSenderService;
     private readonly IMapper _mapper;
     private readonly IRefreshTokenService _refreshTokenService;
-    private readonly IEmailSenderService _emailSenderService;
     private readonly UserManager<User> _userManager;
 
     public UserService(UserManager<User> userManager, IMapper mapper, IAccessTokenService accessTokenService,
@@ -32,8 +32,10 @@ public class UserService : IUserService
         var user = _mapper.Map<RegisterModel, User>(registerModel);
         user.Role = Roles.Administrator;
         var result = await _userManager.CreateAsync(user, registerModel.Password);
-        if (!result.Succeeded) throw new UserRegistrationException("User already exists or there were error while creating him");
-        var token = await _userManager.GenerateUserTokenAsync(user, Domain.Enums.TokenProviders.EmailCodeTokenProviderName, UserManager<User>.ConfirmEmailTokenPurpose);
+        if (!result.Succeeded)
+            throw new UserRegistrationException("User already exists or there were error while creating him");
+        var token = await _userManager.GenerateUserTokenAsync(user,
+            Domain.Enums.TokenProviders.EmailCodeTokenProviderName, UserManager<User>.ConfirmEmailTokenPurpose);
         await _emailSenderService.SendEmailConfirmationCodeAsync(token, user.Email);
         return user.Id;
     }
@@ -79,7 +81,8 @@ public class UserService : IUserService
     public async Task<bool> ValidateEmailCodeAsync(Guid userId, string emailCode)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        var result = await _userManager.VerifyUserTokenAsync(user, Domain.Enums.TokenProviders.EmailCodeTokenProviderName,
+        var result = await _userManager.VerifyUserTokenAsync(user,
+            Domain.Enums.TokenProviders.EmailCodeTokenProviderName,
             UserManager<User>.ConfirmEmailTokenPurpose, emailCode);
         return result;
     }
@@ -102,5 +105,17 @@ public class UserService : IUserService
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+    }
+
+    public Guid GetUserGuidFromAccessToken(string accessToken)
+    {
+        var userId = _accessTokenService.GetGuidFromAccessToken(accessToken);
+        return userId;
+    }
+
+    public async Task<bool> IsEmailConfirmed(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return user.EmailConfirmed;
     }
 }

@@ -1,6 +1,5 @@
-﻿using System.Net;
-using System.Net.Mail;
-using Benkyou.Application.Services.Common;
+﻿using Benkyou.Application.Services.Common;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
@@ -32,10 +31,11 @@ public class EmailSenderService : IEmailSenderService
         };
         emailMessage.To.Add(MailboxAddress.Parse(emailReceiverAddress));
 
-        using var smtpClient = new MailKit.Net.Smtp.SmtpClient();
+        using var smtpClient = new SmtpClient();
 
         await smtpClient.ConnectAsync(emailServer, int.Parse(emailPort!), SecureSocketOptions.StartTls);
         await smtpClient.AuthenticateAsync(emailAddress, emailPassword);
         await smtpClient.SendAsync(emailMessage);
+        await smtpClient.DisconnectAsync(true);
     }
 }

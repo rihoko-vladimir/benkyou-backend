@@ -29,7 +29,6 @@ public class EmailCodeTokenProvider : IUserTwoFactorTokenProvider<User>
         user.LockoutEnabled = false;
         await manager.UpdateAsync(user);
         return true;
-
     }
 
     public Task<bool> CanGenerateTwoFactorTokenAsync(UserManager<User> manager, User user)

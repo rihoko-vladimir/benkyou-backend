@@ -32,4 +32,12 @@ public class JwtAccessTokenService : IAccessTokenService
             _jwtProperties.Audience, _jwtProperties.AccessTokenExpirationTime, claims);
         return token;
     }
+
+    public Guid GetGuidFromAccessToken(string accessToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(accessToken);
+        var userId = token.Claims.First(claim => claim.Type == ApplicationClaimTypes.Uid).Value;
+        return Guid.Parse(userId);
+    }
 }
