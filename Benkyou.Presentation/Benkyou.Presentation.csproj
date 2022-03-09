@@ -20,10 +20,8 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0-preview.1.22076.6" />
     </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\Benkyou.Domain\Benkyou.Domain.csproj" />
         <ProjectReference Include="..\Benkyou.Infrastructure\Benkyou.Infrastructure.csproj" />
     </ItemGroup>
-
 </Project>
