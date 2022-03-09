@@ -1,4 +1,6 @@
 ﻿using Benkyou.Application.Services.Common;
+using Benkyou.Domain;
+using Benkyou.Domain.Templates;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -39,7 +41,7 @@ public class EmailSenderService : IEmailSenderService
         await smtpClient.DisconnectAsync(true);
     }
 
-    public async Task SendEmailResetLinkAsync(string emailAddress, string passwordResetToken)
+    public async Task SendEmailResetLinkAsync(string emailAddress, string passwordResetToken, string name)
     {
         var emailMessage = new MimeMessage();
         var emailSection = _configuration.GetSection("Email");
@@ -50,10 +52,12 @@ public class EmailSenderService : IEmailSenderService
         emailMessage.From.Add(new MailboxAddress("Benkyou! Bot", emailLogin));
         emailMessage.Subject = "Benkyou! Password reset";
         //TODO paste link instead of token here!
-        emailMessage.Body = new TextPart
-        {
-            Text = $"To reset your password, please, click on the link {passwordResetToken}"
-        };
+        emailMessage.XPriority = XMessagePriority.High;
+        var bodyBuilder = new BodyBuilder();
+        var verificationLink =
+            $"https://localhost:5001/api/auth/reset-password-confirm?email={emailAddress}&token={passwordResetToken}";
+        bodyBuilder.HtmlBody = new EmailTemplate().GetHtmlPage(name, verificationLink);
+        emailMessage.Body = bodyBuilder.ToMessageBody();
         emailMessage.To.Add(MailboxAddress.Parse(emailAddress));
         using var smtpClient = new SmtpClient();
 

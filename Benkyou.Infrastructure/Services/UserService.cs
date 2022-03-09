@@ -105,7 +105,7 @@ public class UserService : IUserService
         var user = await _userManager.FindByEmailAsync(emailAddress);
         if (user == null) throw new UserNotFoundExceptions("User with specified email wasn't found");
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        await _emailSenderService.SendEmailResetLinkAsync(user.Email, resetToken);
+        await _emailSenderService.SendEmailResetLinkAsync(user.Email, resetToken, user.FirstName);
     }
 
     public async Task SetNewUserPasswordAsync(string email, string newPassword, string token)
