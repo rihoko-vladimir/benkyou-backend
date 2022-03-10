@@ -30,7 +30,7 @@ public class SetsController : ControllerBase
         try
         {
             var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-            var mySets = await _unitOfWork.SetsRepository.GetAllCardsAsync(userId);
+            var mySets = await _unitOfWork.SetsRepository.GetAllSetsAsync(userId);
             return Ok(mySets.ToArray());
         }
         catch (Exception e)
@@ -46,12 +46,29 @@ public class SetsController : ControllerBase
         try
         {
             var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-            var cardId = await _unitOfWork.SetsRepository.CreateCardAsync(setRequest, userId);
+            var cardId = await _unitOfWork.SetsRepository.CreateSetAsync(setRequest, userId);
             await _unitOfWork.SetsRepository.SaveChangesAsync();
             return Ok(new
             {
                 cardId
             });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Route("delete-set")]
+    public async Task<ActionResult> DeleteSet([FromBody] DeleteSetRequest deleteSetRequest)
+    {
+        try
+        {
+            var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+            await _unitOfWork.SetsRepository.RemoveSetAsync(Guid.Parse(deleteSetRequest.SetId),userId);
+            await _unitOfWork.SetsRepository.SaveChangesAsync();
+            return Ok();
         }
         catch (Exception e)
         {

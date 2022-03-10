@@ -19,7 +19,7 @@ public class SetsRepository : ISetsRepository
         _mapper = mapper;
     }
 
-    public async Task<Guid> CreateCardAsync(CreateSetRequest setRequest, Guid userId)
+    public async Task<Guid> CreateSetAsync(CreateSetRequest setRequest, Guid userId)
     {
         var user = await _dbContext.Users.Include(user => user.Cards).FirstOrDefaultAsync(user => user.Id == userId);
         if (user == null) throw new UserNotFoundExceptions("Invalid Guid");
@@ -52,21 +52,22 @@ public class SetsRepository : ISetsRepository
         return card.Id;
     }
 
-    public async Task ModifyCardAsync(Guid cardId, Card modifiedCard)
+    public async Task ModifySetAsync(Guid cardId, Card modifiedCard)
     {
         var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
         if (card == null) throw new InvalidCardIdException("Card with specified id wasn't found");
         _dbContext.Update(modifiedCard);
     }
 
-    public async Task RemoveCardAsync(Guid cardId)
+    public async Task RemoveSetAsync(Guid cardId, Guid userId)
     {
         var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
         if (card == null) throw new InvalidCardIdException("Card with specified id wasn't found");
+        if (card.UserId != userId) throw new CardRemoveException("You can't remove cards of other users");
         _dbContext.Cards.Remove(card);
     }
 
-    public async Task<List<CardResponse>> GetAllCardsAsync(Guid userId)
+    public async Task<List<CardResponse>> GetAllSetsAsync(Guid userId)
     {
         var cards = await _dbContext.Cards.Where(card => card.UserId == userId)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
@@ -74,7 +75,7 @@ public class SetsRepository : ISetsRepository
         return cards.Count == 0 ? new List<CardResponse>() : _mapper.Map<List<CardResponse>>(cards);
     }
 
-    public async Task<CardResponse> GetCardAsync(Guid cardId)
+    public async Task<CardResponse> GetSetAsync(Guid cardId)
     {
         var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
         if (card == null) throw new InvalidCardIdException("Card with specified id wasn't found");

@@ -5,10 +5,10 @@ namespace Benkyou.Application.Repositories;
 
 public interface ISetsRepository
 {
-    public Task<Guid> CreateCardAsync(CreateSetRequest setRequest, Guid userId);
-    public Task ModifyCardAsync(Guid cardId, Card modifiedCard);
-    public Task RemoveCardAsync(Guid cardId);
-    public Task<List<CardResponse>> GetAllCardsAsync(Guid userId);
-    public Task<CardResponse> GetCardAsync(Guid cardId);
+    public Task<Guid> CreateSetAsync(CreateSetRequest setRequest, Guid userId);
+    public Task ModifySetAsync(Guid cardId, Card modifiedCard);
+    public Task RemoveSetAsync(Guid cardId, Guid userId);
+    public Task<List<CardResponse>> GetAllSetsAsync(Guid userId);
+    public Task<CardResponse> GetSetAsync(Guid cardId);
     public Task SaveChangesAsync();
 }
