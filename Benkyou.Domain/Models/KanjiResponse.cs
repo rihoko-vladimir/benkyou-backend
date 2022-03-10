@@ -6,7 +6,7 @@ public class KanjiResponse
 {
     [JsonPropertyName("kanji")] public string KanjiChar { get; set; }
 
-    [JsonPropertyName("kunyoumiReadings")] public List<KunyomiResult> KunyomiReadings { get; set; }
+    [JsonPropertyName("kunyoumiReadings")] public ICollection<KunyomiResult> KunyomiReadings { get; set; }
 
-    [JsonPropertyName("onyoumiReadings")] public List<OnyomiResult> OnyomiReadings { get; set; }
+    [JsonPropertyName("onyoumiReadings")] public ICollection<OnyomiResult> OnyomiReadings { get; set; }
 }

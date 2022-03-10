@@ -52,11 +52,34 @@ public class SetsRepository : ISetsRepository
         return card.Id;
     }
 
-    public async Task ModifySetAsync(Guid cardId, Card modifiedCard)
+    public async Task ModifySetNameAsync(Guid cardId, string newName, Guid userId)
     {
         var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
         if (card == null) throw new InvalidCardIdException("Card with specified id wasn't found");
-        _dbContext.Update(modifiedCard);
+        if (card.UserId != userId) throw new CardUpdateException("You can't change set name of other users");
+        card.Name = newName;
+        _dbContext.Update(card);
+    }
+
+    public async Task ModifySetDescriptionAsync(Guid cardId, string newDescription, Guid userId)
+    {
+        var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
+        if (card == null) throw new InvalidCardIdException("Card with specified id wasn't found");
+        if (card.UserId != userId) throw new CardUpdateException("You can't change set description of other users");
+        card.Description = newDescription;
+        _dbContext.Update(card);
+    }
+
+    public async Task ModifySetKanjiListAsync(Guid cardId, List<KanjiRequest> kanjiList, Guid userId)
+    {
+        var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
+        if (card == null) throw new InvalidCardIdException("Card with specified id wasn't found");
+        if (card.UserId != userId) throw new CardUpdateException("You can't change set kanji of other users");
+        var kanjiListMapped = _mapper.Map<List<Kanji>>(kanjiList);
+        var kanjiToRemove = await _dbContext.KanjiList.Where(kanji => kanji.CardId == card.Id).ToListAsync();
+        _dbContext.KanjiList.RemoveRange(kanjiToRemove);
+        card.KanjiList = kanjiListMapped;
+        _dbContext.Update(card);
     }
 
     public async Task RemoveSetAsync(Guid cardId, Guid userId)

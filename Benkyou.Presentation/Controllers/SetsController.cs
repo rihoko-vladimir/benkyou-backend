@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Extensions;
@@ -39,7 +40,7 @@ public class SetsController : ControllerBase
         }
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("create-set")]
     public async Task<ActionResult> CreateNewSet([FromBody] CreateSetRequest setRequest)
     {
@@ -67,6 +68,58 @@ public class SetsController : ControllerBase
         {
             var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
             await _unitOfWork.SetsRepository.RemoveSetAsync(Guid.Parse(deleteSetRequest.SetId),userId);
+            await _unitOfWork.SetsRepository.SaveChangesAsync();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPatch]
+    [Route("update-name")]
+    public async Task<ActionResult> UpdateSetName([FromBody] UpdateSetNameRequest updateSetNameRequest)
+    {
+        try
+        {
+            var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+            await _unitOfWork.SetsRepository.ModifySetNameAsync(Guid.Parse(updateSetNameRequest.SetId),
+                updateSetNameRequest.NewName, userId);
+            await _unitOfWork.SetsRepository.SaveChangesAsync();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    [HttpPatch]
+    [Route("update-description")]
+    public async Task<ActionResult> UpdateSetDescription([FromBody] UpdateSetDescriptionRequest updateSetDescriptionRequest)
+    {
+        try
+        {
+            var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+            await _unitOfWork.SetsRepository.ModifySetDescriptionAsync(Guid.Parse(updateSetDescriptionRequest.SetId),
+                updateSetDescriptionRequest.NewName, userId);
+            await _unitOfWork.SetsRepository.SaveChangesAsync();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    [HttpPatch]
+    [Route("update-kanji")]
+    public async Task<ActionResult> UpdateSetKanji([FromBody] UpdateSetKanjiListRequest updateSetKanjiListRequest)
+    {
+        try
+        {
+            var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+            await _unitOfWork.SetsRepository.ModifySetKanjiListAsync(Guid.Parse(updateSetKanjiListRequest.SetId),
+                updateSetKanjiListRequest.NewKanjiList.ToList(), userId);
             await _unitOfWork.SetsRepository.SaveChangesAsync();
             return Ok();
         }
