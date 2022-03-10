@@ -4,12 +4,12 @@ namespace Benkyou.Infrastructure.Repositories;
 
 public class ApplicationUnitOfWork
 {
-    public ApplicationUnitOfWork(ICardsRepository cardsRepository, IUserStatisticsRepository userStatisticsRepository)
+    public ApplicationUnitOfWork(ISetsRepository setsRepository, IUserStatisticsRepository userStatisticsRepository)
     {
-        CardsRepository = cardsRepository;
+        SetsRepository = setsRepository;
         UserStatisticsRepository = userStatisticsRepository;
     }
 
-    public ICardsRepository CardsRepository { get; }
+    public ISetsRepository SetsRepository { get; }
     public IUserStatisticsRepository UserStatisticsRepository { get; }
 }

@@ -10,5 +10,5 @@ public class Kunyomi
 
     public Guid KanjiId { get; set; }
 
-    public Kanji Kanji { get; set; } = null!;
+    public Kanji? Kanji { get; set; } = null!;
 }
