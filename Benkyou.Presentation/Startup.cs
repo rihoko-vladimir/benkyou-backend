@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Benkyou.Application.Common;
+using Benkyou.Application.Repositories;
 using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Database;
@@ -8,6 +9,7 @@ using Benkyou.Domain.Entities;
 using Benkyou.Domain.Enums;
 using Benkyou.Domain.Extensions;
 using Benkyou.Infrastructure.Generators;
+using Benkyou.Infrastructure.Repositories;
 using Benkyou.Infrastructure.Services;
 using Benkyou.Infrastructure.TokenProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,9 +42,13 @@ public class Startup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITokenValidationService, TokenValidationService>();
         services.AddScoped<IEmailSenderService, EmailSenderService>();
+        services.AddScoped<ISetsRepository, SetsRepository>();
+        services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
+        services.AddScoped<ApplicationUnitOfWork>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");
+            // options.LogTo(Console.WriteLine);
         });
         var jwtParams = services.AddJwtProperties(_configuration);
         services.AddAuthentication(options =>

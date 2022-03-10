@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
-using Benkyou.Domain.Extensions;
 using Benkyou.Domain.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Benkyou_backend.Controllers;
@@ -25,7 +23,6 @@ public class AuthController : ControllerBase
     [Route("login")]
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
     {
-
         try
         {
             var tokens = await _userService.LoginAsync(loginModel);
@@ -75,7 +72,8 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var isCorrect = await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
+            var isCorrect =
+                await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
             return isCorrect ? Ok() : BadRequest("Email code is incorrect");
         }
         catch (Exception e)
@@ -108,33 +106,13 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("reset-password-confirm")]
-    public async Task<ActionResult> PasswordResetConfirmation([FromQuery] string email, [FromQuery] string token, [FromBody] ResetPasswordConfirmationRequest confirmationRequest)
+    public async Task<ActionResult> PasswordResetConfirmation([FromQuery] string email, [FromQuery] string token,
+        [FromBody] ResetPasswordConfirmationRequest confirmationRequest)
     {
         try
         {
             await _userService.SetNewUserPasswordAsync(email, confirmationRequest.Password, token);
             return Ok();
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
-    [HttpPost]
-    [Authorize]
-    [Route("test")]
-    public async Task<ActionResult> Test()
-    {
-        try
-        {
-            var accessToken = await this.GetTokenAsync();
-            Console.WriteLine(accessToken);
-            var guid = _userService.GetUserGuidFromAccessToken(accessToken);
-            var isEmailConfirmed = await _userService.IsEmailConfirmedAsync(guid);
-            return isEmailConfirmed
-                ? Ok("Hello secret world")
-                : StatusCode(403, "You need to confirm email address before accessing this route");
         }
         catch (Exception e)
         {

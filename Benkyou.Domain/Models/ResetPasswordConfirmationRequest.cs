@@ -5,6 +5,7 @@ namespace Benkyou.Domain.Models;
 
 public class ResetPasswordConfirmationRequest
 {
-    [Required] [JsonPropertyName("password")]
+    [Required]
+    [JsonPropertyName("password")]
     public string Password { get; set; }
 }

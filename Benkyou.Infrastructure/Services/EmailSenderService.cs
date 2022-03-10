@@ -1,5 +1,4 @@
 ﻿using Benkyou.Application.Services.Common;
-using Benkyou.Domain;
 using Benkyou.Domain.Templates;
 using MailKit.Net.Smtp;
 using MailKit.Security;

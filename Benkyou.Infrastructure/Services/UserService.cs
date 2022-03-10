@@ -68,7 +68,7 @@ public class UserService : IUserService
         var result = await _userManager.VerifyUserTokenAsync(user,
             Domain.Enums.TokenProviders.EmailCodeTokenProviderName,
             UserManager<User>.ConfirmEmailTokenPurpose, emailCode);
-        return !result ? throw new EmailVerificationCodeException("Email code is incorrect"): true;
+        return !result ? throw new EmailVerificationCodeException("Email code is incorrect") : true;
     }
 
     public async Task<TokensResponse> GetNewTokensAsync(Guid userId)
