@@ -5,7 +5,5 @@ namespace Benkyou.Domain.Models;
 
 public class DeleteSetRequest
 {
-    [JsonPropertyName("setId")]
-    [Required]
-    public string SetId { get; set; }
+    [JsonPropertyName("setId")] [Required] public string SetId { get; set; }
 }
