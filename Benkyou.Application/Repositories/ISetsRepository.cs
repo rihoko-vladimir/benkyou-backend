@@ -1,4 +1,6 @@
 ﻿using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
+using Benkyou.Domain.Models.Responses;
 
 namespace Benkyou.Application.Repositories;
 

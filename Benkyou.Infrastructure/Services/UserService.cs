@@ -5,6 +5,8 @@ using Benkyou.Domain.Entities;
 using Benkyou.Domain.Enums;
 using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
+using Benkyou.Domain.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 
 namespace Benkyou.Infrastructure.Services;
@@ -98,26 +100,70 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         return user == null
-            ? Result.Error(new UserNotFoundExceptions("User with specified GUID wasn't found"))
+            ? Result.Error(new UserNotFoundException("User with specified GUID wasn't found"))
             : Result.Success();
     }
 
     public async Task<Result> ResetPasswordAsync(string emailAddress)
     {
         var user = await _userManager.FindByEmailAsync(emailAddress);
-        if (user == null) return Result.Error(new UserNotFoundExceptions("User with specified email wasn't found"));
+        if (user == null) return Result.Error(new UserNotFoundException("User with specified email wasn't found"));
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         await _emailSenderService.SendEmailResetLinkAsync(user.Email, resetToken, user.FirstName);
         return Result.Success();
     }
 
-    public async Task<Result> SetNewUserPasswordAsync(string email, string newPassword, string token)
+    public async Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) return Result.Error(new UserNotFoundExceptions("User wasn't found"));
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
         return !result.Succeeded
             ? Result.Error(new InvalidTokenException("Password change token is expired or incorrect"))
             : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserFirstName(Guid userId, string firstName)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.FirstName = firstName;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserLastName(Guid userId, string lastName)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.LastName = lastName;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserBirthday(Guid userId, DateTime birthday)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.Birthday = birthday;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserAbout(Guid userId, string about)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.About = about;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result<UserResponse>> GetUserInfo(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return user == null
+            ? Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"))
+            : Result.Success(_mapper.Map<UserResponse>(user));
     }
 }

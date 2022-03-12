@@ -43,6 +43,11 @@ public struct Result
         return new Result(true);
     }
 
+    public static Result Error()
+    {
+        return new Result(false);
+    }
+
     public static Result Error(Exception exception)
     {
         return new Result(exception);

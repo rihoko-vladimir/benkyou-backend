@@ -4,6 +4,8 @@ using Benkyou.Domain.Database;
 using Benkyou.Domain.Entities;
 using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
+using Benkyou.Domain.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace Benkyou.Infrastructure.Repositories;
@@ -22,7 +24,7 @@ public class SetsRepository : ISetsRepository
     public async Task<Result<Guid>> CreateSetAsync(CreateSetRequest setRequest, Guid userId)
     {
         var user = await _dbContext.Users.Include(user => user.Cards).FirstOrDefaultAsync(user => user.Id == userId);
-        if (user == null) return Result.Error<Guid>(new UserNotFoundExceptions("Invalid Guid"));
+        if (user == null) return Result.Error<Guid>(new UserNotFoundException("Invalid Guid"));
         if (setRequest.KanjiList.Count < 3)
             return Result.Error<Guid>(new KanjiCountException("There must be at least 3 kanji at the card"));
         var card = new Card

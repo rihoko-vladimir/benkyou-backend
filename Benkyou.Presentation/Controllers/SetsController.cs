@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Extensions;
-using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
 using Benkyou.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +46,7 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                UserNotFoundExceptions => NotFound(exception.Message),
+                UserNotFoundException => NotFound(exception.Message),
                 KanjiCountException => BadRequest(exception.Message),
                 _ => StatusCode(500)
             };

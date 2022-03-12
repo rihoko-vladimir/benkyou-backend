@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using Benkyou.Domain.Entities;
 
-namespace Benkyou.Domain.Models;
+namespace Benkyou.Domain.Models.Requests;
 
 public class CreateSetRequest
 {

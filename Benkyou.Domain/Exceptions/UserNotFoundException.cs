@@ -1,8 +1,8 @@
 ﻿namespace Benkyou.Domain.Exceptions;
 
-public class UserNotFoundExceptions : Exception
+public class UserNotFoundException : Exception
 {
-    public UserNotFoundExceptions(string? message) : base(message)
+    public UserNotFoundException(string? message) : base(message)
     {
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Exceptions;
-using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Benkyou_backend.Controllers;
@@ -87,7 +87,7 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundExceptions => NotFound(exception.Message),
+            UserNotFoundException => NotFound(exception.Message),
             _ => BadRequest()
         };
     }
@@ -104,12 +104,12 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> PasswordResetConfirmation([FromQuery] string email, [FromQuery] string token,
         [FromBody] ResetPasswordConfirmationRequest confirmationRequest)
     {
-        var result = await _userService.SetNewUserPasswordAsync(email, confirmationRequest.Password, token);
+        var result = await _userService.SetNewUserForgottenPasswordAsync(email, confirmationRequest.Password, token);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundExceptions => NotFound(exception.Message),
+            UserNotFoundException => NotFound(exception.Message),
             InvalidTokenException => BadRequest(exception.Message),
             _ => StatusCode(500)
         };
