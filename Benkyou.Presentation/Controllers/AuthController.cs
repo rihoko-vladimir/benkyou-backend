@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
-using Benkyou.Domain.Models;
+using Benkyou.Domain.Exceptions;
+using Benkyou.Domain.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Benkyou_backend.Controllers;
@@ -23,78 +23,73 @@ public class AuthController : ControllerBase
     [Route("login")]
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
     {
-        try
+        var result = await _userService.LoginAsync(loginModel);
+        if (result.IsSuccess) return Ok(result.Value);
+        var exception = result.Exception!;
+        return exception switch
         {
-            var tokens = await _userService.LoginAsync(loginModel);
-            return Ok(tokens);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            LoginException => BadRequest(exception.Message),
+            _ => StatusCode(500)
+        };
     }
 
     [HttpPost]
     [Route("register")]
     public async Task<ActionResult> Register([FromBody] RegisterModel registerModel)
     {
-        try
+        var result = await _userService.RegisterAsync(registerModel);
+        if (result.IsSuccess) return Ok(result.Value);
+        var exception = result.Exception!;
+        return exception switch
         {
-            var userId = await _userService.RegisterAsync(registerModel);
-            return Ok(userId);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            UserRegistrationException => Conflict(exception.Message),
+            _ => BadRequest(exception.Message)
+        };
     }
 
     [HttpPost]
     [Route("refresh")]
     public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
     {
-        try
+        var userId =
+            await _tokenValidationService.GetUserIdIfRefreshTokenValidAsync(refreshTokenRequest.RefreshToken);
+        var result = await _userService.GetNewTokensAsync(userId);
+        if (result.IsSuccess) return Ok(result.Value);
+        var exception = result.Exception!;
+        return exception switch
         {
-            var userId =
-                await _tokenValidationService.GetUserIdIfRefreshTokenValidAsync(refreshTokenRequest.RefreshToken);
-            var tokensResponse = await _userService.GetNewTokensAsync(userId);
-            return Ok(tokensResponse);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            RefreshTokenException => NotFound(exception.Message),
+            _ => BadRequest(exception.Message)
+        };
     }
 
     [HttpPost]
     [Route("verify-email")]
     public async Task<ActionResult> VerifyEmailAddress([FromBody] VerifyEmailCodeRequest emailCodeRequest)
     {
-        try
+        var result =
+            await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
+        if (result.IsSuccess) return Ok();
+        var exception = result.Exception!;
+        return exception switch
         {
-            var isCorrect =
-                await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
-            return isCorrect ? Ok() : BadRequest("Email code is incorrect");
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            EmailVerificationCodeException => BadRequest(exception.Message),
+            _ => StatusCode(500)
+        };
     }
 
     [HttpPost]
     [Route("reset-password")]
     public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
     {
-        try
+        var result = await _userService.ResetPasswordAsync(resetPasswordRequest.EmailAddress);
+        if (result.IsSuccess) return Ok();
+        var exception = result.Exception!;
+        return exception switch
         {
-            await _userService.ResetPasswordAsync(resetPasswordRequest.EmailAddress);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            UserNotFoundException => NotFound(exception.Message),
+            _ => BadRequest()
+        };
     }
 
     [HttpGet]
@@ -109,14 +104,14 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> PasswordResetConfirmation([FromQuery] string email, [FromQuery] string token,
         [FromBody] ResetPasswordConfirmationRequest confirmationRequest)
     {
-        try
+        var result = await _userService.SetNewUserForgottenPasswordAsync(email, confirmationRequest.Password, token);
+        if (result.IsSuccess) return Ok();
+        var exception = result.Exception!;
+        return exception switch
         {
-            await _userService.SetNewUserPasswordAsync(email, confirmationRequest.Password, token);
-            return Ok();
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+            UserNotFoundException => NotFound(exception.Message),
+            InvalidTokenException => BadRequest(exception.Message),
+            _ => StatusCode(500)
+        };
     }
 }

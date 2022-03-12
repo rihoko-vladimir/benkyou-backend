@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Benkyou.Domain.Models;
+namespace Benkyou.Domain.Models.Requests;
 
 public class UpdateSetKanjiListRequest
 {
-    [Required]
-    [JsonPropertyName("setId")]
-    public string SetId { get; set; }
+    [Required] [JsonPropertyName("setId")] public string SetId { get; set; }
+
     [Required]
     [JsonPropertyName("newKanjiList")]
     public ICollection<KanjiRequest> NewKanjiList { get; set; }

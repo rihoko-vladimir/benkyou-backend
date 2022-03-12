@@ -5,6 +5,8 @@ using Benkyou.Domain.Entities;
 using Benkyou.Domain.Enums;
 using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
+using Benkyou.Domain.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 
 namespace Benkyou.Infrastructure.Services;
@@ -27,64 +29,65 @@ public class UserService : IUserService
         _emailSenderService = emailSenderService;
     }
 
-    public async Task<Guid> RegisterAsync(RegisterModel registerModel)
+    public async Task<Result<Guid>> RegisterAsync(RegisterModel registerModel)
     {
         var user = _mapper.Map<RegisterModel, User>(registerModel);
         user.Role = Roles.Administrator;
         var result = await _userManager.CreateAsync(user, registerModel.Password);
         if (!result.Succeeded)
-            throw new UserRegistrationException("User already exists");
+            return Result.Error<Guid>(new UserRegistrationException("User already exists"));
         var token = await _userManager.GenerateUserTokenAsync(user,
             Domain.Enums.TokenProviders.EmailCodeTokenProviderName, UserManager<User>.ConfirmEmailTokenPurpose);
         await _emailSenderService.SendEmailConfirmationCodeAsync(token, user.Email);
-        return user.Id;
+        return Result.Success(user.Id);
     }
 
-    public async Task<TokensResponse> LoginAsync(LoginModel loginModel)
+    public async Task<Result<TokensResponse>> LoginAsync(LoginModel loginModel)
     {
         var user = await _userManager.FindByNameAsync(loginModel.Login);
         if (user == null)
-            throw new LoginException("User not found");
+            return Result.Error<TokensResponse>(new LoginException("User not found"));
         if (!await _userManager.CheckPasswordAsync(user, loginModel.Password))
-            throw new LoginException("Incorrect password");
+            return Result.Error<TokensResponse>(new LoginException("Incorrect password"));
         if (!await _userManager.IsEmailConfirmedAsync(user))
-            throw new LoginException("Email is not verified");
+            return Result.Error<TokensResponse>(new LoginException("Email is not verified"));
         var accessToken = _accessTokenService.GetToken(user);
         var refreshToken = _refreshTokenService.GetToken(user);
         user.RefreshToken = refreshToken;
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
-            throw new LoginException("Something went wrong");
-        return new TokensResponse
+            return Result.Error<TokensResponse>(new LoginException("Something went wrong"));
+        return Result.Success(new TokensResponse
         {
             RefreshToken = refreshToken,
             AccessToken = accessToken
-        };
+        });
     }
 
-    public async Task<bool> ValidateEmailCodeAsync(Guid userId, string emailCode)
+    public async Task<Result> ValidateEmailCodeAsync(Guid userId, string emailCode)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         var result = await _userManager.VerifyUserTokenAsync(user,
             Domain.Enums.TokenProviders.EmailCodeTokenProviderName,
             UserManager<User>.ConfirmEmailTokenPurpose, emailCode);
-        return !result ? throw new EmailVerificationCodeException("Email code is incorrect") : true;
+        return !result ? Result.Error(new EmailVerificationCodeException("Email code is incorrect")) : Result.Success();
     }
 
-    public async Task<TokensResponse> GetNewTokensAsync(Guid userId)
+    public async Task<Result<TokensResponse>> GetNewTokensAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) throw new RefreshTokenException("Incorrect user id provided");
+        if (user == null) return Result.Error<TokensResponse>(new RefreshTokenException("Incorrect user id provided"));
         var accessToken = _accessTokenService.GetToken(user);
         var refreshToken = _refreshTokenService.GetToken(user);
         user.RefreshToken = refreshToken;
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded) throw new RefreshTokenException("An error occured validating your request");
-        return new TokensResponse
+        if (!result.Succeeded)
+            return Result.Error<TokensResponse>(new RefreshTokenException("An error occured validating your request"));
+        return Result.Success(new TokensResponse
         {
             RefreshToken = refreshToken,
             AccessToken = accessToken
-        };
+        });
     }
 
     public Guid GetUserGuidFromAccessToken(string accessToken)
@@ -93,26 +96,74 @@ public class UserService : IUserService
         return userId;
     }
 
-    public async Task<bool> IsEmailConfirmedAsync(Guid userId)
+    public async Task<Result> IsEmailConfirmedAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) throw new UserNotFoundExceptions("User with specified GUID wasn't found");
-        return user.EmailConfirmed;
+        return user == null
+            ? Result.Error(new UserNotFoundException("User with specified GUID wasn't found"))
+            : Result.Success();
     }
 
-    public async Task ResetPasswordAsync(string emailAddress)
+    public async Task<Result> ResetPasswordAsync(string emailAddress)
     {
         var user = await _userManager.FindByEmailAsync(emailAddress);
-        if (user == null) throw new UserNotFoundExceptions("User with specified email wasn't found");
+        if (user == null) return Result.Error(new UserNotFoundException("User with specified email wasn't found"));
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
         await _emailSenderService.SendEmailResetLinkAsync(user.Email, resetToken, user.FirstName);
+        return Result.Success();
     }
 
-    public async Task SetNewUserPasswordAsync(string email, string newPassword, string token)
+    public async Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        if (user == null) throw new UserNotFoundExceptions("User wasn't found");
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
-        if (!result.Succeeded) throw new InvalidTokenException("Password change token is expired or incorrect");
+        return !result.Succeeded
+            ? Result.Error(new InvalidTokenException("Password change token is expired or incorrect"))
+            : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserFirstName(Guid userId, string firstName)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.FirstName = firstName;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserLastName(Guid userId, string lastName)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.LastName = lastName;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserBirthday(Guid userId, DateTime birthday)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.Birthday = birthday;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result> SetNewUserAbout(Guid userId, string about)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.About = about;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error() : Result.Success();
+    }
+
+    public async Task<Result<UserResponse>> GetUserInfo(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        return user == null
+            ? Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"))
+            : Result.Success(_mapper.Map<UserResponse>(user));
     }
 }

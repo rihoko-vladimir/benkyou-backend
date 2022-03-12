@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Benkyou.Domain.Models;
+namespace Benkyou.Domain.Models.Requests;
 
 public class VerifyEmailCodeRequest
 {

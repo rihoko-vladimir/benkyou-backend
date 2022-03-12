@@ -1,21 +1,33 @@
 ﻿using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
+using Benkyou.Domain.Models.Responses;
 
 namespace Benkyou.Application.Services.Identity;
 
 public interface IUserService
 {
-    public Task<Guid> RegisterAsync(RegisterModel registerModel);
-    public Task<TokensResponse> LoginAsync(LoginModel loginModel);
+    public Task<Result<Guid>> RegisterAsync(RegisterModel registerModel);
+    public Task<Result<TokensResponse>> LoginAsync(LoginModel loginModel);
 
-    public Task<bool> ValidateEmailCodeAsync(Guid userId, string emailCode);
+    public Task<Result> ValidateEmailCodeAsync(Guid userId, string emailCode);
 
-    public Task<TokensResponse> GetNewTokensAsync(Guid userId);
+    public Task<Result<TokensResponse>> GetNewTokensAsync(Guid userId);
 
     public Guid GetUserGuidFromAccessToken(string accessToken);
 
-    public Task<bool> IsEmailConfirmedAsync(Guid userId);
+    public Task<Result> IsEmailConfirmedAsync(Guid userId);
 
-    public Task ResetPasswordAsync(string emailAddress);
+    public Task<Result> ResetPasswordAsync(string emailAddress);
 
-    public Task SetNewUserPasswordAsync(string email, string newPassword, string token);
+    public Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token);
+
+    public Task<Result> SetNewUserFirstName(Guid userId, string firstName);
+
+    public Task<Result> SetNewUserLastName(Guid userId, string lastName);
+
+    public Task<Result> SetNewUserBirthday(Guid userId, DateTime birthday);
+
+    public Task<Result> SetNewUserAbout(Guid userId, string about);
+
+    public Task<Result<UserResponse>> GetUserInfo(Guid userId);
 }

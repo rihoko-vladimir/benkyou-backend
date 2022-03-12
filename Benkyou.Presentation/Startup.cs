@@ -35,6 +35,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddCors(builder =>
+        {
+            builder.AddDefaultPolicy(policyBuilder =>
+            {
+                policyBuilder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+            });
+        });
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddScoped<ITokenGenerator, TokenGenerator>();
         services.AddScoped<IAccessTokenService, JwtAccessTokenService>();
@@ -92,6 +99,8 @@ public class Startup
         app.UseAuthentication();
 
         app.UseRouting();
+
+        app.UseCors();
 
         app.UseAuthorization();
 

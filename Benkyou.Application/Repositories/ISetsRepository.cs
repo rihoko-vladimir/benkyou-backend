@@ -1,16 +1,17 @@
-﻿using Benkyou.Domain.Entities;
-using Benkyou.Domain.Models;
+﻿using Benkyou.Domain.Models;
+using Benkyou.Domain.Models.Requests;
+using Benkyou.Domain.Models.Responses;
 
 namespace Benkyou.Application.Repositories;
 
 public interface ISetsRepository
 {
-    public Task<Guid> CreateSetAsync(CreateSetRequest setRequest, Guid userId);
-    public Task ModifySetNameAsync(Guid cardId, string newName, Guid userId);
-    public Task ModifySetDescriptionAsync(Guid cardId, string newDescription, Guid userId);
-    public Task ModifySetKanjiListAsync(Guid cardId, List<KanjiRequest> kanjiList, Guid userId);
-    public Task RemoveSetAsync(Guid cardId, Guid userId);
-    public Task<List<CardResponse>> GetAllSetsAsync(Guid userId);
-    public Task<CardResponse> GetSetAsync(Guid cardId);
+    public Task<Result<Guid>> CreateSetAsync(CreateSetRequest setRequest, Guid userId);
+    public Task<Result> ModifySetNameAsync(Guid cardId, string newName, Guid userId);
+    public Task<Result> ModifySetDescriptionAsync(Guid cardId, string newDescription, Guid userId);
+    public Task<Result> ModifySetKanjiListAsync(Guid cardId, List<KanjiRequest> kanjiList, Guid userId);
+    public Task<Result> RemoveSetAsync(Guid cardId, Guid userId);
+    public Task<Result<List<CardResponse>>> GetAllSetsAsync(Guid userId);
+    public Task<Result<CardResponse>> GetSetAsync(Guid cardId);
     public Task SaveChangesAsync();
 }
