@@ -4,7 +4,7 @@ namespace Benkyou.Domain.Models.Requests;
 
 public class RegisterModel
 {
-    [JsonPropertyName("userName")] public string Login { get; set; } = null!;
+    [JsonPropertyName("userName")] public string UserName { get; set; } = null!;
     [JsonPropertyName("email")] public string Email { get; set; } = null!;
     [JsonPropertyName("firstName")] public string FirstName { get; set; } = null!;
     [JsonPropertyName("lastName")] public string LastName { get; set; } = null!;

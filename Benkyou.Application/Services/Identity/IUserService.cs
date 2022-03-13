@@ -33,7 +33,7 @@ public interface IUserService
 
     public Task<Result> IsEmailAvailable(string email);
 
-    public Task<Result> IsNickNameAvailable(string nickName);
+    public Task<Result> IsUserNameAvailable(string nickName);
 
     public Task<Result<Guid>> GetUserGuidFromEmail(string email);
 }

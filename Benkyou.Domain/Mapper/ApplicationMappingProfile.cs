@@ -10,7 +10,7 @@ public class ApplicationMappingProfile : Profile
     public ApplicationMappingProfile()
     {
         CreateMap<RegisterModel, User>()
-            .ForMember(user => user.UserName, t => t.MapFrom(registerModel => registerModel.Login))
+            .ForMember(user => user.UserName, t => t.MapFrom(registerModel => registerModel.UserName))
             .ForMember(user => user.FirstName, t => t.MapFrom(registerModel => registerModel.FirstName))
             .ForMember(user => user.LastName, t => t.MapFrom(registerModel => registerModel.LastName))
             .ForMember(user => user.Email, t => t.MapFrom(registerModel => registerModel.Email))

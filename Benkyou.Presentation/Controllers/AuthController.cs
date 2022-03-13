@@ -24,17 +24,23 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> IsEmailOccupied([FromQuery] string email)
     {
         var result = await _userService.IsEmailAvailable(email);
-        if (result.IsSuccess) return Ok();
-        return NotFound();
+        if (!result.IsSuccess) return Ok();
+        return Conflict(new
+        {
+            errorMessage = "User with specified email already exists"
+        });
     }
 
     [HttpGet]
-    [Route("check-nickname")]
-    public async Task<ActionResult> IsNickNameOccupied([FromQuery] string userName)
+    [Route("check-username")]
+    public async Task<ActionResult> IsUserNameOccupied([FromQuery] string userName)
     {
-        var result = await _userService.IsNickNameAvailable(userName);
-        if (result.IsSuccess) return Ok();
-        return NotFound();
+        var result = await _userService.IsUserNameAvailable(userName);
+        if (!result.IsSuccess) return Ok();
+        return Conflict(new
+        {
+            errorMessage = "User with specified username already exists"
+        });
     }
 
     [HttpPost]

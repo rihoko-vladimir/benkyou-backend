@@ -175,7 +175,7 @@ public class UserService : IUserService
         return user == null ? Result.Error(new UserNotFoundException("User wasn't found")) : Result.Success();
     }
 
-    public async Task<Result> IsNickNameAvailable(string nickName)
+    public async Task<Result> IsUserNameAvailable(string nickName)
     {
         var user = await _userManager.FindByNameAsync(nickName);
         return user == null ? Result.Error(new UserNotFoundException("User wasn't found")) : Result.Success();
