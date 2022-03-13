@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
         if (result.IsSuccess) return Ok();
         return NotFound();
     }
-    
+
     [HttpGet]
     [Route("check-nickname")]
     public async Task<ActionResult> IsNickNameOccupied([FromQuery] string userName)
@@ -46,12 +46,12 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            LoginException => StatusCode(403,new
+            LoginException => StatusCode(403, new
             {
                 errorMessage = exception.Message,
                 userId = (await _userService.GetUserGuidFromEmail(loginModel.Email)).Value
             }),
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -65,8 +65,8 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserRegistrationException => Conflict(exception.Message),
-            _ => BadRequest(exception.Message)
+            UserRegistrationException => Conflict(new {errorMessage = exception.Message}),
+            _ => BadRequest(new {errorMessage = exception.Message})
         };
     }
 
@@ -81,8 +81,8 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            RefreshTokenException => NotFound(exception.Message),
-            _ => BadRequest(exception.Message)
+            RefreshTokenException => NotFound(new {errorMessage = exception.Message}),
+            _ => BadRequest(new {errorMessage = exception.Message})
         };
     }
 
@@ -92,13 +92,13 @@ public class AuthController : ControllerBase
     {
         var isConfirmedResult = await _userService.IsEmailConfirmedAsync(emailCodeRequest.UserId);
         var exceptionConfirmed = isConfirmedResult.Exception;
-        if (!isConfirmedResult.IsSuccess) return Conflict(exceptionConfirmed!.Message);
+        if (!isConfirmedResult.IsSuccess) return Conflict(new {errorMessage = exceptionConfirmed!.Message});
         var result = await _userService.ConfirmUserEmailAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch
         {
-            EmailConfirmationCodeException => BadRequest(exception.Message),
+            EmailConfirmationCodeException => BadRequest(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -112,7 +112,7 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => BadRequest()
         };
     }
@@ -134,8 +134,8 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
-            InvalidTokenException => BadRequest(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+            InvalidTokenException => BadRequest(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }

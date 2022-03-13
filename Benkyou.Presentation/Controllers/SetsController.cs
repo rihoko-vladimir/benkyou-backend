@@ -46,8 +46,8 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                UserNotFoundException => NotFound(exception.Message),
-                KanjiCountException => BadRequest(exception.Message),
+                UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+                KanjiCountException => BadRequest(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }
@@ -70,8 +70,8 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidCardIdException => BadRequest(exception.Message),
-                CardRemoveException => Unauthorized(exception.Message),
+                InvalidCardIdException => BadRequest(new {errorMessage = exception.Message}),
+                CardRemoveException => Unauthorized(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }
@@ -92,8 +92,8 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidCardIdException => NotFound(exception.Message),
-                CardUpdateException => Unauthorized(exception.Message),
+                InvalidCardIdException => NotFound(new {errorMessage = exception.Message}),
+                CardUpdateException => Unauthorized(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }
@@ -116,8 +116,8 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidCardIdException => NotFound(exception.Message),
-                CardUpdateException => Unauthorized(exception.Message),
+                InvalidCardIdException => NotFound(new {errorMessage = exception.Message}),
+                CardUpdateException => Unauthorized(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }
@@ -139,8 +139,8 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidCardIdException => NotFound(exception.Message),
-                CardUpdateException => Unauthorized(exception.Message),
+                InvalidCardIdException => NotFound(new {errorMessage = exception.Message}),
+                CardUpdateException => Unauthorized(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }

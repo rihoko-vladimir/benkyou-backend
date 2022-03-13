@@ -31,7 +31,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -46,7 +46,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -61,7 +61,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -77,7 +77,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -92,7 +92,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }

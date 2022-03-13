@@ -32,7 +32,7 @@ public interface IUserService
     public Task<Result<UserResponse>> GetUserInfo(Guid userId);
 
     public Task<Result> IsEmailAvailable(string email);
-    
+
     public Task<Result> IsNickNameAvailable(string nickName);
 
     public Task<Result<Guid>> GetUserGuidFromEmail(string email);

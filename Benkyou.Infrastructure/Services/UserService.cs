@@ -99,12 +99,11 @@ public class UserService : IUserService
     public async Task<Result> IsEmailConfirmedAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null)
-        {
-            return Result.Error(new UserNotFoundException("User with specified GUID wasn't found"));
-        }
+        if (user == null) return Result.Error(new UserNotFoundException("User with specified GUID wasn't found"));
         var isConfirmed = user.EmailConfirmed;
-        return !isConfirmed ? Result.Success() : Result.Error(new EmailConfirmationCodeException("Email is already confirmed"));
+        return !isConfirmed
+            ? Result.Success()
+            : Result.Error(new EmailConfirmationCodeException("Email is already confirmed"));
     }
 
     public async Task<Result> ResetPasswordAsync(string emailAddress)
@@ -185,6 +184,8 @@ public class UserService : IUserService
     public async Task<Result<Guid>> GetUserGuidFromEmail(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
-        return user == null ? Result.Error<Guid>(new UserNotFoundException("User wasn't found")) : Result.Success(user.Id);
+        return user == null
+            ? Result.Error<Guid>(new UserNotFoundException("User wasn't found"))
+            : Result.Success(user.Id);
     }
 }
