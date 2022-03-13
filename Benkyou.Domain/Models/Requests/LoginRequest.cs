@@ -5,7 +5,7 @@ namespace Benkyou.Domain.Models.Requests;
 
 public class LoginModel
 {
-    [Required] [JsonPropertyName("login")] public string Login { get; set; }
+    [Required] [JsonPropertyName("login")] public string Email { get; set; }
 
     [Required]
     [JsonPropertyName("password")]

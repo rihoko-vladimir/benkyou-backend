@@ -9,7 +9,7 @@ public interface IUserService
     public Task<Result<Guid>> RegisterAsync(RegisterModel registerModel);
     public Task<Result<TokensResponse>> LoginAsync(LoginModel loginModel);
 
-    public Task<Result> ValidateEmailCodeAsync(Guid userId, string emailCode);
+    public Task<Result> ConfirmUserEmailAsync(Guid userId, string emailCode);
 
     public Task<Result<TokensResponse>> GetNewTokensAsync(Guid userId);
 
@@ -30,4 +30,10 @@ public interface IUserService
     public Task<Result> SetNewUserAbout(Guid userId, string about);
 
     public Task<Result<UserResponse>> GetUserInfo(Guid userId);
+
+    public Task<Result> IsEmailAvailable(string email);
+    
+    public Task<Result> IsNickNameAvailable(string nickName);
+
+    public Task<Result<Guid>> GetUserGuidFromEmail(string email);
 }

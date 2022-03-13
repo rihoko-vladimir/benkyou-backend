@@ -19,6 +19,24 @@ public class AuthController : ControllerBase
         _tokenValidationService = tokenValidationService;
     }
 
+    [HttpGet]
+    [Route("check-email")]
+    public async Task<ActionResult> IsEmailOccupied([FromQuery] string email)
+    {
+        var result = await _userService.IsEmailAvailable(email);
+        if (result.IsSuccess) return Ok();
+        return NotFound();
+    }
+    
+    [HttpGet]
+    [Route("check-nickname")]
+    public async Task<ActionResult> IsNickNameOccupied([FromQuery] string userName)
+    {
+        var result = await _userService.IsNickNameAvailable(userName);
+        if (result.IsSuccess) return Ok();
+        return NotFound();
+    }
+
     [HttpPost]
     [Route("login")]
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
@@ -28,7 +46,12 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            LoginException => BadRequest(exception.Message),
+            LoginException => StatusCode(403,new
+            {
+                errorMessage = exception.Message,
+                userId = (await _userService.GetUserGuidFromEmail(loginModel.Email)).Value
+            }),
+            UserNotFoundException => NotFound(exception.Message),
             _ => StatusCode(500)
         };
     }
@@ -64,16 +87,18 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
-    [Route("verify-email")]
-    public async Task<ActionResult> VerifyEmailAddress([FromBody] VerifyEmailCodeRequest emailCodeRequest)
+    [Route("confirm-email")]
+    public async Task<ActionResult> ConfirmEmailAddress([FromBody] VerifyEmailCodeRequest emailCodeRequest)
     {
-        var result =
-            await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
+        var isConfirmedResult = await _userService.IsEmailConfirmedAsync(emailCodeRequest.UserId);
+        var exceptionConfirmed = isConfirmedResult.Exception;
+        if (!isConfirmedResult.IsSuccess) return Conflict(exceptionConfirmed!.Message);
+        var result = await _userService.ConfirmUserEmailAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch
         {
-            EmailVerificationCodeException => BadRequest(exception.Message),
+            EmailConfirmationCodeException => BadRequest(exception.Message),
             _ => StatusCode(500)
         };
     }

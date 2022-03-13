@@ -44,13 +44,13 @@ public class UserService : IUserService
 
     public async Task<Result<TokensResponse>> LoginAsync(LoginModel loginModel)
     {
-        var user = await _userManager.FindByNameAsync(loginModel.Login);
+        var user = await _userManager.FindByEmailAsync(loginModel.Email);
         if (user == null)
-            return Result.Error<TokensResponse>(new LoginException("User not found"));
+            return Result.Error<TokensResponse>(new UserNotFoundException("User not found"));
         if (!await _userManager.CheckPasswordAsync(user, loginModel.Password))
             return Result.Error<TokensResponse>(new LoginException("Incorrect password"));
         if (!await _userManager.IsEmailConfirmedAsync(user))
-            return Result.Error<TokensResponse>(new LoginException("Email is not verified"));
+            return Result.Error<TokensResponse>(new LoginException("Email is not confirmed"));
         var accessToken = _accessTokenService.GetToken(user);
         var refreshToken = _refreshTokenService.GetToken(user);
         user.RefreshToken = refreshToken;
@@ -64,13 +64,13 @@ public class UserService : IUserService
         });
     }
 
-    public async Task<Result> ValidateEmailCodeAsync(Guid userId, string emailCode)
+    public async Task<Result> ConfirmUserEmailAsync(Guid userId, string emailCode)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         var result = await _userManager.VerifyUserTokenAsync(user,
             Domain.Enums.TokenProviders.EmailCodeTokenProviderName,
             UserManager<User>.ConfirmEmailTokenPurpose, emailCode);
-        return !result ? Result.Error(new EmailVerificationCodeException("Email code is incorrect")) : Result.Success();
+        return !result ? Result.Error(new EmailConfirmationCodeException("Email code is incorrect")) : Result.Success();
     }
 
     public async Task<Result<TokensResponse>> GetNewTokensAsync(Guid userId)
@@ -99,9 +99,12 @@ public class UserService : IUserService
     public async Task<Result> IsEmailConfirmedAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        return user == null
-            ? Result.Error(new UserNotFoundException("User with specified GUID wasn't found"))
-            : Result.Success();
+        if (user == null)
+        {
+            return Result.Error(new UserNotFoundException("User with specified GUID wasn't found"));
+        }
+        var isConfirmed = user.EmailConfirmed;
+        return !isConfirmed ? Result.Success() : Result.Error(new EmailConfirmationCodeException("Email is already confirmed"));
     }
 
     public async Task<Result> ResetPasswordAsync(string emailAddress)
@@ -165,5 +168,23 @@ public class UserService : IUserService
         return user == null
             ? Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"))
             : Result.Success(_mapper.Map<UserResponse>(user));
+    }
+
+    public async Task<Result> IsEmailAvailable(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        return user == null ? Result.Error(new UserNotFoundException("User wasn't found")) : Result.Success();
+    }
+
+    public async Task<Result> IsNickNameAvailable(string nickName)
+    {
+        var user = await _userManager.FindByNameAsync(nickName);
+        return user == null ? Result.Error(new UserNotFoundException("User wasn't found")) : Result.Success();
+    }
+
+    public async Task<Result<Guid>> GetUserGuidFromEmail(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        return user == null ? Result.Error<Guid>(new UserNotFoundException("User wasn't found")) : Result.Success(user.Id);
     }
 }
