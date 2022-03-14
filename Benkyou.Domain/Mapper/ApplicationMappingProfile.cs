@@ -18,7 +18,7 @@ public class ApplicationMappingProfile : Profile
         CreateMap<Kunyomi, KunyomiResponse>();
         CreateMap<Onyomi, OnyomiResponse>();
         CreateMap<Kanji, KanjiResponse>();
-        CreateMap<Set, SetResponse>();
+        CreateMap<Set, SetResponse>().ForMember(response => response.AuthorId, t => t.MapFrom(set => set.UserId));
         CreateMap<KunyomiResponse, Kunyomi>();
         CreateMap<OnyomiResponse, Onyomi>();
         CreateMap<KunyomiRequest, Kunyomi>();
