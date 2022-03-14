@@ -11,7 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     {
     }
 
-    public DbSet<Card> Cards { get; set; } = null!;
+    public DbSet<Set> Sets { get; set; } = null!;
 
     public DbSet<Kanji> KanjiList { get; set; } = null!;
 

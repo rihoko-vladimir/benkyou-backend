@@ -18,7 +18,7 @@ public class ApplicationMappingProfile : Profile
         CreateMap<Kunyomi, KunyomiResponse>();
         CreateMap<Onyomi, OnyomiResponse>();
         CreateMap<Kanji, KanjiResponse>();
-        CreateMap<Card, CardResponse>();
+        CreateMap<Set, SetResponse>();
         CreateMap<KunyomiResponse, Kunyomi>();
         CreateMap<OnyomiResponse, Onyomi>();
         CreateMap<KunyomiRequest, Kunyomi>();

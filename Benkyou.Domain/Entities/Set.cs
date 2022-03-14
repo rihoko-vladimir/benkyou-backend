@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Benkyou.Domain.Entities;
 
-public class Card
+public class Set
 {
     [Key] public Guid Id { get; set; }
 

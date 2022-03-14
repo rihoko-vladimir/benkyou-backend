@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Extensions;
@@ -36,63 +35,18 @@ public class AccountController : ControllerBase
         };
     }
 
-    [HttpPatch]
-    [Route("update-firstname")]
-    public async Task<ActionResult> UpdateUserFirstName([FromBody] UpdateUserFirstNameRequest updateRequest)
+    [HttpPut]
+    [Route("update")]
+    public async Task<ActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest updateUserInfoRequest)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.SetNewUserFirstName(userId, updateRequest.FirstName);
+        var result = await _userService.UpdateUserInfo(userId, updateUserInfoRequest);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch
         {
             UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
-            _ => StatusCode(500)
-        };
-    }
-
-    [HttpPatch]
-    [Route("update-lastname")]
-    public async Task<ActionResult> UpdateUserLastName([FromBody] UpdateUserLastNameRequest updateRequest)
-    {
-        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.SetNewUserLastName(userId, updateRequest.LastName);
-        if (result.IsSuccess) return Ok();
-        var exception = result.Exception!;
-        return exception switch
-        {
-            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
-            _ => StatusCode(500)
-        };
-    }
-
-    [HttpPatch]
-    [Route("update-birthday")]
-    public async Task<ActionResult> UpdateUserBirthday([FromBody] UpdateUserBirthdayRequest updateRequest)
-    {
-        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var newBirthdayInDatetimeFormat = DateTime.Parse(updateRequest.Birthday);
-        var result = await _userService.SetNewUserBirthday(userId, newBirthdayInDatetimeFormat);
-        if (result.IsSuccess) return Ok();
-        var exception = result.Exception!;
-        return exception switch
-        {
-            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
-            _ => StatusCode(500)
-        };
-    }
-
-    [HttpPatch]
-    [Route("update-about")]
-    public async Task<ActionResult> UpdateUserAbout([FromBody] UpdateUserAboutRequest updateRequest)
-    {
-        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.SetNewUserAbout(userId, updateRequest.About);
-        if (result.IsSuccess) return Ok();
-        var exception = result.Exception!;
-        return exception switch
-        {
-            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+            PasswordChangeException => BadRequest(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }

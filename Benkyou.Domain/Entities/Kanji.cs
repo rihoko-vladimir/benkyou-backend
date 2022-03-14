@@ -23,5 +23,5 @@ public class Kanji
 
     public Guid CardId { get; set; }
 
-    public Card? Card { get; set; } = null!;
+    public Set? Card { get; set; } = null!;
 }

@@ -94,12 +94,12 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("confirm-email")]
-    public async Task<ActionResult> ConfirmEmailAddress([FromBody] VerifyEmailCodeRequest emailCodeRequest)
+    public async Task<ActionResult> ConfirmEmailAddress([FromBody] ConfirmEmailRequest emailRequest)
     {
-        var isConfirmedResult = await _userService.IsEmailConfirmedAsync(emailCodeRequest.UserId);
+        var isConfirmedResult = await _userService.IsEmailConfirmedAsync(emailRequest.UserId);
         var exceptionConfirmed = isConfirmedResult.Exception;
         if (!isConfirmedResult.IsSuccess) return Conflict(new {errorMessage = exceptionConfirmed!.Message});
-        var result = await _userService.ConfirmUserEmailAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
+        var result = await _userService.ConfirmUserEmailAsync(emailRequest.UserId, emailRequest.EmailCode);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch

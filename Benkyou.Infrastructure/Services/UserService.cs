@@ -125,40 +125,23 @@ public class UserService : IUserService
             : Result.Success();
     }
 
-    public async Task<Result> SetNewUserFirstName(Guid userId, string firstName)
+    public async Task<Result> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
-        user.FirstName = firstName;
+        user.UserName = updateRequest.UserName;
+        user.FirstName = updateRequest.FirstName;
+        user.LastName = updateRequest.LastName;
+        user.Birthday = updateRequest.Birthday;
+        user.About = updateRequest.About;
+        user.AvatarUrl = updateRequest.AvatarUrl;
         var result = await _userManager.UpdateAsync(user);
-        return !result.Succeeded ? Result.Error() : Result.Success();
-    }
-
-    public async Task<Result> SetNewUserLastName(Guid userId, string lastName)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
-        user.LastName = lastName;
-        var result = await _userManager.UpdateAsync(user);
-        return !result.Succeeded ? Result.Error() : Result.Success();
-    }
-
-    public async Task<Result> SetNewUserBirthday(Guid userId, DateTime birthday)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
-        user.Birthday = birthday;
-        var result = await _userManager.UpdateAsync(user);
-        return !result.Succeeded ? Result.Error() : Result.Success();
-    }
-
-    public async Task<Result> SetNewUserAbout(Guid userId, string about)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
-        user.About = about;
-        var result = await _userManager.UpdateAsync(user);
-        return !result.Succeeded ? Result.Error() : Result.Success();
+        if (!result.Succeeded) return Result.Error();
+        /*var passwordResult =
+            await _userManager.ChangePasswordAsync(user, updateRequest.CurrentPassword, updateRequest.NewPassword);*/
+        return /*!passwordResult.Succeeded
+            ? Result.Error(new PasswordChangeException("Password is incorrect"))
+            : */Result.Success();
     }
 
     public async Task<Result<UserResponse>> GetUserInfo(Guid userId)

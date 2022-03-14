@@ -21,13 +21,7 @@ public interface IUserService
 
     public Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token);
 
-    public Task<Result> SetNewUserFirstName(Guid userId, string firstName);
-
-    public Task<Result> SetNewUserLastName(Guid userId, string lastName);
-
-    public Task<Result> SetNewUserBirthday(Guid userId, DateTime birthday);
-
-    public Task<Result> SetNewUserAbout(Guid userId, string about);
+    public Task<Result> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest);
 
     public Task<Result<UserResponse>> GetUserInfo(Guid userId);
 

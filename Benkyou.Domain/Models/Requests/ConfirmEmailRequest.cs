@@ -2,7 +2,7 @@
 
 namespace Benkyou.Domain.Models.Requests;
 
-public class VerifyEmailCodeRequest
+public class ConfirmEmailRequest
 {
     [JsonPropertyName("emailCode")] public string EmailCode { get; set; } = null!;
 
