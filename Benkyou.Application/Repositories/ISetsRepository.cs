@@ -6,7 +6,7 @@ namespace Benkyou.Application.Repositories;
 
 public interface ISetsRepository
 {
-    public Task<Result<Guid>> CreateSetAsync(CreateSetRequest setRequest, Guid userId);
+    public Task<Result<SetResponse>> CreateSetAsync(CreateSetRequest setRequest, Guid userId);
 
     public Task<Result> ModifySetAsync(ModifySetRequest modifyRequest, Guid userId);
     

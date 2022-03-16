@@ -52,18 +52,15 @@ public class SetsController : ControllerBase
         }
 
         await _unitOfWork.SetsRepository.SaveChangesAsync();
-        return Ok(new
-        {
-            setId = result.Value
-        });
+        return Ok(result.Value);
     }
 
     [HttpDelete]
     [Route("delete")]
-    public async Task<ActionResult> DeleteSet([FromBody] DeleteSetRequest deleteSetRequest)
+    public async Task<ActionResult> DeleteSet([FromQuery] string setId)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _unitOfWork.SetsRepository.RemoveSetAsync(Guid.Parse(deleteSetRequest.SetId), userId);
+        var result = await _unitOfWork.SetsRepository.RemoveSetAsync(Guid.Parse(setId), userId);
         if (!result.IsSuccess)
         {
             var exception = result.Exception!;

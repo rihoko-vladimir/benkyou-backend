@@ -36,7 +36,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPut]
-    [Route("update")]
+    [Route("modify")]
     public async Task<ActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest updateUserInfoRequest)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());

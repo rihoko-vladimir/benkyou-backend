@@ -21,12 +21,12 @@ public class SetsRepository : ISetsRepository
         _mapper = mapper;
     }
 
-    public async Task<Result<Guid>> CreateSetAsync(CreateSetRequest setRequest, Guid userId)
+    public async Task<Result<SetResponse>> CreateSetAsync(CreateSetRequest setRequest, Guid userId)
     {
         var user = await _dbContext.Users.Include(user => user.Cards).FirstOrDefaultAsync(user => user.Id == userId);
-        if (user == null) return Result.Error<Guid>(new UserNotFoundException("Invalid Guid"));
+        if (user == null) return Result.Error<SetResponse>(new UserNotFoundException("Invalid Guid"));
         if (setRequest.KanjiList.Count < 3)
-            return Result.Error<Guid>(new KanjiCountException("There must be at least 3 kanji at the card"));
+            return Result.Error<SetResponse>(new KanjiCountException("There must be at least 3 kanji at the card"));
         var card = new Set
         {
             Id = Guid.NewGuid(),
@@ -54,7 +54,7 @@ public class SetsRepository : ISetsRepository
         }
 
         await _dbContext.Sets.AddAsync(card);
-        return Result.Success(card.Id);
+        return Result.Success(_mapper.Map<SetResponse>(card));
     }
 
     public async Task<Result> ModifySetAsync(ModifySetRequest modifyRequest, Guid userId)

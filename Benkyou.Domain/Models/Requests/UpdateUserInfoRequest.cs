@@ -19,9 +19,9 @@ public class UpdateUserInfoRequest
 
     [Required]
     [JsonPropertyName("birthday")]
-    public DateTime Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
 
-    [Required] [JsonPropertyName("about")] public string About { get; set; } = null!;
+    [Required] [JsonPropertyName("about")] public string? About { get; set; } = null!;
 
     // [Required]
     // [JsonPropertyName("currentPassword")]
