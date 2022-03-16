@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Exceptions;
@@ -26,7 +25,7 @@ public class SetsController : ControllerBase
     }
 
     [HttpGet]
-    [Route("my-sets")]
+    [Route("my-collection")]
     public async Task<ActionResult> GetMySets()
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
@@ -36,7 +35,7 @@ public class SetsController : ControllerBase
     }
 
     [HttpPut]
-    [Route("create-set")]
+    [Route("create")]
     public async Task<ActionResult> CreateNewSet([FromBody] CreateSetRequest setRequest)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
@@ -46,32 +45,29 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                UserNotFoundException => NotFound(exception.Message),
-                KanjiCountException => BadRequest(exception.Message),
+                UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+                KanjiCountException => BadRequest(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }
 
         await _unitOfWork.SetsRepository.SaveChangesAsync();
-        return Ok(new
-        {
-            cardId = result.Value
-        });
+        return Ok(result.Value);
     }
 
     [HttpDelete]
-    [Route("delete-set")]
-    public async Task<ActionResult> DeleteSet([FromBody] DeleteSetRequest deleteSetRequest)
+    [Route("delete")]
+    public async Task<ActionResult> DeleteSet([FromQuery] string setId)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _unitOfWork.SetsRepository.RemoveSetAsync(Guid.Parse(deleteSetRequest.SetId), userId);
+        var result = await _unitOfWork.SetsRepository.RemoveSetAsync(Guid.Parse(setId), userId);
         if (!result.IsSuccess)
         {
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidCardIdException => BadRequest(exception.Message),
-                CardRemoveException => Unauthorized(exception.Message),
+                InvalidSetIdException => NotFound(new {errorMessage = exception.Message}),
+                CardRemoveException => Unauthorized(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }
@@ -80,67 +76,20 @@ public class SetsController : ControllerBase
         return Ok();
     }
 
-    [HttpPatch]
-    [Route("update-name")]
-    public async Task<ActionResult> UpdateSetName([FromBody] UpdateSetNameRequest updateSetNameRequest)
+    [HttpPut]
+    [Route("modify")]
+    public async Task<ActionResult> ModifyUserSet([FromBody] ModifySetRequest modifySetRequest)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _unitOfWork.SetsRepository.ModifySetNameAsync(Guid.Parse(updateSetNameRequest.SetId),
-            updateSetNameRequest.NewName, userId);
+        var result = await _unitOfWork.SetsRepository.ModifySetAsync(modifySetRequest, userId);
         if (!result.IsSuccess)
         {
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidCardIdException => NotFound(exception.Message),
-                CardUpdateException => Unauthorized(exception.Message),
-                _ => StatusCode(500)
-            };
-        }
-
-        await _unitOfWork.SetsRepository.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPatch]
-    [Route("update-description")]
-    public async Task<ActionResult> UpdateSetDescription(
-        [FromBody] UpdateSetDescriptionRequest updateSetDescriptionRequest)
-    {
-        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _unitOfWork.SetsRepository.ModifySetDescriptionAsync(
-            Guid.Parse(updateSetDescriptionRequest.SetId),
-            updateSetDescriptionRequest.NewName, userId);
-        if (!result.IsSuccess)
-        {
-            var exception = result.Exception!;
-            return exception switch
-            {
-                InvalidCardIdException => NotFound(exception.Message),
-                CardUpdateException => Unauthorized(exception.Message),
-                _ => StatusCode(500)
-            };
-        }
-
-        await _unitOfWork.SetsRepository.SaveChangesAsync();
-        return Ok();
-    }
-
-    [HttpPatch]
-    [Route("update-kanji")]
-    public async Task<ActionResult> UpdateSetKanji([FromBody] UpdateSetKanjiListRequest updateSetKanjiListRequest)
-    {
-        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _unitOfWork.SetsRepository.ModifySetKanjiListAsync(
-            Guid.Parse(updateSetKanjiListRequest.SetId),
-            updateSetKanjiListRequest.NewKanjiList.ToList(), userId);
-        if (!result.IsSuccess)
-        {
-            var exception = result.Exception!;
-            return exception switch
-            {
-                InvalidCardIdException => NotFound(exception.Message),
-                CardUpdateException => Unauthorized(exception.Message),
+                UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+                KanjiCountException => BadRequest(new {errorMessage = exception.Message}),
+                SetUpdateException => NotFound(new {errorMessage = exception.Message}),
                 _ => StatusCode(500)
             };
         }

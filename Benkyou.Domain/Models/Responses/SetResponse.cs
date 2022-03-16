@@ -1,8 +1,9 @@
 ﻿namespace Benkyou.Domain.Models.Responses;
 
-public class CardResponse
+public class SetResponse
 {
     public Guid Id { get; set; }
+    public Guid AuthorId { get; set; }
 
     public string Name { get; set; }
 

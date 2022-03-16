@@ -4,15 +4,17 @@ public class UserResponse
 {
     public Guid Id { get; set; }
 
+    public string UserName { get; set; } = null!;
+
     public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; } = null!;
 
-    public DateTime? Birthday { get; set; }
+    public string Birthday { get; set; } = null!;
 
-    public string? About { get; set; } = null!;
+    public string? About { get; set; }
 
-    public string? AvatarUrl { get; set; } = null!;
+    public string? AvatarUrl { get; set; }
 
     public string Email { get; set; } = null!;
 }

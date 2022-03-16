@@ -27,7 +27,7 @@ public class User : IdentityUser<Guid>
 
     public UserStatistic UserStatistic { get; set; } = null!;
 
-    public ICollection<Card>? Cards { get; set; } = null!;
+    public ICollection<Set>? Cards { get; set; } = null!;
 
     public string? RefreshToken { get; set; } = null!;
 

@@ -19,6 +19,30 @@ public class AuthController : ControllerBase
         _tokenValidationService = tokenValidationService;
     }
 
+    [HttpGet]
+    [Route("check-email")]
+    public async Task<ActionResult> IsEmailOccupied([FromQuery] string email)
+    {
+        var result = await _userService.IsEmailAvailable(email);
+        if (!result.IsSuccess) return Ok();
+        return Conflict(new
+        {
+            errorMessage = "User with specified email already exists"
+        });
+    }
+
+    [HttpGet]
+    [Route("check-username")]
+    public async Task<ActionResult> IsUserNameOccupied([FromQuery] string userName)
+    {
+        var result = await _userService.IsUserNameAvailable(userName);
+        if (!result.IsSuccess) return Ok();
+        return Conflict(new
+        {
+            errorMessage = "User with specified username already exists"
+        });
+    }
+
     [HttpPost]
     [Route("login")]
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
@@ -28,7 +52,12 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            LoginException => BadRequest(exception.Message),
+            LoginException => StatusCode(403, new
+            {
+                errorMessage = exception.Message,
+                userId = (await _userService.GetUserGuidFromEmail(loginModel.Email)).Value
+            }),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -42,8 +71,8 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserRegistrationException => Conflict(exception.Message),
-            _ => BadRequest(exception.Message)
+            UserRegistrationException => Conflict(new {errorMessage = exception.Message}),
+            _ => BadRequest(new {errorMessage = exception.Message})
         };
     }
 
@@ -58,22 +87,24 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            RefreshTokenException => NotFound(exception.Message),
-            _ => BadRequest(exception.Message)
+            RefreshTokenException => NotFound(new {errorMessage = exception.Message}),
+            _ => BadRequest(new {errorMessage = exception.Message})
         };
     }
 
     [HttpPost]
-    [Route("verify-email")]
-    public async Task<ActionResult> VerifyEmailAddress([FromBody] VerifyEmailCodeRequest emailCodeRequest)
+    [Route("confirm-email")]
+    public async Task<ActionResult> ConfirmEmailAddress([FromBody] ConfirmEmailRequest emailRequest)
     {
-        var result =
-            await _userService.ValidateEmailCodeAsync(emailCodeRequest.UserId, emailCodeRequest.EmailCode);
+        var isConfirmedResult = await _userService.IsEmailConfirmedAsync(emailRequest.UserId);
+        var exceptionConfirmed = isConfirmedResult.Exception;
+        if (!isConfirmedResult.IsSuccess) return Conflict(new {errorMessage = exceptionConfirmed!.Message});
+        var result = await _userService.ConfirmUserEmailAsync(emailRequest.UserId, emailRequest.EmailCode);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch
         {
-            EmailVerificationCodeException => BadRequest(exception.Message),
+            EmailConfirmationCodeException => BadRequest(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
@@ -87,7 +118,7 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => BadRequest()
         };
     }
@@ -109,8 +140,8 @@ public class AuthController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(exception.Message),
-            InvalidTokenException => BadRequest(exception.Message),
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+            InvalidTokenException => BadRequest(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }
