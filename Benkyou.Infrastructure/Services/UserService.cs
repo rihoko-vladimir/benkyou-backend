@@ -111,12 +111,14 @@ public class UserService : IUserService
         var user = await _userManager.FindByEmailAsync(emailAddress);
         if (user == null) return Result.Error(new UserNotFoundException("User with specified email wasn't found"));
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        Console.WriteLine(resetToken);
         await _emailSenderService.SendEmailResetLinkAsync(user.Email, resetToken, user.FirstName);
         return Result.Success();
     }
 
     public async Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token)
     {
+        Console.WriteLine(token);
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);

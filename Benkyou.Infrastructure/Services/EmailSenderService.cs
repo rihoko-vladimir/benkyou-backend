@@ -54,7 +54,7 @@ public class EmailSenderService : IEmailSenderService
         emailMessage.XPriority = XMessagePriority.High;
         var bodyBuilder = new BodyBuilder();
         var verificationLink =
-            $"https://localhost:5001/api/auth/reset-password-confirm?email={emailAddress}&token={passwordResetToken}";
+            $"http://localhost:3000/auth/reset-password-confirm?email={emailAddress}&token={passwordResetToken}";
         bodyBuilder.HtmlBody = new EmailTemplate().GetHtmlPage(name, verificationLink);
         emailMessage.Body = bodyBuilder.ToMessageBody();
         emailMessage.To.Add(MailboxAddress.Parse(emailAddress));
