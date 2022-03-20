@@ -41,7 +41,7 @@ public class AccountController : ControllerBase
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
         var result = await _userService.UpdateUserInfo(userId, updateUserInfoRequest);
-        if (result.IsSuccess) return Ok();
+        if (result.IsSuccess) return Ok(result.Value);
         var exception = result.Exception!;
         return exception switch
         {

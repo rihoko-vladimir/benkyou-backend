@@ -18,15 +18,17 @@ public class UserService : IUserService
     private readonly IMapper _mapper;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly UserManager<User> _userManager;
+    private readonly IFileUploadService _fileUploadService;
 
     public UserService(UserManager<User> userManager, IMapper mapper, IAccessTokenService accessTokenService,
-        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService)
+        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService, IFileUploadService fileUploadService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
         _emailSenderService = emailSenderService;
+        _fileUploadService = fileUploadService;
     }
 
     public async Task<Result<Guid>> RegisterAsync(RegisterModel registerModel)
@@ -127,23 +129,30 @@ public class UserService : IUserService
             : Result.Success();
     }
 
-    public async Task<Result> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest)
+    public async Task<Result<UserResponse>> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        if (user == null) return Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"));
         user.UserName = updateRequest.UserName;
         user.FirstName = updateRequest.FirstName;
         user.LastName = updateRequest.LastName;
         user.Birthday = updateRequest.Birthday;
         user.About = updateRequest.About;
-        user.AvatarUrl = updateRequest.AvatarUrl;
+        if (updateRequest.Avatar != null)
+        {
+            var imageUrl =
+                await _fileUploadService.UploadFileAsync(
+                    new MemoryStream(Convert.FromBase64String(updateRequest.Avatar)));
+            Console.WriteLine(imageUrl);
+            user.AvatarUrl = imageUrl;
+        }
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded) return Result.Error();
+        if (!result.Succeeded) return Result.Error<UserResponse>(new Exception("Unknown database error"));
         /*var passwordResult =
             await _userManager.ChangePasswordAsync(user, updateRequest.CurrentPassword, updateRequest.NewPassword);*/
         return /*!passwordResult.Succeeded
             ? Result.Error(new PasswordChangeException("Password is incorrect"))
-            : */Result.Success();
+            : */Result.Success(_mapper.Map<UserResponse>(user));
     }
 
     public async Task<Result<UserResponse>> GetUserInfo(Guid userId)

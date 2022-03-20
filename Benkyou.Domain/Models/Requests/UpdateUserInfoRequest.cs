@@ -31,6 +31,6 @@ public class UpdateUserInfoRequest
     // [JsonPropertyName("newPassword")]
     // public string NewPassword { get; set; } = null!;
     
-    [JsonPropertyName("avatarUrl")]
-    public string? AvatarUrl { get; set; } = null!;
+    [JsonPropertyName("avatar")]
+    public string? Avatar { get; set; } = null!;
 }

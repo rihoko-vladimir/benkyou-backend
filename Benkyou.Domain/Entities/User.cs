@@ -19,7 +19,7 @@ public class User : IdentityUser<Guid>
 
     [MaxLength(350)] public string? About { get; set; } = null!;
 
-    [MaxLength(100)] public string? AvatarUrl { get; set; } = null!;
+    public string? AvatarUrl { get; set; } = null!;
 
     [MaxLength(35)]
     [Required(ErrorMessage = "Email address must be set")]
