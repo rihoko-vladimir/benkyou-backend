@@ -6,10 +6,6 @@ namespace Benkyou.Domain.Models.Requests;
 public class UpdateUserInfoRequest
 {
     [Required]
-    [JsonPropertyName("userName")]
-    public string UserName { get; set; } = null!;
-
-    [Required]
     [JsonPropertyName("firstName")]
     public string FirstName { get; set; } = null!;
 

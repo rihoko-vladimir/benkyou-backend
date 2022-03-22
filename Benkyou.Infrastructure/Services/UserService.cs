@@ -133,12 +133,11 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null) return Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"));
-        user.UserName = updateRequest.UserName;
         user.FirstName = updateRequest.FirstName;
         user.LastName = updateRequest.LastName;
         user.Birthday = updateRequest.Birthday;
         user.About = updateRequest.About;
-        if (updateRequest.Avatar != null)
+        if (!string.IsNullOrEmpty(updateRequest.Avatar))
         {
             var imageUrl =
                 await _fileUploadService.UploadFileAsync(
@@ -153,6 +152,15 @@ public class UserService : IUserService
         return /*!passwordResult.Succeeded
             ? Result.Error(new PasswordChangeException("Password is incorrect"))
             : */Result.Success(_mapper.Map<UserResponse>(user));
+    }
+
+    public async Task<Result> ChangeVisibility(Guid userId, bool isVisible)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
+        user.IsAccountPublic = isVisible;
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded ? Result.Error(new Exception("Unknown database error")) : Result.Success();
     }
 
     public async Task<Result<UserResponse>> GetUserInfo(Guid userId)

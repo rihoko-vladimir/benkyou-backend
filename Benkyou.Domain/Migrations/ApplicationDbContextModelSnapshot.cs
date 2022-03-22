@@ -151,6 +151,9 @@ namespace Benkyou.Domain.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<bool>("IsAccountPublic")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsTermsAccepted")
                         .HasColumnType("bit");
 

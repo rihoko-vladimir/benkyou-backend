@@ -23,6 +23,8 @@ public interface IUserService
 
     public Task<Result<UserResponse>> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest);
 
+    public Task<Result> ChangeVisibility(Guid userId, bool isVisible);
+
     public Task<Result<UserResponse>> GetUserInfo(Guid userId);
 
     public Task<Result> IsEmailAvailable(string email);

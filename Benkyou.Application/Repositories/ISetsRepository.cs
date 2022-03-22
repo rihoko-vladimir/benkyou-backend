@@ -11,7 +11,8 @@ public interface ISetsRepository
     public Task<Result> ModifySetAsync(ModifySetRequest modifyRequest, Guid userId);
     
     public Task<Result> RemoveSetAsync(Guid cardId, Guid userId);
-    public Task<Result<List<SetResponse>>> GetAllSetsAsync(Guid userId);
+    public Task<Result<List<SetResponse>>> GetUserSetsAsync(Guid userId);
+    public Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(int pageNumber);
     public Task<Result<SetResponse>> GetSetAsync(Guid cardId);
     public Task SaveChangesAsync();
 }

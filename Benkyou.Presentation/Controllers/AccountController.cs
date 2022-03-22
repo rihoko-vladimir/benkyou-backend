@@ -50,4 +50,19 @@ public class AccountController : ControllerBase
             _ => StatusCode(500)
         };
     }
+
+    [HttpPatch]
+    [Route("change-visibility")]
+    public async Task<ActionResult> ChangeAccountVisibility([FromQuery] bool isVisible)
+    {
+        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+        var result = await _userService.ChangeVisibility(userId, isVisible);
+        if (result.IsSuccess) return Ok();
+        var exception = result.Exception!;
+        return exception switch
+        {
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+            _ => StatusCode(500)
+        };
+    }
 }
