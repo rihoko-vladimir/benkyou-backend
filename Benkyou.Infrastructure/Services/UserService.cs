@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.RegularExpressions;
+using AutoMapper;
 using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Entities;
@@ -139,6 +140,11 @@ public class UserService : IUserService
         user.About = updateRequest.About;
         if (!string.IsNullOrEmpty(updateRequest.Avatar))
         {
+            if (!string.IsNullOrEmpty(user.AvatarUrl))
+            {
+                var fileName = new Regex(@"%2F([^?]+)").Match(user.AvatarUrl!).Groups[1].Value;
+                await _fileUploadService.DeleteFileAsync(fileName);
+            }
             var imageUrl =
                 await _fileUploadService.UploadFileAsync(
                     new MemoryStream(Convert.FromBase64String(updateRequest.Avatar)));
@@ -146,12 +152,7 @@ public class UserService : IUserService
             user.AvatarUrl = imageUrl;
         }
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded) return Result.Error<UserResponse>(new Exception("Unknown database error"));
-        /*var passwordResult =
-            await _userManager.ChangePasswordAsync(user, updateRequest.CurrentPassword, updateRequest.NewPassword);*/
-        return /*!passwordResult.Succeeded
-            ? Result.Error(new PasswordChangeException("Password is incorrect"))
-            : */Result.Success(_mapper.Map<UserResponse>(user));
+        return !result.Succeeded ? Result.Error<UserResponse>(new Exception("Unknown database error")) : Result.Success(_mapper.Map<UserResponse>(user));
     }
 
     public async Task<Result> ChangeVisibility(Guid userId, bool isVisible)

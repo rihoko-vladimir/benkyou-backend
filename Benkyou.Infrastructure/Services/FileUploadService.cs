@@ -22,7 +22,7 @@ public class FileUploadService : IFileUploadService
     {
         var authInfo = new FirebaseAuthProvider(new FirebaseConfig(_apiKey));
         var a = await authInfo.SignInWithEmailAndPasswordAsync(_email, _password);
-        return await new FirebaseStorage("benkyou-18d11.appspot.com", new FirebaseStorageOptions()
+        return await new FirebaseStorage("benkyou-18d11.appspot.com", new FirebaseStorageOptions
         {
             AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
             ThrowOnCancel = true
@@ -30,5 +30,19 @@ public class FileUploadService : IFileUploadService
             .Child("avatars")
             .Child(Guid.NewGuid().ToString())
             .PutAsync(fileStream);
+    }
+
+    public async Task DeleteFileAsync(string fileName)
+    {
+        var authInfo = new FirebaseAuthProvider(new FirebaseConfig(_apiKey));
+        var a = await authInfo.SignInWithEmailAndPasswordAsync(_email, _password);
+        await new FirebaseStorage("benkyou-18d11.appspot.com", new FirebaseStorageOptions
+            {
+                AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                ThrowOnCancel = true
+            })
+            .Child("avatars")
+            .Child(fileName)
+            .DeleteAsync();
     }
 }
