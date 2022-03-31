@@ -100,10 +100,25 @@ public class SetsController : ControllerBase
 
     [HttpGet]
     [Route("all")]
-    public async Task<ActionResult> GetAllSets([FromQuery] int page)
+    public async Task<ActionResult> GetAllSets([FromQuery] int page, [FromQuery] int size)
     {
-        var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(page);
-        if (result.IsSuccess) return Ok(result.Value);
-        return BadRequest(result.Value);
+        if (page <= 0 || size <= 0)
+        {
+            return BadRequest(new
+            {
+                errorMessage = "Invalid page or page size provided"
+            });
+        }
+        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCount(size);
+        var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(page, size);
+        if (result.IsSuccess && pageCountResult.IsSuccess) return Ok(new
+        {
+            pages = pageCountResult.Value,
+            sets = result.Value
+        });
+        return BadRequest(new
+        {
+            errorMessage = result.Value
+        });
     }
 }

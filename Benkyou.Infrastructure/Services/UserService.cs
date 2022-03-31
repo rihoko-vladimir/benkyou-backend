@@ -16,13 +16,14 @@ public class UserService : IUserService
 {
     private readonly IAccessTokenService _accessTokenService;
     private readonly IEmailSenderService _emailSenderService;
+    private readonly IFileUploadService _fileUploadService;
     private readonly IMapper _mapper;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly UserManager<User> _userManager;
-    private readonly IFileUploadService _fileUploadService;
 
     public UserService(UserManager<User> userManager, IMapper mapper, IAccessTokenService accessTokenService,
-        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService, IFileUploadService fileUploadService)
+        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService,
+        IFileUploadService fileUploadService)
     {
         _userManager = userManager;
         _mapper = mapper;
@@ -145,14 +146,18 @@ public class UserService : IUserService
                 var fileName = new Regex(@"%2F([^?]+)").Match(user.AvatarUrl!).Groups[1].Value;
                 await _fileUploadService.DeleteFileAsync(fileName);
             }
+
             var imageUrl =
                 await _fileUploadService.UploadFileAsync(
                     new MemoryStream(Convert.FromBase64String(updateRequest.Avatar)));
             Console.WriteLine(imageUrl);
             user.AvatarUrl = imageUrl;
         }
+
         var result = await _userManager.UpdateAsync(user);
-        return !result.Succeeded ? Result.Error<UserResponse>(new Exception("Unknown database error")) : Result.Success(_mapper.Map<UserResponse>(user));
+        return !result.Succeeded
+            ? Result.Error<UserResponse>(new Exception("Unknown database error"))
+            : Result.Success(_mapper.Map<UserResponse>(user));
     }
 
     public async Task<Result> ChangeVisibility(Guid userId, bool isVisible)

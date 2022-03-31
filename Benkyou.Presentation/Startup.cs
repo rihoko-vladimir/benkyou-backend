@@ -56,7 +56,7 @@ public class Startup
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");
-            // options.LogTo(Console.WriteLine);
+            //options.LogTo(Console.WriteLine);
         });
         var jwtParams = services.AddJwtProperties(_configuration);
         services.AddAuthentication(options =>

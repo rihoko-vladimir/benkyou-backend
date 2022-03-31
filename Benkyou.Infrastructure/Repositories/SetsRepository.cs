@@ -88,6 +88,7 @@ public class SetsRepository : ISetsRepository
     public async Task<Result<List<SetResponse>>> GetUserSetsAsync(Guid userId)
     {
         var cards = await _dbContext.Sets.Where(card => card.UserId == userId)
+            .OrderBy(set => set.Name)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings).ToListAsync();
         return cards.Count == 0
@@ -95,25 +96,36 @@ public class SetsRepository : ISetsRepository
             : Result.Success(_mapper.Map<List<SetResponse>>(cards));
     }
 
-    public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(int pageNumber)
+    public async Task<Result<int>> GetAllSetsPageCount(int pageSize)
     {
-        var pageSize = 8;
+        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id);
+        decimal count = await sets.CountAsync();
+        var pageCount = (int)Math.Ceiling(count / pageSize);
+        return Result.Success(pageCount);
+    }
 
+    public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(int pageNumber, int pageSize)
+    {
         var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id);
         var count = await sets.CountAsync();
-        switch (count)
-        {
-            case 0:
-                return Result.Success(new List<SetResponse>());
-            case <= 8:
-                return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));
-            default:
-            {
-                var setsToReturn = _mapper.Map<List<SetResponse>>(await sets.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
-                return Result.Success(setsToReturn);
-            }
-        }
+        if (count == 0) return Result.Success(new List<SetResponse>());
+        if (count <= pageSize) return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));
+        var setsToReturn =
+            _mapper.Map<List<SetResponse>>(await sets.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
+        return Result.Success(setsToReturn);
     }
+
+    public async Task<Result<List<SetResponse>>> GetSetsByQuery(string searchQuery, int pageNumber, int pageSize)
+    {
+        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id).Where(set => set.Name.Contains(searchQuery));
+        var count = await sets.CountAsync();
+        if (count == 0) return Result.Success(new List<SetResponse>());
+        if (count <= pageSize) return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));
+        var setsToReturn =
+            _mapper.Map<List<SetResponse>>(await sets.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
+        return Result.Success(setsToReturn);
+    }
+
 
     public async Task<Result<SetResponse>> GetSetAsync(Guid cardId)
     {
