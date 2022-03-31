@@ -102,6 +102,7 @@ public class SetsController : ControllerBase
     [Route("all")]
     public async Task<ActionResult> GetAllSets([FromQuery] int page, [FromQuery] int size)
     {
+        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
         if (page <= 0 || size <= 0)
         {
             return BadRequest(new
@@ -110,10 +111,12 @@ public class SetsController : ControllerBase
             });
         }
         var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCount(size);
-        var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(page, size);
+        var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(userId, page, size);
         if (result.IsSuccess && pageCountResult.IsSuccess) return Ok(new
         {
             pages = pageCountResult.Value,
+            page,
+            size,
             sets = result.Value
         });
         return BadRequest(new

@@ -104,9 +104,12 @@ public class SetsRepository : ISetsRepository
         return Result.Success(pageCount);
     }
 
-    public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(int pageNumber, int pageSize)
+    public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(Guid userId, int pageNumber, int pageSize)
     {
-        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id)
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .OrderBy(set => set.Id)
+            .Where(set => set.UserId != userId)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings);
         var count = await sets.CountAsync();
@@ -117,9 +120,13 @@ public class SetsRepository : ISetsRepository
         return Result.Success(setsToReturn);
     }
 
-    public async Task<Result<List<SetResponse>>> GetSetsByQuery(string searchQuery, int pageNumber, int pageSize)
+    public async Task<Result<List<SetResponse>>> GetSetsByQuery(Guid userId, string searchQuery, int pageNumber, int pageSize)
     {
-        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id).Where(set => set.Name.Contains(searchQuery))
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .OrderBy(set => set.Id)
+            .Where(set => set.Name.Contains(searchQuery))
+            .Where(set => set.UserId != userId)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings);
         var count = await sets.CountAsync();
