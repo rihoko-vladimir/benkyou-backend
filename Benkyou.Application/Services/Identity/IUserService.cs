@@ -21,7 +21,9 @@ public interface IUserService
 
     public Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token);
 
-    public Task<Result> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest);
+    public Task<Result<UserResponse>> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest);
+
+    public Task<Result> ChangeVisibility(Guid userId, bool isVisible);
 
     public Task<Result<UserResponse>> GetUserInfo(Guid userId);
 

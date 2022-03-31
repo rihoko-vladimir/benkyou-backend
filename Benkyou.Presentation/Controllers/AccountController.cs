@@ -41,12 +41,27 @@ public class AccountController : ControllerBase
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
         var result = await _userService.UpdateUserInfo(userId, updateUserInfoRequest);
-        if (result.IsSuccess) return Ok();
+        if (result.IsSuccess) return Ok(result.Value);
         var exception = result.Exception!;
         return exception switch
         {
             UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             PasswordChangeException => BadRequest(new {errorMessage = exception.Message}),
+            _ => StatusCode(500)
+        };
+    }
+
+    [HttpPatch]
+    [Route("change-visibility")]
+    public async Task<ActionResult> ChangeAccountVisibility([FromQuery] bool isPublic)
+    {
+        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+        var result = await _userService.ChangeVisibility(userId, isPublic);
+        if (result.IsSuccess) return Ok();
+        var exception = result.Exception!;
+        return exception switch
+        {
+            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)
         };
     }

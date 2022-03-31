@@ -29,7 +29,7 @@ public class SetsController : ControllerBase
     public async Task<ActionResult> GetMySets()
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _unitOfWork.SetsRepository.GetAllSetsAsync(userId);
+        var result = await _unitOfWork.SetsRepository.GetUserSetsAsync(userId);
         var mySets = result.Value!;
         return Ok(mySets.ToArray());
     }
@@ -96,5 +96,32 @@ public class SetsController : ControllerBase
 
         await _unitOfWork.SetsRepository.SaveChangesAsync();
         return Ok();
+    }
+
+    [HttpGet]
+    [Route("all")]
+    public async Task<ActionResult> GetAllSets([FromQuery] int page, [FromQuery] int size)
+    {
+        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+        if (page <= 0 || size <= 0)
+        {
+            return BadRequest(new
+            {
+                errorMessage = "Invalid page or page size provided"
+            });
+        }
+        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCount(size);
+        var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(userId, page, size);
+        if (result.IsSuccess && pageCountResult.IsSuccess) return Ok(new
+        {
+            pages = pageCountResult.Value,
+            page,
+            size,
+            sets = result.Value
+        });
+        return BadRequest(new
+        {
+            errorMessage = result.Value
+        });
     }
 }

@@ -19,7 +19,7 @@ public class User : IdentityUser<Guid>
 
     [MaxLength(350)] public string? About { get; set; } = null!;
 
-    [MaxLength(100)] public string? AvatarUrl { get; set; } = null!;
+    public string? AvatarUrl { get; set; } = null!;
 
     [MaxLength(35)]
     [Required(ErrorMessage = "Email address must be set")]
@@ -37,5 +37,6 @@ public class User : IdentityUser<Guid>
     [Required(ErrorMessage = "No terms accepted value")]
     public bool IsTermsAccepted { get; set; }
 
+    public bool IsAccountPublic { get; set; }
     public string? EmailConfirmationCode { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.RegularExpressions;
+using AutoMapper;
 using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Entities;
@@ -15,18 +16,21 @@ public class UserService : IUserService
 {
     private readonly IAccessTokenService _accessTokenService;
     private readonly IEmailSenderService _emailSenderService;
+    private readonly IFileUploadService _fileUploadService;
     private readonly IMapper _mapper;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly UserManager<User> _userManager;
 
     public UserService(UserManager<User> userManager, IMapper mapper, IAccessTokenService accessTokenService,
-        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService)
+        IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService,
+        IFileUploadService fileUploadService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
         _emailSenderService = emailSenderService;
+        _fileUploadService = fileUploadService;
     }
 
     public async Task<Result<Guid>> RegisterAsync(RegisterModel registerModel)
@@ -111,12 +115,14 @@ public class UserService : IUserService
         var user = await _userManager.FindByEmailAsync(emailAddress);
         if (user == null) return Result.Error(new UserNotFoundException("User with specified email wasn't found"));
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        Console.WriteLine(resetToken);
         await _emailSenderService.SendEmailResetLinkAsync(user.Email, resetToken, user.FirstName);
         return Result.Success();
     }
 
     public async Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token)
     {
+        Console.WriteLine(token);
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
         var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
@@ -125,23 +131,49 @@ public class UserService : IUserService
             : Result.Success();
     }
 
-    public async Task<Result> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest)
+    public async Task<Result<UserResponse>> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"));
+        if (!string.IsNullOrEmpty(updateRequest.About))
+        {
+            user.About = updateRequest.About;
+        }
+        if (updateRequest.Birthday!=null)
+        {
+            user.Birthday = updateRequest.Birthday;
+        }
+
+        user.FirstName = updateRequest.FirstName;
+        user.LastName = updateRequest.LastName;
+        if (!string.IsNullOrEmpty(updateRequest.Avatar))
+        {
+            if (!string.IsNullOrEmpty(user.AvatarUrl))
+            {
+                var fileName = new Regex(@"%2F([^?]+)").Match(user.AvatarUrl!).Groups[1].Value;
+                await _fileUploadService.DeleteFileAsync(fileName);
+            }
+
+            var imageUrl =
+                await _fileUploadService.UploadFileAsync(
+                    new MemoryStream(Convert.FromBase64String(updateRequest.Avatar)));
+            Console.WriteLine(imageUrl);
+            user.AvatarUrl = imageUrl;
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+        return !result.Succeeded
+            ? Result.Error<UserResponse>(new Exception("Unknown database error"))
+            : Result.Success(_mapper.Map<UserResponse>(user));
+    }
+
+    public async Task<Result> ChangeVisibility(Guid userId, bool isVisible)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
-        user.UserName = updateRequest.UserName;
-        user.FirstName = updateRequest.FirstName;
-        user.LastName = updateRequest.LastName;
-        user.Birthday = updateRequest.Birthday;
-        user.About = updateRequest.About;
-        user.AvatarUrl = updateRequest.AvatarUrl;
+        user.IsAccountPublic = isVisible;
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded) return Result.Error();
-        /*var passwordResult =
-            await _userManager.ChangePasswordAsync(user, updateRequest.CurrentPassword, updateRequest.NewPassword);*/
-        return /*!passwordResult.Succeeded
-            ? Result.Error(new PasswordChangeException("Password is incorrect"))
-            : */Result.Success();
+        return !result.Succeeded ? Result.Error(new Exception("Unknown database error")) : Result.Success();
     }
 
     public async Task<Result<UserResponse>> GetUserInfo(Guid userId)

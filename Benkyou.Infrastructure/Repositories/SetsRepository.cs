@@ -75,42 +75,6 @@ public class SetsRepository : ISetsRepository
         return Result.Success();
     }
 
-    // public async Task<Result> ModifySetNameAsync(Guid cardId, string newName, Guid userId)
-    // {
-    //     var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
-    //     if (card == null) return Result.Error(new InvalidCardIdException("Card with specified id wasn't found"));
-    //     if (card.UserId != userId)
-    //         return Result.Error(new CardUpdateException("You can't change set name of other users"));
-    //     card.Name = newName;
-    //     _dbContext.Update(card);
-    //     return Result.Success();
-    // }
-    //
-    // public async Task<Result> ModifySetDescriptionAsync(Guid cardId, string newDescription, Guid userId)
-    // {
-    //     var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
-    //     if (card == null) return Result.Error(new InvalidCardIdException("Card with specified id wasn't found"));
-    //     if (card.UserId != userId)
-    //         return Result.Error(new CardUpdateException("You can't change set description of other users"));
-    //     card.Description = newDescription;
-    //     _dbContext.Update(card);
-    //     return Result.Success();
-    // }
-    //
-    // public async Task<Result> ModifySetKanjiListAsync(Guid cardId, List<KanjiRequest> kanjiList, Guid userId)
-    // {
-    //     var card = await _dbContext.Cards.FirstOrDefaultAsync(card => card.Id == cardId);
-    //     if (card == null) return Result.Error(new InvalidCardIdException("Card with specified id wasn't found"));
-    //     if (card.UserId != userId)
-    //         return Result.Error(new CardUpdateException("You can't change set kanji of other users"));
-    //     var kanjiListMapped = _mapper.Map<List<Kanji>>(kanjiList);
-    //     var kanjiToRemove = await _dbContext.KanjiList.Where(kanji => kanji.CardId == card.Id).ToListAsync();
-    //     _dbContext.KanjiList.RemoveRange(kanjiToRemove);
-    //     card.KanjiList = kanjiListMapped;
-    //     _dbContext.Update(card);
-    //     return Result.Success();
-    // }
-
     public async Task<Result> RemoveSetAsync(Guid cardId, Guid userId)
     {
         var card = await _dbContext.Sets.FirstOrDefaultAsync(card => card.Id == cardId);
@@ -121,15 +85,58 @@ public class SetsRepository : ISetsRepository
         return Result.Success();
     }
 
-    public async Task<Result<List<SetResponse>>> GetAllSetsAsync(Guid userId)
+    public async Task<Result<List<SetResponse>>> GetUserSetsAsync(Guid userId)
     {
         var cards = await _dbContext.Sets.Where(card => card.UserId == userId)
+            .OrderBy(set => set.Name)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
             .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings).ToListAsync();
         return cards.Count == 0
             ? Result.Success(new List<SetResponse>())
             : Result.Success(_mapper.Map<List<SetResponse>>(cards));
     }
+
+    public async Task<Result<int>> GetAllSetsPageCount(int pageSize)
+    {
+        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id);
+        decimal count = await sets.CountAsync();
+        var pageCount = (int)Math.Ceiling(count / pageSize);
+        return Result.Success(pageCount);
+    }
+
+    public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(Guid userId, int pageNumber, int pageSize)
+    {
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .OrderBy(set => set.Id)
+            .Where(set => set.UserId != userId)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings);
+        var count = await sets.CountAsync();
+        if (count == 0) return Result.Success(new List<SetResponse>());
+        if (count <= pageSize) return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));
+        var setsToReturn =
+            _mapper.Map<List<SetResponse>>(await sets.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
+        return Result.Success(setsToReturn);
+    }
+
+    public async Task<Result<List<SetResponse>>> GetSetsByQuery(Guid userId, string searchQuery, int pageNumber, int pageSize)
+    {
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .OrderBy(set => set.Id)
+            .Where(set => set.Name.Contains(searchQuery))
+            .Where(set => set.UserId != userId)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings);
+        var count = await sets.CountAsync();
+        if (count == 0) return Result.Success(new List<SetResponse>());
+        if (count <= pageSize) return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));
+        var setsToReturn =
+            _mapper.Map<List<SetResponse>>(await sets.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync());
+        return Result.Success(setsToReturn);
+    }
+
 
     public async Task<Result<SetResponse>> GetSetAsync(Guid cardId)
     {
