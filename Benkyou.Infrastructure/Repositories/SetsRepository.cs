@@ -106,7 +106,9 @@ public class SetsRepository : ISetsRepository
 
     public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(int pageNumber, int pageSize)
     {
-        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id);
+        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings);
         var count = await sets.CountAsync();
         if (count == 0) return Result.Success(new List<SetResponse>());
         if (count <= pageSize) return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));
@@ -117,7 +119,9 @@ public class SetsRepository : ISetsRepository
 
     public async Task<Result<List<SetResponse>>> GetSetsByQuery(string searchQuery, int pageNumber, int pageSize)
     {
-        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id).Where(set => set.Name.Contains(searchQuery));
+        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id).Where(set => set.Name.Contains(searchQuery))
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings);
         var count = await sets.CountAsync();
         if (count == 0) return Result.Success(new List<SetResponse>());
         if (count <= pageSize) return Result.Success(_mapper.Map<List<SetResponse>>(await sets.ToListAsync()));

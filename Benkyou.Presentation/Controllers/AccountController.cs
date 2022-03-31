@@ -53,10 +53,10 @@ public class AccountController : ControllerBase
 
     [HttpPatch]
     [Route("change-visibility")]
-    public async Task<ActionResult> ChangeAccountVisibility([FromQuery] bool isVisible)
+    public async Task<ActionResult> ChangeAccountVisibility([FromQuery] bool isPublic)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.ChangeVisibility(userId, isVisible);
+        var result = await _userService.ChangeVisibility(userId, isPublic);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch
