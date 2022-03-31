@@ -5,6 +5,7 @@ using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Entities;
 using Benkyou.Domain.Enums;
 using Benkyou.Domain.Exceptions;
+using Benkyou.Domain.Models;
 using Benkyou.Domain.Properties;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -54,11 +55,11 @@ public class TokenValidationService : ITokenValidationService
         return user.RefreshToken == refreshToken;
     }
 
-    public async Task<Guid> GetUserIdIfRefreshTokenValidAsync(string refreshToken)
+    public async Task<Result<Guid>> GetUserIdIfRefreshTokenValidAsync(string refreshToken)
     {
         var isTokenValid = await IsRefreshTokenValidAsync(refreshToken);
-        if (!isTokenValid) throw new InvalidTokenException("Refresh token is incorrect");
-        return Guid.Parse(GetClaimsPrincipalFromRefreshToken(refreshToken).Claims
-            .First(claim => claim.Type == ApplicationClaimTypes.Uid).Value);
+        if (!isTokenValid) Result.Error<Guid>(new InvalidTokenException("Refresh token is incorrect"));
+        return Result.Success(Guid.Parse(GetClaimsPrincipalFromRefreshToken(refreshToken).Claims
+            .First(claim => claim.Type == ApplicationClaimTypes.Uid).Value));
     }
 }

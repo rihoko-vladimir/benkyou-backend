@@ -80,9 +80,10 @@ public class AuthController : ControllerBase
     [Route("refresh")]
     public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
     {
-        //TODO catch
-        var userId =
+        var userIdResult =
             await _tokenValidationService.GetUserIdIfRefreshTokenValidAsync(refreshTokenRequest.RefreshToken);
+        if (!userIdResult.IsSuccess) return Unauthorized(new {errorMessage = userIdResult.Exception!.Message});
+        var userId = userIdResult.Value;
         var result = await _userService.GetNewTokensAsync(userId);
         if (result.IsSuccess) return Ok(result.Value);
         var exception = result.Exception!;
