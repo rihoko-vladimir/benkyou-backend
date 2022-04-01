@@ -26,7 +26,7 @@ public class ApplicationMappingProfile : Profile
         CreateMap<OnyomiRequest, Onyomi>();
         CreateMap<KanjiRequest, Kanji>();
         CreateMap<User, UserResponse>()
-            .ForMember(response => response.Birthday, 
+            .ForMember(response => response.Birthday,
                 t => t
                     .MapFrom(user => user.Birthday != null ? user.Birthday.Value.ToString("yyyy-MM-dd") : ""))
             .ForMember(response => response.IsPublic,

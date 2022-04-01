@@ -135,14 +135,8 @@ public class UserService : IUserService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null) return Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"));
-        if (!string.IsNullOrEmpty(updateRequest.About))
-        {
-            user.About = updateRequest.About;
-        }
-        if (updateRequest.Birthday!=null)
-        {
-            user.Birthday = updateRequest.Birthday;
-        }
+        if (!string.IsNullOrEmpty(updateRequest.About)) user.About = updateRequest.About;
+        if (updateRequest.Birthday != null) user.Birthday = updateRequest.Birthday;
 
         user.FirstName = updateRequest.FirstName;
         user.LastName = updateRequest.LastName;
