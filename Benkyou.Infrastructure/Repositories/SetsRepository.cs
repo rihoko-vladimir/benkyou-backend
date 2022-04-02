@@ -96,15 +96,18 @@ public class SetsRepository : ISetsRepository
             : Result.Success(_mapper.Map<List<SetResponse>>(cards));
     }
 
-    public async Task<Result<int>> GetAllSetsPageCount(int pageSize)
+    public async Task<Result<int>> GetAllSetsPageCount(Guid userId, int pageSize)
     {
-        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id);
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .Where(set => set.UserId != userId);
         decimal count = await sets.CountAsync();
         var pageCount = (int) Math.Ceiling(count / pageSize);
         return Result.Success(pageCount);
     }
 
-    public async Task<Result<int>> GetAllSetsByQueryPageCount(Guid userId,int pageNumber, int pageSize, string searchQuery)
+    public async Task<Result<int>> GetAllSetsByQueryPageCount(Guid userId, int pageNumber, int pageSize,
+        string searchQuery)
     {
         var sets = _dbContext.Sets
             .Where(set => set.User.IsAccountPublic)
