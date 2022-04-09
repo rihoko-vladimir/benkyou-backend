@@ -104,21 +104,55 @@ public class SetsController : ControllerBase
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
         if (page <= 0 || size <= 0)
-        {
             return BadRequest(new
             {
                 errorMessage = "Invalid page or page size provided"
             });
-        }
-        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCount(size);
+        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCount(userId, size);
         var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(userId, page, size);
-        if (result.IsSuccess && pageCountResult.IsSuccess) return Ok(new
+        if (result.IsSuccess && pageCountResult.IsSuccess)
+            return Ok(new
+            {
+                pages = pageCountResult.Value,
+                page,
+                size,
+                sets = result.Value
+            });
+        return BadRequest(new
         {
-            pages = pageCountResult.Value,
-            page,
-            size,
-            sets = result.Value
+            errorMessage = result.Value
         });
+    }
+
+    [HttpGet]
+    [Route("all_search")]
+    public async Task<ActionResult> GetAllSetsByQuery([FromQuery] int page, [FromQuery] int size,
+        [FromQuery] string name)
+    {
+        var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
+        if (page <= 0 || size <= 0)
+            return BadRequest(new
+            {
+                errorMessage = "Invalid page or page size provided"
+            });
+
+        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsByQueryPageCount(userId, page, size, name);
+
+        if (!pageCountResult.IsSuccess)
+            return BadRequest(new
+            {
+                errorMessage = "You've typed incorrect page or page size"
+            });
+        var result = await _unitOfWork.SetsRepository.GetSetsByQuery(userId, name, page, size);
+        if (result.IsSuccess && pageCountResult.IsSuccess)
+            return Ok(new
+            {
+                search = name,
+                pages = pageCountResult.Value,
+                page,
+                size,
+                sets = result.Value
+            });
         return BadRequest(new
         {
             errorMessage = result.Value

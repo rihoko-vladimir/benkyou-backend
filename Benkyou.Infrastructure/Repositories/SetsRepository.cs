@@ -96,12 +96,33 @@ public class SetsRepository : ISetsRepository
             : Result.Success(_mapper.Map<List<SetResponse>>(cards));
     }
 
-    public async Task<Result<int>> GetAllSetsPageCount(int pageSize)
+    public async Task<Result<int>> GetAllSetsPageCount(Guid userId, int pageSize)
     {
-        var sets = _dbContext.Sets.Where(set => set.User.IsAccountPublic).OrderBy(set => set.Id);
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .Where(set => set.UserId != userId);
         decimal count = await sets.CountAsync();
-        var pageCount = (int)Math.Ceiling(count / pageSize);
+        var pageCount = (int) Math.Ceiling(count / pageSize);
         return Result.Success(pageCount);
+    }
+
+    public async Task<Result<int>> GetAllSetsByQueryPageCount(Guid userId, int pageNumber, int pageSize,
+        string searchQuery)
+    {
+        var sets = _dbContext.Sets
+            .Where(set => set.User.IsAccountPublic)
+            .Where(set => set.UserId != userId)
+            .Where(set => set.Name.Contains(searchQuery));
+        decimal count = await sets.CountAsync();
+        try
+        {
+            var pageCount = (int) Math.Ceiling(count / pageSize);
+            return Result.Success(pageCount);
+        }
+        catch (Exception)
+        {
+            return Result.Error<int>(new Exception("Something went wrong"));
+        }
     }
 
     public async Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(Guid userId, int pageNumber, int pageSize)
@@ -120,7 +141,8 @@ public class SetsRepository : ISetsRepository
         return Result.Success(setsToReturn);
     }
 
-    public async Task<Result<List<SetResponse>>> GetSetsByQuery(Guid userId, string searchQuery, int pageNumber, int pageSize)
+    public async Task<Result<List<SetResponse>>> GetSetsByQuery(Guid userId, string searchQuery, int pageNumber,
+        int pageSize)
     {
         var sets = _dbContext.Sets
             .Where(set => set.User.IsAccountPublic)

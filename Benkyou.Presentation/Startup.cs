@@ -55,7 +55,9 @@ public class Startup
         services.AddScoped<ApplicationUnitOfWork>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "");
+            options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "", 
+                builder =>
+                builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             //options.LogTo(Console.WriteLine);
         });
         var jwtParams = services.AddJwtProperties(_configuration);
