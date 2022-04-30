@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using Benkyou.Application.Common;
 using Benkyou.Application.Repositories;
 using Benkyou.Application.Services.Common;
@@ -39,7 +40,12 @@ public class Startup
         {
             builder.AddDefaultPolicy(policyBuilder =>
             {
-                policyBuilder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+                policyBuilder
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .SetIsOriginAllowed(s => s.Contains("localhost"))
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             });
         });
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -55,9 +61,9 @@ public class Startup
         services.AddScoped<ApplicationUnitOfWork>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "", 
+            options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "",
                 builder =>
-                builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                    builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
             //options.LogTo(Console.WriteLine);
         });
         var jwtParams = services.AddJwtProperties(_configuration);
@@ -82,6 +88,14 @@ public class Startup
                 ClockSkew = TimeSpan.Zero
             };
             options.TokenValidationParameters = validationParameters;
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    context.Token = context.Request.Cookies["access"];
+                    return Task.CompletedTask;
+                }
+            };
         });
         services.AddIdentityCore<User>(options =>
         {
