@@ -42,23 +42,31 @@ public class TokenValidationService : ITokenValidationService
 
     public async Task<bool> IsRefreshTokenValidAsync(string refreshToken)
     {
-        var claimsPrincipal = GetClaimsPrincipalFromRefreshToken(refreshToken);
+        try
+        {
+            var claimsPrincipal = GetClaimsPrincipalFromRefreshToken(refreshToken);
+            var userId = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ApplicationClaimTypes.Uid)?.Value;
 
-        var userId = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ApplicationClaimTypes.Uid)?.Value;
+            if (userId == null) return false;
 
-        if (userId == null) return false;
+            if (refreshToken == "") return false;
 
-        var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId);
 
-        if (user == null) return false;
+            if (user == null) return false;
 
-        return user.RefreshToken == refreshToken;
+            return user.RefreshToken == refreshToken;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     public async Task<Result<Guid>> GetUserIdIfRefreshTokenValidAsync(string refreshToken)
     {
         var isTokenValid = await IsRefreshTokenValidAsync(refreshToken);
-        if (!isTokenValid) Result.Error<Guid>(new InvalidTokenException("Refresh token is incorrect"));
+        if (!isTokenValid) return Result.Error<Guid>(new InvalidTokenException("Refresh token is incorrect"));
         return Result.Success(Guid.Parse(GetClaimsPrincipalFromRefreshToken(refreshToken).Claims
             .First(claim => claim.Type == ApplicationClaimTypes.Uid).Value));
     }

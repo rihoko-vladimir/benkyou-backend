@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Exceptions;
+using Benkyou.Domain.Extensions;
 using Benkyou.Domain.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,7 +49,12 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
     {
         var result = await _userService.LoginAsync(loginModel);
-        if (result.IsSuccess) return Ok(result.Value);
+        if (result.IsSuccess)
+        {
+            this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken);
+            return Ok();
+        }
+
         var exception = result.Exception!;
         return exception switch
         {
@@ -78,14 +84,19 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("refresh")]
-    public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
+    public async Task<ActionResult> RefreshToken()
     {
-        var userIdResult =
-            await _tokenValidationService.GetUserIdIfRefreshTokenValidAsync(refreshTokenRequest.RefreshToken);
+        var token = this.GetRefreshTokenFromCookie();
+        var userIdResult = await _tokenValidationService.GetUserIdIfRefreshTokenValidAsync(token);
         if (!userIdResult.IsSuccess) return Unauthorized(new {errorMessage = userIdResult.Exception!.Message});
         var userId = userIdResult.Value;
         var result = await _userService.GetNewTokensAsync(userId);
-        if (result.IsSuccess) return Ok(result.Value);
+        if (result.IsSuccess)
+        {
+            this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken);
+            return Ok();
+        }
+
         var exception = result.Exception!;
         return exception switch
         {
