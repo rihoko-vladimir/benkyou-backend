@@ -25,7 +25,7 @@ public class AccountController : ControllerBase
     public async Task<ActionResult> GetUserInfo()
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.GetUserInfo(userId);
+        var result = await _userService.GetUserInfoAsync(userId);
         if (result.IsSuccess) return Ok(result.Value!);
         var exception = result.Exception!;
         return exception switch
@@ -40,7 +40,7 @@ public class AccountController : ControllerBase
     public async Task<ActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest updateUserInfoRequest)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.UpdateUserInfo(userId, updateUserInfoRequest);
+        var result = await _userService.UpdateUserInfoAsync(userId, updateUserInfoRequest);
         if (result.IsSuccess) return Ok(result.Value);
         var exception = result.Exception!;
         return exception switch
@@ -56,7 +56,7 @@ public class AccountController : ControllerBase
     public async Task<ActionResult> ChangeAccountVisibility([FromQuery] bool isPublic)
     {
         var userId = _userService.GetUserGuidFromAccessToken(await this.GetTokenAsync());
-        var result = await _userService.ChangeVisibility(userId, isPublic);
+        var result = await _userService.ChangeVisibilityAsync(userId, isPublic);
         if (result.IsSuccess) return Ok();
         var exception = result.Exception!;
         return exception switch

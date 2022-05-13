@@ -38,4 +38,12 @@ public class JwtAccessTokenService : IAccessTokenService
         var userId = token.Claims.First(claim => claim.Type == ApplicationClaimTypes.Uid).Value;
         return Guid.Parse(userId);
     }
+
+    public string GetRoleFromAccessToken(string accessToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(accessToken);
+        var role = token.Claims.First(claim => claim.Type == ApplicationClaimTypes.Role).Value;
+        return role;
+    }
 }

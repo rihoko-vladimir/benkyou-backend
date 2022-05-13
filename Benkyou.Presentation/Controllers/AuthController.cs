@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     [Route("check-email")]
     public async Task<ActionResult> IsEmailOccupied([FromQuery] string email)
     {
-        var result = await _userService.IsEmailAvailable(email);
+        var result = await _userService.IsEmailAvailableAsync(email);
         if (!result.IsSuccess) return Ok();
         return Conflict(new
         {
@@ -36,7 +36,7 @@ public class AuthController : ControllerBase
     [Route("check-username")]
     public async Task<ActionResult> IsUserNameOccupied([FromQuery] string userName)
     {
-        var result = await _userService.IsUserNameAvailable(userName);
+        var result = await _userService.IsUserNameAvailableAsync(userName);
         if (!result.IsSuccess) return Ok();
         return Conflict(new
         {
@@ -61,7 +61,7 @@ public class AuthController : ControllerBase
             LoginException => StatusCode(403, new
             {
                 errorMessage = exception.Message,
-                userId = (await _userService.GetUserGuidFromEmail(loginModel.Email)).Value
+                userId = (await _userService.GetUserGuidFromEmailAsync(loginModel.Email)).Value
             }),
             UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
             _ => StatusCode(500)

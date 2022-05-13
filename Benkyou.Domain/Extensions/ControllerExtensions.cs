@@ -20,13 +20,13 @@ public static class ControllerExtensions
         {
             Secure = true,
             HttpOnly = true,
-            SameSite = SameSiteMode.Unspecified,
+            SameSite = SameSiteMode.Unspecified
         };
         var refreshCookieOptions = new CookieOptions
         {
             Secure = true,
             HttpOnly = true,
-            SameSite = SameSiteMode.Unspecified,
+            SameSite = SameSiteMode.Unspecified
         };
         controllerBase.Response.Cookies.Append(accessCookieKey, accessToken, accessCookieOptions);
         controllerBase.Response.Cookies.Append(refreshCookieKey, refreshToken, refreshCookieOptions);

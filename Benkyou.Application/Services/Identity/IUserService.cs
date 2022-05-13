@@ -21,15 +21,19 @@ public interface IUserService
 
     public Task<Result> SetNewUserForgottenPasswordAsync(string email, string newPassword, string token);
 
-    public Task<Result<UserResponse>> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest);
+    public Task<Result<UserResponse>> UpdateUserInfoAsync(Guid userId, UpdateUserInfoRequest updateRequest);
 
-    public Task<Result> ChangeVisibility(Guid userId, bool isVisible);
+    public Task<Result> ChangeVisibilityAsync(Guid userId, bool isVisible);
 
-    public Task<Result<UserResponse>> GetUserInfo(Guid userId);
+    public Task<Result<UserResponse>> GetUserInfoAsync(Guid userId);
 
-    public Task<Result> IsEmailAvailable(string email);
+    public Task<Result> IsEmailAvailableAsync(string email);
 
-    public Task<Result> IsUserNameAvailable(string nickName);
+    public Task<Result> IsUserNameAvailableAsync(string nickName);
 
-    public Task<Result<Guid>> GetUserGuidFromEmail(string email);
+    public Task<Result<Guid>> GetUserGuidFromEmailAsync(string email);
+
+    public Task<Result<List<UserResponse>>> GetAllUsersAsync();
+
+    public Task<Result> RemoveUserAsync(Guid userId);
 }
