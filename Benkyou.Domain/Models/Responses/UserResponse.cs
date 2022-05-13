@@ -17,6 +17,6 @@ public class UserResponse
     public string? AvatarUrl { get; set; }
 
     public string Email { get; set; } = null!;
-
     public bool IsPublic { get; set; }
+    public string Role { get; set; }
 }

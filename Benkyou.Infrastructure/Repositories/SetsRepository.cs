@@ -96,7 +96,7 @@ public class SetsRepository : ISetsRepository
             : Result.Success(_mapper.Map<List<SetResponse>>(cards));
     }
 
-    public async Task<Result<int>> GetAllSetsPageCount(Guid userId, int pageSize)
+    public async Task<Result<int>> GetAllSetsPageCountAsync(Guid userId, int pageSize)
     {
         var sets = _dbContext.Sets
             .Where(set => set.User.IsAccountPublic)
@@ -106,7 +106,7 @@ public class SetsRepository : ISetsRepository
         return Result.Success(pageCount);
     }
 
-    public async Task<Result<int>> GetAllSetsByQueryPageCount(Guid userId, int pageNumber, int pageSize,
+    public async Task<Result<int>> GetAllSetsByQueryPageCountAsync(Guid userId, int pageNumber, int pageSize,
         string searchQuery)
     {
         var sets = _dbContext.Sets
@@ -141,7 +141,7 @@ public class SetsRepository : ISetsRepository
         return Result.Success(setsToReturn);
     }
 
-    public async Task<Result<List<SetResponse>>> GetSetsByQuery(Guid userId, string searchQuery, int pageNumber,
+    public async Task<Result<List<SetResponse>>> GetSetsByQueryAsync(Guid userId, string searchQuery, int pageNumber,
         int pageSize)
     {
         var sets = _dbContext.Sets

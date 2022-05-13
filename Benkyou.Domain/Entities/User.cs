@@ -17,9 +17,9 @@ public class User : IdentityUser<Guid>
 
     public DateTime? Birthday { get; set; }
 
-    [MaxLength(350)] public string? About { get; set; } = null!;
+    [MaxLength(350)] public string? About { get; set; }
 
-    public string? AvatarUrl { get; set; } = null!;
+    public string? AvatarUrl { get; set; }
 
     [MaxLength(35)]
     [Required(ErrorMessage = "Email address must be set")]
@@ -27,9 +27,9 @@ public class User : IdentityUser<Guid>
 
     public UserStatistic UserStatistic { get; set; } = null!;
 
-    public ICollection<Set>? Cards { get; set; } = null!;
+    public ICollection<Set>? Cards { get; set; }
 
-    public string? RefreshToken { get; set; } = null!;
+    public string? RefreshToken { get; set; }
 
     [Required(ErrorMessage = "Role must be set")]
     public string Role { get; set; } = null!;

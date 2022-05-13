@@ -3,7 +3,6 @@ using AutoMapper;
 using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Entities;
-using Benkyou.Domain.Enums;
 using Benkyou.Domain.Exceptions;
 using Benkyou.Domain.Models;
 using Benkyou.Domain.Models.Requests;
@@ -36,7 +35,7 @@ public class UserService : IUserService
     public async Task<Result<Guid>> RegisterAsync(RegisterModel registerModel)
     {
         var user = _mapper.Map<RegisterModel, User>(registerModel);
-        user.Role = Roles.Administrator;
+        user.Role = Role.User;
         var result = await _userManager.CreateAsync(user, registerModel.Password);
         if (!result.Succeeded)
             return Result.Error<Guid>(new UserRegistrationException("User already exists"));
@@ -131,7 +130,7 @@ public class UserService : IUserService
             : Result.Success();
     }
 
-    public async Task<Result<UserResponse>> UpdateUserInfo(Guid userId, UpdateUserInfoRequest updateRequest)
+    public async Task<Result<UserResponse>> UpdateUserInfoAsync(Guid userId, UpdateUserInfoRequest updateRequest)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null) return Result.Error<UserResponse>(new UserNotFoundException("User wasn't found"));
@@ -161,7 +160,7 @@ public class UserService : IUserService
             : Result.Success(_mapper.Map<UserResponse>(user));
     }
 
-    public async Task<Result> ChangeVisibility(Guid userId, bool isVisible)
+    public async Task<Result> ChangeVisibilityAsync(Guid userId, bool isVisible)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null) return Result.Error(new UserNotFoundException("User wasn't found"));
@@ -170,7 +169,7 @@ public class UserService : IUserService
         return !result.Succeeded ? Result.Error(new Exception("Unknown database error")) : Result.Success();
     }
 
-    public async Task<Result<UserResponse>> GetUserInfo(Guid userId)
+    public async Task<Result<UserResponse>> GetUserInfoAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         return user == null
@@ -178,23 +177,37 @@ public class UserService : IUserService
             : Result.Success(_mapper.Map<UserResponse>(user));
     }
 
-    public async Task<Result> IsEmailAvailable(string email)
+    public async Task<Result> IsEmailAvailableAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
         return user == null ? Result.Error(new UserNotFoundException("User wasn't found")) : Result.Success();
     }
 
-    public async Task<Result> IsUserNameAvailable(string nickName)
+    public async Task<Result> IsUserNameAvailableAsync(string nickName)
     {
         var user = await _userManager.FindByNameAsync(nickName);
         return user == null ? Result.Error(new UserNotFoundException("User wasn't found")) : Result.Success();
     }
 
-    public async Task<Result<Guid>> GetUserGuidFromEmail(string email)
+    public async Task<Result<Guid>> GetUserGuidFromEmailAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
         return user == null
             ? Result.Error<Guid>(new UserNotFoundException("User wasn't found"))
             : Result.Success(user.Id);
+    }
+
+    public async Task<Result<List<UserResponse>>> GetAllUsersAsync()
+    {
+        return await Task.FromResult(Result.Success(_mapper.Map<List<UserResponse>>(_userManager.Users.ToList())));
+    }
+
+    public async Task<Result> RemoveUserAsync(Guid userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null) return Result.Error(new UserNotFoundException("Specified user does not exist"));
+
+        var result = await _userManager.DeleteAsync(user);
+        return result.Succeeded ? Result.Success() : Result.Error();
     }
 }

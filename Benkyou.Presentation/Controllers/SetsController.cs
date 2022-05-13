@@ -108,7 +108,7 @@ public class SetsController : ControllerBase
             {
                 errorMessage = "Invalid page or page size provided"
             });
-        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCount(userId, size);
+        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsPageCountAsync(userId, size);
         var result = await _unitOfWork.SetsRepository.GetAllSetsByPageAsync(userId, page, size);
         if (result.IsSuccess && pageCountResult.IsSuccess)
             return Ok(new
@@ -136,14 +136,14 @@ public class SetsController : ControllerBase
                 errorMessage = "Invalid page or page size provided"
             });
 
-        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsByQueryPageCount(userId, page, size, name);
+        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsByQueryPageCountAsync(userId, page, size, name);
 
         if (!pageCountResult.IsSuccess)
             return BadRequest(new
             {
                 errorMessage = "You've typed incorrect page or page size"
             });
-        var result = await _unitOfWork.SetsRepository.GetSetsByQuery(userId, name, page, size);
+        var result = await _unitOfWork.SetsRepository.GetSetsByQueryAsync(userId, name, page, size);
         if (result.IsSuccess && pageCountResult.IsSuccess)
             return Ok(new
             {
