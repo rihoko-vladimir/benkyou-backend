@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using AutoMapper;
+﻿using AutoMapper;
 using Benkyou.Application.Services.Common;
 using Benkyou.Application.Services.Identity;
 using Benkyou.Domain.Entities;
@@ -14,22 +13,22 @@ namespace Benkyou.Infrastructure.Services;
 public class UserService : IUserService
 {
     private readonly IAccessTokenService _accessTokenService;
+    private readonly IAvatarUploadService _avatarUploadService;
     private readonly IEmailSenderService _emailSenderService;
-    private readonly IFileUploadService _fileUploadService;
     private readonly IMapper _mapper;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly UserManager<User> _userManager;
 
     public UserService(UserManager<User> userManager, IMapper mapper, IAccessTokenService accessTokenService,
         IRefreshTokenService refreshTokenService, IEmailSenderService emailSenderService,
-        IFileUploadService fileUploadService)
+        IAvatarUploadService avatarUploadService)
     {
         _userManager = userManager;
         _mapper = mapper;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
         _emailSenderService = emailSenderService;
-        _fileUploadService = fileUploadService;
+        _avatarUploadService = avatarUploadService;
     }
 
     public async Task<Result<Guid>> RegisterAsync(RegisterModel registerModel)
@@ -141,14 +140,9 @@ public class UserService : IUserService
         user.LastName = updateRequest.LastName;
         if (!string.IsNullOrEmpty(updateRequest.Avatar))
         {
-            if (!string.IsNullOrEmpty(user.AvatarUrl))
-            {
-                var fileName = new Regex(@"%2F([^?]+)").Match(user.AvatarUrl!).Groups[1].Value;
-                await _fileUploadService.DeleteFileAsync(fileName);
-            }
-
+            if (!string.IsNullOrEmpty(user.AvatarUrl)) await _avatarUploadService.DeleteFileAsync(user.AvatarUrl);
             var imageUrl =
-                await _fileUploadService.UploadFileAsync(
+                await _avatarUploadService.UploadFileAsync(
                     new MemoryStream(Convert.FromBase64String(updateRequest.Avatar)));
             Console.WriteLine(imageUrl);
             user.AvatarUrl = imageUrl;
@@ -208,6 +202,8 @@ public class UserService : IUserService
         if (user == null) return Result.Error(new UserNotFoundException("Specified user does not exist"));
 
         var result = await _userManager.DeleteAsync(user);
-        return result.Succeeded ? Result.Success() : Result.Error();
+        if (!result.Succeeded) return Result.Error();
+        if (!string.IsNullOrEmpty(user.AvatarUrl)) await _avatarUploadService.DeleteFileAsync(user.AvatarUrl);
+        return Result.Success();
     }
 }

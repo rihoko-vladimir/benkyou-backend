@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Benkyou.Application.Services.Common;
 using Firebase.Auth;
 using Firebase.Storage;
@@ -5,13 +6,13 @@ using Microsoft.Extensions.Configuration;
 
 namespace Benkyou.Infrastructure.Services;
 
-public class FileUploadService : IFileUploadService
+public class AvatarUploadService : IAvatarUploadService
 {
     private readonly string _apiKey;
     private readonly string _email;
     private readonly string _password;
 
-    public FileUploadService(IConfiguration configuration)
+    public AvatarUploadService(IConfiguration configuration)
     {
         _apiKey = configuration.GetSection("Firebase")["Key"] ?? string.Empty;
         _email = configuration.GetSection("Firebase")["Email"] ?? string.Empty;
@@ -32,8 +33,9 @@ public class FileUploadService : IFileUploadService
             .PutAsync(fileStream);
     }
 
-    public async Task DeleteFileAsync(string fileName)
+    public async Task DeleteFileAsync(string fileUrl)
     {
+        var fileName = new Regex(@"%2F([^?]+)").Match(fileUrl).Groups[1].Value;
         var authInfo = new FirebaseAuthProvider(new FirebaseConfig(_apiKey));
         var a = await authInfo.SignInWithEmailAndPasswordAsync(_email, _password);
         await new FirebaseStorage("benkyou-18d11.appspot.com", new FirebaseStorageOptions

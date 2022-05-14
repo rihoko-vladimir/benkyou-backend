@@ -141,6 +141,17 @@ public class SetsRepository : ISetsRepository
         return Result.Success(setsToReturn);
     }
 
+    public async Task<Result<List<SetResponse>>> GetAllSetsAsync()
+    {
+        var sets = await _dbContext.Sets
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+            .Include(card => card.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings)
+            .ToListAsync();
+        var setsToReturn =
+            _mapper.Map<List<SetResponse>>(sets);
+        return Result.Success(setsToReturn);
+    }
+
     public async Task<Result<List<SetResponse>>> GetSetsByQueryAsync(Guid userId, string searchQuery, int pageNumber,
         int pageSize)
     {

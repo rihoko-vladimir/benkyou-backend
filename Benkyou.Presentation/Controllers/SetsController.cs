@@ -136,7 +136,8 @@ public class SetsController : ControllerBase
                 errorMessage = "Invalid page or page size provided"
             });
 
-        var pageCountResult = await _unitOfWork.SetsRepository.GetAllSetsByQueryPageCountAsync(userId, page, size, name);
+        var pageCountResult =
+            await _unitOfWork.SetsRepository.GetAllSetsByQueryPageCountAsync(userId, page, size, name);
 
         if (!pageCountResult.IsSuccess)
             return BadRequest(new

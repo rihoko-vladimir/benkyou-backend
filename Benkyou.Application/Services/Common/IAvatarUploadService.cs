@@ -1,8 +1,8 @@
 namespace Benkyou.Application.Services.Common;
 
-public interface IFileUploadService
+public interface IAvatarUploadService
 {
     public Task<string> UploadFileAsync(MemoryStream fileStream);
 
-    public Task DeleteFileAsync(string fileName);
+    public Task DeleteFileAsync(string fileUrl);
 }
