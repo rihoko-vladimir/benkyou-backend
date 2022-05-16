@@ -19,6 +19,8 @@ public interface ISetsRepository
 
     public Task<Result<List<SetResponse>>> GetAllSetsAsync();
 
+    public Task<Result> ReportSetAsync(Guid userId, Guid setId, string reportReason);
+
     public Task<Result<List<SetResponse>>> GetSetsByQueryAsync(Guid userId, string searchQuery, int pageNumber,
         int pageSize);
 

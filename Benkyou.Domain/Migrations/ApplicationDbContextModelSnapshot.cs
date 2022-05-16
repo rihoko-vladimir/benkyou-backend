@@ -85,6 +85,34 @@ namespace Benkyou.Domain.Migrations
                     b.ToTable("OnyomiList");
                 });
 
+            modelBuilder.Entity("Benkyou.Domain.Entities.Report", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(90)
+                        .HasColumnType("nvarchar(90)");
+
+                    b.Property<Guid>("SetId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("set_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("reporter_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SetId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("Benkyou.Domain.Entities.Set", b =>
                 {
                     b.Property<Guid>("Id")
@@ -405,6 +433,25 @@ namespace Benkyou.Domain.Migrations
                     b.Navigation("Kanji");
                 });
 
+            modelBuilder.Entity("Benkyou.Domain.Entities.Report", b =>
+                {
+                    b.HasOne("Benkyou.Domain.Entities.Set", "Set")
+                        .WithMany()
+                        .HasForeignKey("SetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Benkyou.Domain.Entities.User", "User")
+                        .WithMany("Reports")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Set");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Benkyou.Domain.Entities.Set", b =>
                 {
                     b.HasOne("Benkyou.Domain.Entities.User", "User")
@@ -493,6 +540,8 @@ namespace Benkyou.Domain.Migrations
             modelBuilder.Entity("Benkyou.Domain.Entities.User", b =>
                 {
                     b.Navigation("Cards");
+
+                    b.Navigation("Reports");
 
                     b.Navigation("UserStatistic")
                         .IsRequired();

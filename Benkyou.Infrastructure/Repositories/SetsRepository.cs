@@ -152,6 +152,24 @@ public class SetsRepository : ISetsRepository
         return Result.Success(setsToReturn);
     }
 
+    public async Task<Result> ReportSetAsync(Guid userId, Guid setId, string reportReason)
+    {
+        var set = await _dbContext.Sets.Where(set1 => set1.Id == setId).ToListAsync();
+        var isReportingOwnSet = set[0].UserId == userId;
+        if (isReportingOwnSet)
+        {
+            return Result.Error(new Exception("You can not report your own sets"));
+        }
+        var report = new Report
+        {
+            SetId = setId,
+            UserId = userId,
+            Description = reportReason
+        };
+        await _dbContext.Reports.AddAsync(report);
+        return Result.Success();
+    }
+
     public async Task<Result<List<SetResponse>>> GetSetsByQueryAsync(Guid userId, string searchQuery, int pageNumber,
         int pageSize)
     {

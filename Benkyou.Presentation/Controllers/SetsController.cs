@@ -124,6 +124,20 @@ public class SetsController : ControllerBase
         });
     }
 
+    [HttpPost]
+    [Route("report")]
+    public async Task<ActionResult> ReportUserSet([FromBody] ReportRequest reportRequest)
+    {
+        var setIdResult = Guid.TryParse(reportRequest.SetId, out var setIdGuid);
+        var userIdResult = Guid.TryParse(reportRequest.UserId, out var userIdGuid);
+        if (!setIdResult || !userIdResult) return BadRequest();
+        var result = await _unitOfWork.SetsRepository.ReportSetAsync(userIdGuid, setIdGuid, reportRequest.ReportReason);
+        if (!result.IsSuccess) return BadRequest(new {errorMessage = result.Exception!.Message});
+        await _unitOfWork.SetsRepository.SaveChangesAsync();
+        return Ok();
+
+    }
+
     [HttpGet]
     [Route("all_search")]
     public async Task<ActionResult> GetAllSetsByQuery([FromQuery] int page, [FromQuery] int size,

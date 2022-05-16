@@ -21,5 +21,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
 
     public new DbSet<User> Users { get; set; } = null!;
 
+    public DbSet<Report> Reports { get; set; } = null!;
+
     public DbSet<UserStatistic> UserStatistics { get; set; } = null!;
 }

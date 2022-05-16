@@ -30,12 +30,15 @@ namespace Benkyou.Domain.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
-                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    About = table.Column<string>(type: "nvarchar(350)", maxLength: 350, nullable: false),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    About = table.Column<string>(type: "nvarchar(350)", maxLength: 350, nullable: true),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsTermsAccepted = table.Column<bool>(type: "bit", nullable: false),
+                    IsAccountPublic = table.Column<bool>(type: "bit", nullable: false),
+                    EmailConfirmationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -162,7 +165,7 @@ namespace Benkyou.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Cards",
+                name: "Sets",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -172,9 +175,9 @@ namespace Benkyou.Domain.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cards", x => x.Id);
+                    table.PrimaryKey("PK_Sets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Cards_AspNetUsers_author_id",
+                        name: "FK_Sets_AspNetUsers_author_id",
                         column: x => x.author_id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -214,11 +217,37 @@ namespace Benkyou.Domain.Migrations
                 {
                     table.PrimaryKey("PK_KanjiList", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_KanjiList_Cards_CardId",
+                        name: "FK_KanjiList_Sets_CardId",
                         column: x => x.CardId,
-                        principalTable: "Cards",
+                        principalTable: "Sets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reports",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(90)", maxLength: 90, nullable: false),
+                    set_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    reporter_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reports_AspNetUsers_reporter_id",
+                        column: x => x.reporter_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Reports_Sets_set_id",
+                        column: x => x.set_id,
+                        principalTable: "Sets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -299,11 +328,6 @@ namespace Benkyou.Domain.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cards_author_id",
-                table: "Cards",
-                column: "author_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_KanjiList_CardId",
                 table: "KanjiList",
                 column: "CardId");
@@ -317,6 +341,21 @@ namespace Benkyou.Domain.Migrations
                 name: "IX_OnyomiList_KanjiId",
                 table: "OnyomiList",
                 column: "KanjiId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_reporter_id",
+                table: "Reports",
+                column: "reporter_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_set_id",
+                table: "Reports",
+                column: "set_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sets_author_id",
+                table: "Sets",
+                column: "author_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserStatistics_UserId",
@@ -349,6 +388,9 @@ namespace Benkyou.Domain.Migrations
                 name: "OnyomiList");
 
             migrationBuilder.DropTable(
+                name: "Reports");
+
+            migrationBuilder.DropTable(
                 name: "UserStatistics");
 
             migrationBuilder.DropTable(
@@ -358,7 +400,7 @@ namespace Benkyou.Domain.Migrations
                 name: "KanjiList");
 
             migrationBuilder.DropTable(
-                name: "Cards");
+                name: "Sets");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
