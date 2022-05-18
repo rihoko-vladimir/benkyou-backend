@@ -135,7 +135,6 @@ public class SetsController : ControllerBase
         if (!result.IsSuccess) return BadRequest(new {errorMessage = result.Exception!.Message});
         await _unitOfWork.SetsRepository.SaveChangesAsync();
         return Ok();
-
     }
 
     [HttpGet]

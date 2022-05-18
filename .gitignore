@@ -8,3 +8,5 @@
 /Benkyou.Application/bin/
 /.idea/
 /Benkyou-backend/
+/Notification.Api/obj/
+/Notification.Api/bin/

@@ -156,10 +156,7 @@ public class SetsRepository : ISetsRepository
     {
         var set = await _dbContext.Sets.Where(set1 => set1.Id == setId).ToListAsync();
         var isReportingOwnSet = set[0].UserId == userId;
-        if (isReportingOwnSet)
-        {
-            return Result.Error(new Exception("You can not report your own sets"));
-        }
+        if (isReportingOwnSet) return Result.Error(new Exception("You can not report your own sets"));
         var report = new Report
         {
             SetId = setId,
