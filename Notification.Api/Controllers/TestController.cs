@@ -15,11 +15,21 @@ public class TestController : ControllerBase
     }
 
     [HttpPost]
-    [Route("test")]
+    [Route("testCode")]
     public async Task<ActionResult> SendTestEmail()
     {
         var result =
             await _emailSenderService.SendAccountConfirmationCodeAsync("test name", "vovakozlouskiy@gmail.com", 123456);
+        if (result.IsSuccess) return Ok();
+        return BadRequest(result.Exception!.Message);
+    }
+
+    [HttpPost]
+    [Route("testReset")]
+    public async Task<ActionResult> SentCodeResetEmail()
+    {
+        var result =
+            await _emailSenderService.SendForgottenPasswordResetLinkAsync("Vladimir", "vovakozlouskiy@gmail.com", "okokokokok");
         if (result.IsSuccess) return Ok();
         return BadRequest(result.Exception!.Message);
     }

@@ -23,6 +23,9 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
 
     public async Task<string> GetForgottenPasswordMailAsync(string userFirstName, string url)
     {
-        throw new NotImplementedException();
+        var templateFile = $"{Environment.CurrentDirectory}/EmailTemplates/EmailForgottenPasswordTemplate.mustache";
+        var dataObject = new {name = userFirstName, resetLink = url};
+        var result = await GetRenderedEmailAsync(templateFile, dataObject);
+        return result;
     }
 }

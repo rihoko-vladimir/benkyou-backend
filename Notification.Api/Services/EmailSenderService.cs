@@ -61,6 +61,17 @@ public class EmailSenderService : IEmailSenderService
     public async Task<Result> SendForgottenPasswordResetLinkAsync(string userName, string emailAddress,
         string passwordResetToken)
     {
-        return await Task.FromResult(Result.Success());
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
+        message.Subject = "Benkyou! Password reset";
+        var mailString = await _templateGenerator.GetForgottenPasswordMailAsync(userName, $"https://okok.ok/{passwordResetToken}");
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = mailString
+        };
+        message.Body = bodyBuilder.ToMessageBody();
+
+        message.To.Add(MailboxAddress.Parse(emailAddress));
+        return await SendEmailAsync(message);
     }
 }
