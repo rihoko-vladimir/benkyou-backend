@@ -1,10 +1,13 @@
+using Notification.Api.Extensions;
 using Notification.Api.Generators;
+using Notification.Api.HealthChecks;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Logging.ClearProviders();
 var loggerBuilder = new LoggerConfiguration()
@@ -16,7 +19,10 @@ else
 var logger = loggerBuilder.CreateLogger();
 builder.Logging.AddSerilog(logger);
 
-builder.Services.AddHealthChecks();
+var emailConfiguration = configuration.GetEmailConfiguration();
+builder.Services.AddHealthChecks()
+    .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server));
+
 builder.Services.AddSingleton(logger);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
