@@ -32,4 +32,8 @@
         <Content Remove="obj\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Resourses" />
+    </ItemGroup>
+
 </Project>
