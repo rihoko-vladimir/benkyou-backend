@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Notification.Api.Extensions;
 using Notification.Api.Generators;
 using Notification.Api.HealthChecks;
@@ -32,7 +34,11 @@ builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 
 var app = builder.Build();
 
-app.MapHealthChecks("/healthz");
+app.UseHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 if (app.Environment.IsDevelopment())
 {

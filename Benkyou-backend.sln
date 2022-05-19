@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benkyou.Application", "Benk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification.Api", "Notification.Api\Notification.Api.csproj", "{8754A924-1759-4E6B-80E1-D9196550FC64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Health.Api", "Health.Api\Health.Api.csproj", "{99122301-4E85-4505-AE90-DD4862FED435}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{8754A924-1759-4E6B-80E1-D9196550FC64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8754A924-1759-4E6B-80E1-D9196550FC64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8754A924-1759-4E6B-80E1-D9196550FC64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99122301-4E85-4505-AE90-DD4862FED435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99122301-4E85-4505-AE90-DD4862FED435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99122301-4E85-4505-AE90-DD4862FED435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99122301-4E85-4505-AE90-DD4862FED435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
