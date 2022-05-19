@@ -16,7 +16,10 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
     public async Task<string> GetRenderedEmailAsync(string filePath, object data)
     {
         var stubble = new StubbleBuilder().Build();
-        _logger.LogDebug("Rendering template from path {TemplatePath}", filePath);
+        if (_logger.IsEnabled(LogLevel.Debug))
+        {
+            _logger.LogDebug("Rendering template from path {TemplatePath}", filePath);    
+        }
         try
         {
             var streamReader = new StreamReader(filePath, Encoding.UTF8);

@@ -30,7 +30,10 @@ public class EmailSenderService : IEmailSenderService
             await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.Port,
                 SecureSocketOptions.StartTls);
             await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
-            _logger.LogDebug("Sending email message: {Message}", emailMessage.ToString());
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Sending email message: {Message}", emailMessage.ToString());
+            }
             await smtpClient.SendAsync(emailMessage);
             await smtpClient.DisconnectAsync(true);
             _logger.LogInformation("Sent successfully");
