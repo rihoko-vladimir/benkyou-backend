@@ -4,7 +4,7 @@ using Notification.Api.Interfaces.Services;
 namespace Notification.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("test")]
 public class TestController : ControllerBase
 {
     private readonly IEmailSenderService _emailSenderService;
@@ -15,7 +15,7 @@ public class TestController : ControllerBase
     }
 
     [HttpPost]
-    [Route("testCode")]
+    [Route("test_code")]
     public async Task<ActionResult> SendTestEmail()
     {
         var result =
@@ -25,11 +25,12 @@ public class TestController : ControllerBase
     }
 
     [HttpPost]
-    [Route("testReset")]
+    [Route("test_reset")]
     public async Task<ActionResult> SentCodeResetEmail()
     {
         var result =
-            await _emailSenderService.SendForgottenPasswordResetLinkAsync("Vladimir", "vovakozlouskiy@gmail.com", "okokokokok");
+            await _emailSenderService.SendForgottenPasswordResetLinkAsync("Vladimir", "vovakozlouskiy@gmail.com",
+                "okokokokok");
         if (result.IsSuccess) return Ok();
         return BadRequest(result.Exception!.Message);
     }
