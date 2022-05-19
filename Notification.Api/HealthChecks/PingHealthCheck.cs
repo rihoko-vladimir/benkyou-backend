@@ -13,11 +13,23 @@ public class PingHealthCheck : IHealthCheck
         _server = server;
     }
 
-    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new())
     {
         var pingClient = new Ping();
-        var result = await pingClient.SendPingAsync(_server);
-        var isSuccess = result.Status == IPStatus.Success;
-        return await Task.FromResult(isSuccess ? HealthCheckResult.Healthy("Smtp server is available") : HealthCheckResult.Unhealthy("Smtp server is unavailable"));
+        bool isSuccess;
+        var errorMessage = "";
+        try
+        {
+            var result = await pingClient.SendPingAsync(_server);
+            isSuccess = result.Status == IPStatus.Success;
+        }
+        catch (Exception e)
+        {
+            isSuccess = false;
+            errorMessage = e.Source!;
+        }
+        return await Task.FromResult(isSuccess ? 
+            HealthCheckResult.Healthy("Smtp server is available") : 
+            HealthCheckResult.Unhealthy($"Smtp server is unavailable. Occured at : {errorMessage}"));
     }
 }
