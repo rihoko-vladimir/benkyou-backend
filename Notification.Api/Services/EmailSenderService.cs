@@ -63,7 +63,7 @@ public class EmailSenderService : IEmailSenderService
             HtmlBody = mailString
         };
         message.Body = bodyBuilder.ToMessageBody();
-
+        message.XPriority = XMessagePriority.High;
         message.To.Add(MailboxAddress.Parse(emailAddress));
         _logger.LogInformation("Sending confirmation code {ConfirmationCode} to {Destination}", confirmationCode,
             emailAddress);
@@ -83,7 +83,7 @@ public class EmailSenderService : IEmailSenderService
             HtmlBody = mailString
         };
         message.Body = bodyBuilder.ToMessageBody();
-
+        message.XPriority = XMessagePriority.High;
         message.To.Add(MailboxAddress.Parse(emailAddress));
         _logger.LogInformation("Sending reset link with token {Token} to {Destination}", passwordResetToken,
             emailAddress);

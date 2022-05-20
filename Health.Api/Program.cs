@@ -14,5 +14,3 @@ app.UseHttpsRedirection();
 app.UseHealthChecksUI(options => options.UIPath = "/health-ui");
 
 app.Run();
-
-//TODO Set up SSL certificate
