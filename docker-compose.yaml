@@ -1,0 +1,26 @@
+version: '3.8'
+services: 
+  notification-api:
+    build:
+      context: .
+      dockerfile: Notification.Api/Dockerfile
+    ports:
+      - "8080:80"
+      - "8081:443"
+    environment:
+      ASPNETCORE_URLS : "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT : 8081
+    volumes:
+      - "./Certificates:/Certificates"
+  health-api:
+    build:
+      dockerfile: Health.Api/Dockerfile
+    ports:
+      - "9080:80"
+      - "9081:443"
+    environment:
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT: 9081
+    volumes:
+      - "./Certificates:/Certificates"
+      

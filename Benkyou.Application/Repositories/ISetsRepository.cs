@@ -11,9 +11,15 @@ public interface ISetsRepository
     public Task<Result> RemoveSetAsync(Guid cardId, Guid userId);
     public Task<Result<List<SetResponse>>> GetUserSetsAsync(Guid userId);
     public Task<Result<int>> GetAllSetsPageCountAsync(Guid userId, int pageSize);
+
     public Task<Result<int>> GetAllSetsByQueryPageCountAsync(Guid userId, int pageNumber, int pageSize,
         string searchQuery);
+
     public Task<Result<List<SetResponse>>> GetAllSetsByPageAsync(Guid userId, int pageNumber, int pageSize);
+
+    public Task<Result<List<SetResponse>>> GetAllSetsAsync();
+
+    public Task<Result> ReportSetAsync(Guid userId, Guid setId, string reportReason);
 
     public Task<Result<List<SetResponse>>> GetSetsByQueryAsync(Guid userId, string searchQuery, int pageNumber,
         int pageSize);

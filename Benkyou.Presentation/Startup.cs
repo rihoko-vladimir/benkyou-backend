@@ -57,7 +57,7 @@ public class Startup
         services.AddScoped<IEmailSenderService, EmailSenderService>();
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<IUserStatisticsRepository, UserStatisticsRepository>();
-        services.AddScoped<IFileUploadService, FileUploadService>();
+        services.AddScoped<IAvatarUploadService, AvatarUploadService>();
         services.AddScoped<ApplicationUnitOfWork>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {

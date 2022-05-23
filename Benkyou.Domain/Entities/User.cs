@@ -29,6 +29,8 @@ public class User : IdentityUser<Guid>
 
     public ICollection<Set>? Cards { get; set; }
 
+    public ICollection<Report>? Reports { get; set; }
+
     public string? RefreshToken { get; set; }
 
     [Required(ErrorMessage = "Role must be set")]

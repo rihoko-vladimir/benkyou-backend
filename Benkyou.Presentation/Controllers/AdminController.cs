@@ -16,8 +16,8 @@ namespace Benkyou_backend.Controllers;
 [Role(Role.Admin)]
 public class AdminController : ControllerBase
 {
-    private readonly IUserService _userService;
     private readonly ApplicationUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
 
     public AdminController(IUserService userService, ApplicationUnitOfWork unitOfWork)
     {
@@ -31,6 +31,33 @@ public class AdminController : ControllerBase
     {
         var result = await _userService.GetAllUsersAsync();
         if (result.IsSuccess) return Ok(result.Value);
+        return StatusCode(500);
+    }
+
+    [HttpGet]
+    [Route("usersCount")]
+    public async Task<ActionResult> GetUsersCount()
+    {
+        var result = await _userService.GetAllUsersAsync();
+        if (result.IsSuccess) return Ok(new {count = result.Value!.Count});
+        return StatusCode(500);
+    }
+
+    [HttpGet]
+    [Route("sets")]
+    public async Task<ActionResult> GetAllSets()
+    {
+        var result = await _unitOfWork.SetsRepository.GetAllSetsAsync();
+        if (result.IsSuccess) return Ok(result.Value);
+        return StatusCode(500);
+    }
+
+    [HttpGet]
+    [Route("setsCount")]
+    public async Task<ActionResult> GetSetsCount()
+    {
+        var result = await _unitOfWork.SetsRepository.GetAllSetsAsync();
+        if (result.IsSuccess) return Ok(new {count = result.Value!.Count});
         return StatusCode(500);
     }
 
