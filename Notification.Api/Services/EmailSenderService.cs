@@ -1,7 +1,7 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using Notification.Api.Extensions;
+using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
@@ -20,35 +20,6 @@ public class EmailSenderService : IEmailSenderService
         _emailConfiguration = configuration.GetEmailConfiguration();
         _templateGenerator = templateGenerator;
         _logger = logger;
-    }
-
-    public async Task<Result> SendEmailAsync(MimeMessage emailMessage)
-    {
-        var smtpClient = new SmtpClient();
-        try
-        {
-            await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.Port,
-                SecureSocketOptions.StartTls);
-            await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
-            if (_logger.IsEnabled(LogLevel.Debug))
-            {
-                _logger.LogDebug("Sending email message: {Message}", emailMessage.ToString());
-            }
-            await smtpClient.SendAsync(emailMessage);
-            await smtpClient.DisconnectAsync(true);
-            _logger.LogInformation("Sent successfully");
-            return Result.Success();
-        }
-        catch (Exception e)
-        {
-            _logger.LogCritical("An exception {Type} was thrown while trying to send an email message: {EmailMessage}",
-                e.GetType().FullName, emailMessage);
-            return Result.Error(e);
-        }
-        finally
-        {
-            smtpClient.Dispose();
-        }
     }
 
     public async Task<Result> SendAccountConfirmationCodeAsync(string userName, string emailAddress,
@@ -88,5 +59,28 @@ public class EmailSenderService : IEmailSenderService
         _logger.LogInformation("Sending reset link with token {Token} to {Destination}", passwordResetToken,
             emailAddress);
         return await SendEmailAsync(message);
+    }
+
+    private async Task<Result> SendEmailAsync(MimeMessage emailMessage)
+    {
+        try
+        {
+            using var smtpClient = new SmtpClient();
+            await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.Port,
+                SecureSocketOptions.StartTls);
+            await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
+            if (_logger.IsEnabled(LogLevel.Debug))
+                _logger.LogDebug("Sending email message: {Message}", emailMessage.ToString());
+            await smtpClient.SendAsync(emailMessage);
+            await smtpClient.DisconnectAsync(true);
+            _logger.LogInformation("Sent successfully");
+            return Result.Success();
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical("An exception {Type} was thrown while trying to send an email message: {EmailMessage}",
+                e.GetType().FullName, emailMessage);
+            return Result.Error(e);
+        }
     }
 }

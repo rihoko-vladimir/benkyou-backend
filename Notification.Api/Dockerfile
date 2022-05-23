@@ -17,4 +17,5 @@ RUN dotnet publish "Notification.Api.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY ["Notification.Api/Resources", "/app/Resources"]
 ENTRYPOINT ["dotnet", "Notification.Api.dll"]

@@ -1,4 +1,4 @@
-version: '1'
+version: '3.8'
 services: 
   notification-api:
     build:
@@ -10,7 +10,7 @@ services:
       ASPNETCORE_URLS : "https://+;http://+"
       ASPNETCORE_HTTPS_PORT : 8081
     volumes:
-      - "/usr/local/share/ca-certificates/aspnet:/https/"
+      - "./Certificates:/Certificates"
   health-api:
     build:
       dockerfile: Health.Api/Dockerfile
@@ -21,5 +21,5 @@ services:
       ASPNETCORE_URLS: "https://+;http://+"
       ASPNETCORE_HTTPS_PORT: 9081
     volumes:
-      - "/usr/local/share/ca-certificates/aspnet:/https/"
+      - "./Certificates:/Certificates"
       
