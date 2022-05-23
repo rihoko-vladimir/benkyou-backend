@@ -21,7 +21,7 @@ var app = builder.Build();
 
 app.UseRouting();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseHealthChecksUI(options => options.UIPath = "/health-ui");
 

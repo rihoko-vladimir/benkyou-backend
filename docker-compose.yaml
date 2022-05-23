@@ -2,6 +2,7 @@ version: '3.8'
 services: 
   notification-api:
     build:
+      context: .
       dockerfile: Notification.Api/Dockerfile
     ports:
       - "8080:80"

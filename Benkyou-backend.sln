@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notification.Api", "Notific
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Health.Api", "Health.Api\Health.Api.csproj", "{99122301-4E85-4505-AE90-DD4862FED435}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Api", "Auth.Api\Auth.Api.csproj", "{D45015D0-62B7-4300-BCBF-326417D7F76F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{99122301-4E85-4505-AE90-DD4862FED435}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99122301-4E85-4505-AE90-DD4862FED435}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99122301-4E85-4505-AE90-DD4862FED435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

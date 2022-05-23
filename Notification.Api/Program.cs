@@ -7,17 +7,17 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
-var loggerBuilder = new LoggerConfiguration()
-    .WriteTo.Console();
-if (builder.Environment.IsDevelopment()) loggerBuilder.MinimumLevel.Debug();
-else loggerBuilder.MinimumLevel.Information();
-var logger = loggerBuilder.CreateLogger();
+var logger = new LoggerConfiguration()
+    .WriteTo.Console().CreateLogger();
 Log.Logger = logger;
 Log.Information("Application is starting up...");
 try
 {
-    builder.Logging.AddSerilog(logger);
-
+    builder.Host.UseSerilog((ctx, lc) =>
+    {
+        lc.WriteTo.Console()
+            .ReadFrom.Configuration(ctx.Configuration);
+    });
     var emailConfiguration = configuration.GetEmailConfiguration();
     builder.Services.AddHealthChecks()
         .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server));
@@ -29,6 +29,8 @@ try
     builder.Services.AddEmailSender();
 
     var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
 
     app.UseHealthChecks("/hc", new HealthCheckOptions
     {

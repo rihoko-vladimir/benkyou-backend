@@ -5,21 +5,19 @@ using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
+using Serilog;
 
 namespace Notification.Api.Services;
 
 public class EmailSenderService : IEmailSenderService
 {
     private readonly EmailConfiguration _emailConfiguration;
-    private readonly ILogger<EmailSenderService> _logger;
     private readonly IEmailTemplateGenerator _templateGenerator;
 
-    public EmailSenderService(IConfiguration configuration, IEmailTemplateGenerator templateGenerator,
-        ILogger<EmailSenderService> logger)
+    public EmailSenderService(IConfiguration configuration, IEmailTemplateGenerator templateGenerator)
     {
         _emailConfiguration = configuration.GetEmailConfiguration();
         _templateGenerator = templateGenerator;
-        _logger = logger;
     }
 
     public async Task<Result> SendAccountConfirmationCodeAsync(string userName, string emailAddress,
@@ -36,7 +34,7 @@ public class EmailSenderService : IEmailSenderService
         message.Body = bodyBuilder.ToMessageBody();
         message.XPriority = XMessagePriority.High;
         message.To.Add(MailboxAddress.Parse(emailAddress));
-        _logger.LogInformation("Sending confirmation code {ConfirmationCode} to {Destination}", confirmationCode,
+        Log.Information("Sending confirmation code {ConfirmationCode} to {Destination}", confirmationCode,
             emailAddress);
         return await SendEmailAsync(message);
     }
@@ -56,7 +54,7 @@ public class EmailSenderService : IEmailSenderService
         message.Body = bodyBuilder.ToMessageBody();
         message.XPriority = XMessagePriority.High;
         message.To.Add(MailboxAddress.Parse(emailAddress));
-        _logger.LogInformation("Sending reset link with token {Token} to {Destination}", passwordResetToken,
+        Log.Information("Sending reset link with token {Token} to {Destination}", passwordResetToken,
             emailAddress);
         return await SendEmailAsync(message);
     }
@@ -69,16 +67,15 @@ public class EmailSenderService : IEmailSenderService
             await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.Port,
                 SecureSocketOptions.StartTls);
             await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
-            if (_logger.IsEnabled(LogLevel.Debug))
-                _logger.LogDebug("Sending email message: {Message}", emailMessage.ToString());
+            Log.Debug("Sending email message: {Message}", emailMessage.ToString());
             await smtpClient.SendAsync(emailMessage);
             await smtpClient.DisconnectAsync(true);
-            _logger.LogInformation("Sent successfully");
+            Log.Information("Sent successfully");
             return Result.Success();
         }
         catch (Exception e)
         {
-            _logger.LogCritical("An exception {Type} was thrown while trying to send an email message: {EmailMessage}",
+            Log.Error("An exception {Type} was thrown while trying to send an email message: {EmailMessage}",
                 e.GetType().FullName, emailMessage);
             return Result.Error(e);
         }
