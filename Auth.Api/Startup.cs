@@ -1,5 +1,5 @@
 using Auth.Api.Extensions.JWTExtensions;
-using Auth.Api.Models;
+using Auth.Api.Models.DbContext;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +21,7 @@ public class Startup
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.ConfigureJwtBearer(_configuration);
-        });
+        }).AddJwtBearer(options => { options.ConfigureJwtBearer(_configuration); });
         services.AddDbContext<ApplicationContext>(options =>
         {
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "",

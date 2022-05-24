@@ -1,8 +1,9 @@
+using Auth.Api.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Auth.Api.Models;
+namespace Auth.Api.Models.DbContext;
 
-public class ApplicationContext : DbContext
+public class ApplicationContext : Microsoft.EntityFrameworkCore.DbContext
 {
     public ApplicationContext(DbContextOptions options) : base(options)
     {

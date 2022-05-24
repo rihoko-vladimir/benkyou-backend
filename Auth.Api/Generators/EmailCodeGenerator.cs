@@ -1,10 +1,11 @@
-using Auth.Api.Models;
+using Auth.Api.Interfaces.Generators;
+using Auth.Api.Models.Entities;
 
-namespace Auth.Api.TokenProviders;
+namespace Auth.Api.Generators;
 
-public class EmailCodeTokenProvider
+public class EmailCodeGenerator : IEmailCodeGenerator
 {
-    public string Generate()
+    public string GenerateCode()
     {
         const string chars = "0123456789";
         var random = new Random();
@@ -13,7 +14,7 @@ public class EmailCodeTokenProvider
         return randomCode;
     }
 
-    public bool Validate(string token, User user)
+    public bool VerifyCode(string token, User user)
     {
         var userCode = user.EmailConfirmationCode;
         return token.Equals(userCode);

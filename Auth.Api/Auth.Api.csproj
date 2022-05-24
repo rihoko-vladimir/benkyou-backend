@@ -19,8 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Models\Constants" />
-      <Folder Include="Services" />
+      <Folder Include="TokenProviders" />
     </ItemGroup>
 
 </Project>
