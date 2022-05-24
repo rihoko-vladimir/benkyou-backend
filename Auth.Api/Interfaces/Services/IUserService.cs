@@ -16,5 +16,5 @@ public interface IUserService
 
     public Task<Result> ResetPasswordAsync(Guid userId);
 
-    public Task<Result> ConfirmPasswordResetAsync(Guid userId, string token, string newPassword, string newPasswordConfirmation);
+    public Task<Result> ConfirmPasswordResetAsync(Guid userId, string token, string newPassword);
 }

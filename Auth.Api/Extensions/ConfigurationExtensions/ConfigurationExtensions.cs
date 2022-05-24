@@ -11,8 +11,10 @@ public static class ConfigurationExtensions
         var issuer = section.GetValue<string>("Issuer");
         var accessSecret = section.GetValue<string>("AccessSecret");
         var refreshSecret = section.GetValue<string>("RefreshSecret");
+        var resetSecret = section.GetValue<string>("ResetSecret");
         var accessExpiresIn = section.GetValue<int>("AccessTokenExpirationTimeMinutes");
         var refreshExpiresIn = section.GetValue<int>("RefreshTokenExpirationTimeMinutes");
-        return new JwtConfiguration(audience, issuer, accessSecret, refreshSecret, accessExpiresIn, refreshExpiresIn);
+        var resetExpiresIn = section.GetValue<int>("ResetTokenExpirationTimeMinutes");
+        return new JwtConfiguration(audience, issuer, accessSecret, refreshSecret, resetSecret, accessExpiresIn, refreshExpiresIn, resetExpiresIn);
     }
 }
