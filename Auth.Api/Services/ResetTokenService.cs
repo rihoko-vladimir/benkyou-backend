@@ -21,6 +21,7 @@ public class ResetTokenService : IResetTokenService
         _tokenGenerator = tokenGenerator;
         _jwtConfiguration = configuration.GetJwtConfiguration();
     }
+
     public string GetToken(Guid id)
     {
         var claims = new List<Claim>

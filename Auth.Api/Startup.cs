@@ -4,7 +4,9 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Services;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Api;
@@ -37,6 +39,8 @@ public class Startup
             options.UseSqlServer(_configuration.GetConnectionString("SqlServerConnectionString") ?? "",
                 builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
+        services.AddHealthChecks()
+            .AddDbContextCheck<ApplicationContext>("Users database", tags: new List<string> {"Database"});
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -52,6 +56,12 @@ public class Startup
         }
 
         app.UseRouting();
+        
+        app.UseHealthChecks("/hc", new HealthCheckOptions
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
 
         app.UseHttpsRedirection();
 

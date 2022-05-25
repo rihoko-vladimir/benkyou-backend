@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 services: 
   notification-api:
     build:
@@ -21,6 +21,17 @@ services:
     environment:
       ASPNETCORE_URLS: "https://+;http://+"
       ASPNETCORE_HTTPS_PORT: 9081
+    volumes:
+      - "./Certificates:/Certificates"
+  auth-api:
+    build:
+      dockerfile: Auth.Api/Dockerfile
+    ports:
+      - "7080:80"
+      - "7081:443"
+    environment:
+      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_HTTPS_PORT: 7081
     volumes:
       - "./Certificates:/Certificates"
       

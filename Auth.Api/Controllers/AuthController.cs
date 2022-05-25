@@ -1,11 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using Auth.Api.Extensions.ControllerExtensions;
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models.Constants;
 using Auth.Api.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Auth.Api.Controllers;
 
@@ -69,10 +65,11 @@ public class AuthController : ControllerBase
         if (!result.IsSuccess) return BadRequest(result.Message);
         return Ok();
     }
-    
+
     [HttpPost]
     [Route("reset_password_confirm")]
-    public async Task<ActionResult> ResetPasswordConform([FromQuery] string email, string token, [FromBody] ResetPasswordConfirmationRequest confirmationRequest)
+    public async Task<ActionResult> ResetPasswordConform([FromQuery] string email, string token,
+        [FromBody] ResetPasswordConfirmationRequest confirmationRequest)
     {
         var result = await _userService.ConfirmPasswordResetAsync(email, token, confirmationRequest.Password);
         if (!result.IsSuccess) return BadRequest(result.Message);
