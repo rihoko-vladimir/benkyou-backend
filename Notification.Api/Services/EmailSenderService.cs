@@ -21,7 +21,7 @@ public class EmailSenderService : IEmailSenderService
     }
 
     public async Task<Result> SendAccountConfirmationCodeAsync(string userName, string emailAddress,
-        int confirmationCode)
+        string confirmationCode)
     {
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));

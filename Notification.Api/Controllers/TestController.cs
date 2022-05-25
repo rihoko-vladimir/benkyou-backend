@@ -19,7 +19,8 @@ public class TestController : ControllerBase
     public async Task<ActionResult> SendTestEmail()
     {
         var result =
-            await _emailSenderService.SendAccountConfirmationCodeAsync("test name", "vovakozlouskiy@gmail.com", 123456);
+            await _emailSenderService.SendAccountConfirmationCodeAsync("test name", "vovakozlouskiy@gmail.com",
+                "123456");
         if (result.IsSuccess) return Ok();
         return BadRequest(result.Exception!.Message);
     }

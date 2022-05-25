@@ -4,7 +4,7 @@ namespace Auth.Api;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         try
         {
@@ -12,11 +12,12 @@ public class Program
                 .WriteTo.Console().CreateLogger();
             Log.Logger = logger;
             Log.Information("Application is starting up...");
-            CreateHostBuilder(args).Build().Run();
+            await CreateHostBuilder(args).Build().RunAsync();
         }
         catch (Exception e)
         {
-            Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName, e.Message ,e.StackTrace);
+            Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+                e.Message, e.StackTrace);
         }
         finally
         {
@@ -34,6 +35,5 @@ public class Program
                 lc.WriteTo.Console()
                     .ReadFrom.Configuration(ctx.Configuration);
             });
-        ;
     }
 }

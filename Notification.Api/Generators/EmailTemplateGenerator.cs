@@ -7,7 +7,7 @@ namespace Notification.Api.Generators;
 
 public class EmailTemplateGenerator : IEmailTemplateGenerator
 {
-    public async Task<string> GetEmailCodeMailAsync(string userFirstName, int emailCode)
+    public async Task<string> GetEmailCodeMailAsync(string userFirstName, string emailCode)
     {
         var templateFilePath = $"{Environment.CurrentDirectory}/Resources/EmailTemplates/EmailCodeTemplate.mustache";
         var dataObject = new {name = userFirstName, confirmationCode = emailCode};

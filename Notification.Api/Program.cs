@@ -1,5 +1,8 @@
 using HealthChecks.UI.Client;
+using MassTransit;
+using Messages.Contracts;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Notification.Api.Consumers;
 using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Extensions.DIExtensions;
 using Notification.Api.HealthChecks;
@@ -27,6 +30,22 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddEmailSender();
+    builder.Services.AddMassTransit(configurator =>
+    {
+        configurator.AddConsumer<SendEmailCodeConsumer>();
+        configurator.AddConsumer<SendPasswordResetConsumer>();
+        configurator.UsingRabbitMq((context, factoryConfigurator) =>
+        {
+            factoryConfigurator.ReceiveEndpoint(QueueNames.EmailConfirmationQueue,
+                endpointConfigurator => { endpointConfigurator.ConfigureConsumer<SendEmailCodeConsumer>(context); });
+            factoryConfigurator.ReceiveEndpoint(QueueNames.PasswordResetQueue,
+                endpointConfigurator =>
+                {
+                    endpointConfigurator.ConfigureConsumer<SendPasswordResetConsumer>(context);
+                });
+            factoryConfigurator.Host("rabbitmq");
+        });
+    });
 
     var app = builder.Build();
 
@@ -52,7 +71,8 @@ try
 }
 catch (Exception e)
 {
-    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName, e.Message ,e.StackTrace);
+    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+        e.Message, e.StackTrace);
 }
 finally
 {

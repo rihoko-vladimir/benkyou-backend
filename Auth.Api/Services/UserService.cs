@@ -6,7 +6,6 @@ using Auth.Api.Models.Entities;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Bcrypt = BCrypt.Net.BCrypt;
 
 namespace Auth.Api.Services;
@@ -18,16 +17,19 @@ public class UserService : IUserService
     private readonly IEmailCodeGenerator _emailCodeGenerator;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IResetTokenService _resetTokenService;
+    private readonly ISenderService _senderService;
 
     public UserService(ApplicationContext applicationContext, IAccessTokenService accessTokenService,
         IRefreshTokenService refreshTokenService, IResetTokenService resetTokenService,
-        IEmailCodeGenerator emailCodeGenerator)
+        IEmailCodeGenerator emailCodeGenerator,
+        ISenderService senderService)
     {
         _applicationContext = applicationContext;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
         _resetTokenService = resetTokenService;
         _emailCodeGenerator = emailCodeGenerator;
+        _senderService = senderService;
     }
 
     public async Task<Result<TokensResponse>> LoginAsync(string email, string password)
@@ -82,10 +84,9 @@ public class UserService : IUserService
         };
         await _applicationContext.Users.AddAsync(user);
         await _applicationContext.SaveChangesAsync();
-        Log.Information("Email code is {EmailCode}", emailCode);
 
-        //TODO Send email via Notification Api
-
+        var result = await _senderService.SendEmailCodeAsync(emailCode, registrationRequest.Email);
+        if (!result.IsSuccess) return Result.Error<Guid>("Message broker error");
         return Result.Success(user.Id);
     }
 
@@ -155,7 +156,8 @@ public class UserService : IUserService
 
         Console.WriteLine(resetCode);
 
-        //TODO Send reset email via Notification Api
+        var result = await _senderService.SendResetPasswordAsync(resetCode, email);
+        if (!result.IsSuccess) return Result.Error("Message broker error");
 
         return Result.Success();
     }

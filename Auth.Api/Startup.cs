@@ -5,6 +5,7 @@ using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Services;
 using HealthChecks.UI.Client;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
@@ -22,11 +23,28 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddMassTransit(configurator =>
+        {
+            configurator.UsingRabbitMq((_, factoryConfigurator) =>
+            {
+                factoryConfigurator.Host("rabbitmq");
+            });
+        });
+        services.AddOptions<MassTransitHostOptions>()
+            .Configure(options =>
+            {
+                options.WaitUntilStarted = true;
+
+                options.StartTimeout = TimeSpan.FromSeconds(5);
+
+                options.StopTimeout = TimeSpan.FromSeconds(5);
+            });
         services.AddSingleton<IEmailCodeGenerator, EmailCodeGenerator>();
         services.AddSingleton<ITokenGenerator, TokenGenerator>();
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
         services.AddSingleton<IResetTokenService, ResetTokenService>();
+        services.AddTransient<ISenderService, SenderService>();
         services.AddScoped<IUserService, UserService>();
         services.AddAuthentication(options =>
         {
@@ -56,7 +74,7 @@ public class Startup
         }
 
         app.UseRouting();
-        
+
         app.UseHealthChecks("/hc", new HealthCheckOptions
         {
             Predicate = _ => true,
