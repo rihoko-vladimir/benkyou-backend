@@ -2,5 +2,5 @@ namespace Auth.Api.Interfaces.Services;
 
 public interface IAccessTokenService : ITokenService
 {
-    public Guid GetGuidFromAccessTokenAsync(string accessToken);
+    public bool GetGuidFromAccessToken(string accessToken, out Guid userId);
 }

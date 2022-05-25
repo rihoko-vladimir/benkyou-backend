@@ -10,11 +10,11 @@ public interface IUserService
 
     public Task<Result<Guid>> RegisterAsync(RegistrationRequest registrationRequest);
 
-    public Task<Result<TokensResponse>> RefreshTokensAsync(Guid userId, string refreshToken);
+    public Task<Result<TokensResponse>> RefreshTokensAsync(string refreshToken);
 
     public Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string confirmationCode);
 
-    public Task<Result> ResetPasswordAsync(Guid userId);
+    public Task<Result> ResetPasswordAsync(string email);
 
-    public Task<Result> ConfirmPasswordResetAsync(Guid userId, string token, string newPassword);
+    public Task<Result> ConfirmPasswordResetAsync(string email, string token, string newPassword);
 }

@@ -1,5 +1,9 @@
 using Auth.Api.Extensions.JWTExtensions;
+using Auth.Api.Generators;
+using Auth.Api.Interfaces.Generators;
+using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.DbContext;
+using Auth.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +20,12 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IEmailCodeGenerator, EmailCodeGenerator>();
+        services.AddSingleton<ITokenGenerator, TokenGenerator>();
+        services.AddSingleton<IAccessTokenService, AccessTokenService>();
+        services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
+        services.AddSingleton<IResetTokenService, ResetTokenService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,6 +50,8 @@ public class Startup
             app.UseSwaggerUI();
             app.UseDeveloperExceptionPage();
         }
+
+        app.UseRouting();
 
         app.UseHttpsRedirection();
 

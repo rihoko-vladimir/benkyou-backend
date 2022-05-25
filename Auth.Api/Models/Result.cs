@@ -18,7 +18,7 @@ public struct Result<T>
 
     public Result(string message)
     {
-        IsSuccess = true;
+        IsSuccess = false;
         Exception = null;
         Value = default;
         Message = message;

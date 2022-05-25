@@ -6,6 +6,7 @@ using Auth.Api.Models.Entities;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Bcrypt = BCrypt.Net.BCrypt;
 
 namespace Auth.Api.Services;
@@ -30,18 +31,20 @@ public class UserService : IUserService
 
     public async Task<Result<TokensResponse>> LoginAsync(string email, string password)
     {
-        var user = await _applicationContext.Users
+        if (!await IsUserExistsByEmailAsync(email)) return Result.Error<TokensResponse>("User not found");
+        var user = (await _applicationContext.Users
             .Include(user => user.Tokens)
-            .FirstOrDefaultAsync(user => user.Email == email);
-        if (user is null) return Result.Error<TokensResponse>("User not found");
-        
+            .FirstOrDefaultAsync(user => user.Email == email))!;
+
         if (!user.IsEmailConfirmed) return Result.Error<TokensResponse>("Email is not confirmed");
         
         var isSuccess = Bcrypt.Verify(password, user.PasswordHash);
         if (!isSuccess) return Result.Error<TokensResponse>("Password is incorrect");
         
         var access = _accessTokenService.GetToken(user.Id);
+        Console.WriteLine(access);
         var refresh = _refreshTokenService.GetToken(user.Id);
+        Console.WriteLine(refresh);
         if (user.Tokens.Count == 3)
         {
             var oldestSession = user.Tokens.OrderBy(token => token.IssuedDateTime).First();
@@ -76,20 +79,24 @@ public class UserService : IUserService
         };
         await _applicationContext.Users.AddAsync(user);
         await _applicationContext.SaveChangesAsync();
+        Log.Information("Email code is {EmailCode}", emailCode);
         
         //TODO Send email via Notification Api
         
         return Result.Success(user.Id);
     }
 
-    public async Task<Result<TokensResponse>> RefreshTokensAsync(Guid userId, string refreshToken)
+    public async Task<Result<TokensResponse>> RefreshTokensAsync(string refreshToken)
     {
-        if (await IsUserExistsByIdAsync(userId)) return Result.Error<TokensResponse>("User not found");
+        if (!_refreshTokenService.GetGuidFromRefreshToken(refreshToken, out var userId)) return Result.Error<TokensResponse>("Token is invalid");
+        if (!await IsUserExistsByIdAsync(userId)) return Result.Error<TokensResponse>("User not found");
         
         var user = await _applicationContext.Users
             .Include(user1 => user1.Tokens)
             .FirstAsync(user1 => user1.Id == userId);
-        
+
+        Console.WriteLine(user.Tokens.Count);
+
         var token = user.Tokens.FirstOrDefault(token1 => token1.RefreshToken == refreshToken);
         if (token is null) return Result.Error<TokensResponse>("You can not refresh tokens, that are not registered as trusted sessions");
         user.Tokens.Remove(token);
@@ -105,7 +112,7 @@ public class UserService : IUserService
             UserId = userId
         };
         user.Tokens.Add(newToken);
-        await _applicationContext.Users.AddAsync(user);
+        _applicationContext.Users.Update(user);
         await _applicationContext.SaveChangesAsync();
         
         return Result.Success(new TokensResponse(access, refresh));
@@ -113,7 +120,7 @@ public class UserService : IUserService
 
     public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string confirmationCode)
     {
-        if (await IsUserExistsByIdAsync(userId)) return Result.Error<Guid>("User not found");
+        if (!await IsUserExistsByIdAsync(userId)) return Result.Error<Guid>("User not found");
         
         var user = (await _applicationContext.Users
             .Include(user => user.Tokens)
@@ -129,28 +136,32 @@ public class UserService : IUserService
         return Result.Success(user.Id);
     }
 
-    public async Task<Result> ResetPasswordAsync(Guid userId)
+    public async Task<Result> ResetPasswordAsync(string email)
     {
-        if (await IsUserExistsByIdAsync(userId)) return Result.Error("User not found");
+        if (!await IsUserExistsByEmailAsync(email)) return Result.Error("User not found");
         
-        var user = await _applicationContext.Users
+        var user = (await _applicationContext.Users
             .Include(user => user.Tokens)
-            .FirstOrDefaultAsync(user => user.Id == userId);
+            .FirstOrDefaultAsync(user => user.Email == email))!;
         
-        var resetCode = _resetTokenService.GetToken(userId);
+        var resetCode = _resetTokenService.GetToken(user.Id);
+
+        Console.WriteLine(resetCode);
         
         //TODO Send reset email via Notification Api
+        
         return Result.Success();
     }
 
-    public async Task<Result> ConfirmPasswordResetAsync(Guid userId, string token, string newPassword)
+    public async Task<Result> ConfirmPasswordResetAsync(string email, string token, string newPassword)
     {
-        if (await IsUserExistsByIdAsync(userId)) return Result.Error("User not found");
+        if (!await IsUserExistsByEmailAsync(email)) return Result.Error("User not found");
         
-        var isCorrect = _resetTokenService.VerifyToken(userId, token);
+        var user = await _applicationContext.Users.FirstAsync(user1 => user1.Email == email);
+        
+        var isCorrect = _resetTokenService.VerifyToken(user.Id, token);
         if (!isCorrect) return Result.Error("Reset token is incorrect");
         
-        var user = await _applicationContext.Users.FirstAsync(user1 => user1.Id == userId);
         var newPasswordHash = Bcrypt.HashPassword(newPassword);
         user.PasswordHash = newPasswordHash;
         _applicationContext.Users.Update(user);
@@ -163,6 +174,13 @@ public class UserService : IUserService
     {
         var user = await _applicationContext.Users
             .FirstOrDefaultAsync(user => user.Id == userId);
+        return user is not null;
+    }
+    
+    private async Task<bool> IsUserExistsByEmailAsync(string email)
+    {
+        var user = await _applicationContext.Users
+            .FirstOrDefaultAsync(user => user.Email == email);
         return user is not null;
     }
 }

@@ -5,6 +5,4 @@ namespace Auth.Api.Interfaces.Generators;
 public interface IEmailCodeGenerator
 {
     public string GenerateCode();
-
-    public bool VerifyCode(string code, User user);
 }

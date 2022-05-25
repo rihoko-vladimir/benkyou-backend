@@ -4,7 +4,7 @@ namespace Auth.Api.Models.Entities;
 
 public class User
 {
-    [Key] public Guid Id { get; } = new();
+    [Key] public Guid Id { get; set; } = new();
 
     public string Email { get; set; }
 

@@ -35,11 +35,21 @@ public class AccessTokenService : IAccessTokenService
         return token;
     }
 
-    public Guid GetGuidFromAccessTokenAsync(string accessToken)
+    public bool GetGuidFromAccessToken(string accessToken, out Guid userId)
     {
-        var handler = new JwtSecurityTokenHandler();
-        var token = handler.ReadJwtToken(accessToken);
-        var userId = token.Claims.First(claim => claim.Type == ClaimTypes.Id).Value;
-        return Guid.Parse(userId);
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(accessToken);
+            var id = token.Claims.First(claim => claim.Type == ClaimTypes.Id).Value;
+            var guid = Guid.Parse(id);
+            userId = guid;
+            return true;
+        }
+        catch (Exception e)
+        {
+            userId = Guid.Empty;
+            return false;
+        }
     }
 }

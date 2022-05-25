@@ -60,4 +60,22 @@ public class RefreshTokenService : IRefreshTokenService
             return false;
         }
     }
+
+    public bool GetGuidFromRefreshToken(string refreshToken, out Guid userId)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(refreshToken);
+            var id = token.Claims.First(claim => claim.Type == ClaimTypes.Id).Value;
+            var guid = Guid.Parse(id);
+            userId = guid;
+            return true;
+        }
+        catch (Exception e)
+        {
+            userId = Guid.Empty;
+            return false;
+        }
+    }
 }
