@@ -6,6 +6,7 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Application;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using ClaimTypes = Auth.Api.Models.Constants.ClaimTypes;
 
 namespace Auth.Api.Services;
@@ -33,6 +34,7 @@ public class ResetTokenService : IResetTokenService
             _jwtConfiguration.Audience,
             _jwtConfiguration.ResetExpiresIn,
             claims);
+        Log.Information("Generated Password reset token {Token} for User {UserId}", token, id);
         return token;
     }
 
@@ -55,8 +57,10 @@ public class ResetTokenService : IResetTokenService
             var id = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Id)?.Value;
             return id == userId.ToString();
         }
-        catch (Exception e)
+        catch (Exception)
         {
+            Log.Warning("Verification failed: Password reset token is invalid. User: {UserId}, Token: {Token}", userId,
+                resetToken);
             return false;
         }
     }

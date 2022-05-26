@@ -2,6 +2,7 @@ using Auth.Api.Interfaces.Services;
 using Auth.Api.Models;
 using MassTransit;
 using Messages.Contracts;
+using Serilog;
 
 namespace Auth.Api.Services;
 
@@ -19,6 +20,7 @@ public class SenderService : ISenderService
         try
         {
             var endpoint = await _bus.GetSendEndpoint(new Uri(QueueNames.EmailConfirmationQueueWithProtocol));
+            Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
             await endpoint.Send(new SendEmailConfirmationCode
             {
                 EmailCode = emailCode,
@@ -28,6 +30,9 @@ public class SenderService : ISenderService
         }
         catch (Exception e)
         {
+            Log.Error(
+                "An error occured while attempting to send confirmation code. Exception: {Type}, Message: {Message}",
+                e.GetType().FullName, e.Message);
             return Result.Error();
         }
     }
@@ -37,6 +42,7 @@ public class SenderService : ISenderService
         try
         {
             var endpoint = await _bus.GetSendEndpoint(new Uri(QueueNames.PasswordResetQueueWithProtocol));
+            Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
             await endpoint.Send(new SendEmailResetLink
             {
                 ResetToken = resetToken,
@@ -46,6 +52,9 @@ public class SenderService : ISenderService
         }
         catch (Exception e)
         {
+            Log.Error(
+                "An error occured while attempting to send password reset token. Exception: {Type}, Message: {Message}",
+                e.GetType().FullName, e.Message);
             return Result.Error();
         }
     }

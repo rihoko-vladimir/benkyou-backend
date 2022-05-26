@@ -5,6 +5,7 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Application;
 using Auth.Api.Models.Constants;
+using Serilog;
 using ClaimTypes = Auth.Api.Models.Constants.ClaimTypes;
 
 namespace Auth.Api.Services;
@@ -32,6 +33,7 @@ public class AccessTokenService : IAccessTokenService
             _jwtConfiguration.Audience,
             _jwtConfiguration.AccessExpiresIn,
             claims);
+        Log.Information("Generated JWT Access token {Token} for User {UserId}", token, id);
         return token;
     }
 
@@ -48,6 +50,8 @@ public class AccessTokenService : IAccessTokenService
         }
         catch (Exception e)
         {
+            Log.Warning("Invalid Access token provided. Exception: {Type}, Message: {Message}", e.GetType().FullName,
+                e.Message);
             userId = Guid.Empty;
             return false;
         }

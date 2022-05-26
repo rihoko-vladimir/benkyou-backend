@@ -1,8 +1,5 @@
 using HealthChecks.UI.Client;
-using MassTransit;
-using Messages.Contracts;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Notification.Api.Consumers;
 using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Extensions.DIExtensions;
 using Notification.Api.HealthChecks;
@@ -26,26 +23,10 @@ try
         .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server));
 
     builder.Services.AddSingleton(logger);
-    builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddEmailSender();
-    builder.Services.AddMassTransit(configurator =>
-    {
-        configurator.AddConsumer<SendEmailCodeConsumer>();
-        configurator.AddConsumer<SendPasswordResetConsumer>();
-        configurator.UsingRabbitMq((context, factoryConfigurator) =>
-        {
-            factoryConfigurator.ReceiveEndpoint(QueueNames.EmailConfirmationQueue,
-                endpointConfigurator => { endpointConfigurator.ConfigureConsumer<SendEmailCodeConsumer>(context); });
-            factoryConfigurator.ReceiveEndpoint(QueueNames.PasswordResetQueue,
-                endpointConfigurator =>
-                {
-                    endpointConfigurator.ConfigureConsumer<SendPasswordResetConsumer>(context);
-                });
-            factoryConfigurator.Host("rabbitmq");
-        });
-    });
+    builder.Services.AddConfiguredMassTransit();
 
     var app = builder.Build();
 
@@ -64,8 +45,6 @@ try
     }
 
     //app.UseHttpsRedirection();
-
-    app.MapDefaultControllerRoute();
 
     app.Run();
 }

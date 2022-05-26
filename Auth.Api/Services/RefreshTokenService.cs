@@ -6,6 +6,7 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Application;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using ClaimTypes = Auth.Api.Models.Constants.ClaimTypes;
 
 namespace Auth.Api.Services;
@@ -33,6 +34,7 @@ public class RefreshTokenService : IRefreshTokenService
             _jwtConfiguration.Audience,
             _jwtConfiguration.RefreshExpiresIn,
             claims);
+        Log.Information("Generated JWT Refresh token {Token} for User {UserId}", token, id);
         return token;
     }
 
@@ -55,8 +57,10 @@ public class RefreshTokenService : IRefreshTokenService
             var id = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Id)?.Value;
             return id == userId.ToString();
         }
-        catch (Exception e)
+        catch (Exception)
         {
+            Log.Warning("Verification failed: Refresh token is invalid. User: {UserId}, Token: {Token}", userId,
+                refreshToken);
             return false;
         }
     }
@@ -74,6 +78,8 @@ public class RefreshTokenService : IRefreshTokenService
         }
         catch (Exception e)
         {
+            Log.Warning("Invalid Refresh token provided. Exception: {Type}, Message: {Message}", e.GetType().FullName,
+                e.Message);
             userId = Guid.Empty;
             return false;
         }
