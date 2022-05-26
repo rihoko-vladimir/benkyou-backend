@@ -1,4 +1,4 @@
-using Auth.Api.DIExtensions;
+using Auth.Api.Extensions.DIExtensions;
 using Auth.Api.Extensions.JWTExtensions;
 using Auth.Api.Models.DbContext;
 using HealthChecks.UI.Client;

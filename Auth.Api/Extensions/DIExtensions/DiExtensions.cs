@@ -4,7 +4,7 @@ using Auth.Api.Interfaces.Services;
 using Auth.Api.Services;
 using MassTransit;
 
-namespace Auth.Api.DIExtensions;
+namespace Auth.Api.Extensions.DIExtensions;
 
 public static class DiExtensions
 {
