@@ -20,7 +20,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddApplication();
-        services.AddConfiguredMassTransit();
+        services.AddConfiguredMassTransit(_configuration);
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

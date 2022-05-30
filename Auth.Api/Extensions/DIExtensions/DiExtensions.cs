@@ -1,6 +1,9 @@
+using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Generators;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
+using ConfigurationExtensionsApp = Auth.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
+using Auth.Api.Models.Configuration;
 using Auth.Api.Services;
 using MassTransit;
 
@@ -19,18 +22,27 @@ public static class DiExtensions
         services.AddScoped<IUserService, UserService>();
     }
 
-    public static void AddConfiguredMassTransit(this IServiceCollection services)
+    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
+        var massConfig = configuration.GetMassTransitConfiguration();
         services.AddMassTransit(configurator =>
         {
-            configurator.UsingRabbitMq((_, factoryConfigurator) =>
+            switch (massConfig.Type)
             {
-                factoryConfigurator.Host("rabbitmq", "/", hostConfigurator =>
-                {
-                    hostConfigurator.Username("guest");
-                    hostConfigurator.Password("guest");
-                });
-            });
+                case MassTransitType.RabbitMq:
+                    configurator.UsingRabbitMq((_, factoryConfigurator) =>
+                    {
+                        ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
+                    });
+                    break;
+                case MassTransitType.AzureServiceBus:
+                    configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
+                    {
+                        ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
+                    });
+                    break;
+            }
         });
+        
     }
 }

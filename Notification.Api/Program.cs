@@ -26,7 +26,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddEmailSender();
-    builder.Services.AddConfiguredMassTransit();
+    builder.Services.AddConfiguredMassTransit(configuration);
 
     var app = builder.Build();
 

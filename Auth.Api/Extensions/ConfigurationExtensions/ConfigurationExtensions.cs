@@ -1,4 +1,6 @@
 using Auth.Api.Models.Application;
+using Auth.Api.Models.Configuration;
+using MassTransit;
 
 namespace Auth.Api.Extensions.ConfigurationExtensions;
 
@@ -17,5 +19,48 @@ public static class ConfigurationExtensions
         var resetExpiresIn = section.GetValue<int>("ResetTokenExpirationTimeMinutes");
         return new JwtConfiguration(audience, issuer, accessSecret, refreshSecret, resetSecret, accessExpiresIn,
             refreshExpiresIn, resetExpiresIn);
+    }
+
+    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
+    {
+        var configurationSection = configuration.GetSection("MassTransitConfiguration");
+        var stringType = configurationSection.GetValue<string>("BusType");
+        var type = stringType is not (MassTransitType.RabbitMq or MassTransitType.AzureServiceBus)
+            ? "Unknown"
+            : stringType;
+        switch (type)
+        {
+            case MassTransitType.RabbitMq:
+            {
+                var host = configurationSection.GetValue<string>("Host");
+                var virtualHost = configurationSection.GetValue<string>("VirtualHost");
+                var userName = configurationSection.GetValue<string>("UserName");
+                var password = configurationSection.GetValue<string>("Password");
+                return new MassTransitConfiguration(type, host, virtualHost, userName, password);
+            }
+            case MassTransitType.AzureServiceBus:
+                var connectionString = configurationSection.GetValue<string>("AzureConnection");
+                return new MassTransitConfiguration(type, ConnectionString: connectionString);
+        }
+
+        return new MassTransitConfiguration(type);
+    }
+    
+    public static void ConfigureRabbitMq(
+        IRabbitMqBusFactoryConfigurator factoryConfigurator,
+        MassTransitConfiguration massConfig)
+    {
+        factoryConfigurator.Host(massConfig.Host, massConfig.VirtualHost, hostConfigurator =>
+        {
+            hostConfigurator.Username(massConfig.UserName);
+            hostConfigurator.Password(massConfig.Password);
+        });
+    }
+
+    public static void ConfigureAzureServiceBus(
+        IServiceBusBusFactoryConfigurator factoryConfigurator,
+        MassTransitConfiguration massConfig)
+    {
+        factoryConfigurator.Host(massConfig.ConnectionString);
     }
 }

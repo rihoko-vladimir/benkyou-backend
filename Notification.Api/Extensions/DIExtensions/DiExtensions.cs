@@ -1,9 +1,11 @@
 using MassTransit;
-using Messages.Contracts;
 using Notification.Api.Consumers;
+using Notification.Api.Extensions.ConfigurationExtensions;
+using ConfigurationExtensionsApp = Notification.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 using Notification.Api.Generators;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
+using Notification.Api.Models;
 using Notification.Api.Services;
 
 namespace Notification.Api.Extensions.DIExtensions;
@@ -16,30 +18,28 @@ public static class DiExtensions
         services.AddScoped<IEmailSenderService, EmailSenderService>();
     }
 
-    public static void AddConfiguredMassTransit(this IServiceCollection services)
+    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
+        var massConfig = configuration.GetMassTransitConfiguration();
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<SendEmailCodeConsumer>();
             configurator.AddConsumer<SendPasswordResetConsumer>();
-            configurator.UsingRabbitMq((context, factoryConfigurator) =>
+            switch (massConfig.Type)
             {
-                factoryConfigurator.ReceiveEndpoint(QueueNames.EmailConfirmationQueue,
-                    endpointConfigurator =>
+                case MassTransitType.RabbitMq:
+                    configurator.UsingRabbitMq((context, factoryConfigurator) =>
                     {
-                        endpointConfigurator.ConfigureConsumer<SendEmailCodeConsumer>(context);
+                        ConfigurationExtensionsApp.ConfigureRabbitMq(context, factoryConfigurator, massConfig);
                     });
-                factoryConfigurator.ReceiveEndpoint(QueueNames.PasswordResetQueue,
-                    endpointConfigurator =>
+                    break;
+                case MassTransitType.AzureServiceBus:
+                    configurator.UsingAzureServiceBus((context, factoryConfigurator) =>
                     {
-                        endpointConfigurator.ConfigureConsumer<SendPasswordResetConsumer>(context);
+                        ConfigurationExtensionsApp.ConfigureAzureServiceBus(context, factoryConfigurator, massConfig);
                     });
-                factoryConfigurator.Host("rabbitmq", "/", hostConfigurator =>
-                {
-                    hostConfigurator.Username("guest");
-                    hostConfigurator.Password("guest");
-                });
-            });
+                    break;
+            }
         });
     }
 }
