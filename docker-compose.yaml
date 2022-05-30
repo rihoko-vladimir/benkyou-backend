@@ -10,6 +10,9 @@ services:
     environment:
       ASPNETCORE_URLS : "https://+;http://+"
       ASPNETCORE_HTTPS_PORT : 8081
+      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
+      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
+      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
     volumes:
       - "./Certificates:/Certificates"
     links:
@@ -34,6 +37,9 @@ services:
     environment:
       ASPNETCORE_URLS: "https://+;http://+"
       ASPNETCORE_HTTPS_PORT: 7081
+      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
+      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
+      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
     volumes:
       - "./Certificates:/Certificates"
     links:

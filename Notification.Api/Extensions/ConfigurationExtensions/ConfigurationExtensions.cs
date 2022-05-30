@@ -1,3 +1,4 @@
+using Azure.Security.KeyVault.Secrets;
 using MassTransit;
 using Messages.Contracts;
 using Notification.Api.Consumers;
@@ -17,7 +18,7 @@ public static class ConfigurationExtensions
         return new EmailConfiguration(server, serverPort, login, password);
     }
 
-    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
+    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration, SecretClient secretClient)
     {
         var configurationSection = configuration.GetSection("MassTransitConfiguration");
         var stringType = configurationSection.GetValue<string>("BusType");
@@ -35,8 +36,17 @@ public static class ConfigurationExtensions
                 return new MassTransitConfiguration(type, host, virtualHost, userName, password);
             }
             case MassTransitType.AzureServiceBus:
-                var connectionString = configurationSection.GetValue<string>("AzureConnection");
-                return new MassTransitConfiguration(type, ConnectionString: connectionString);
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                {
+                    var connectionString = configurationSection.GetValue<string>("AzureConnection");
+                    return new MassTransitConfiguration(type, ConnectionString: connectionString);
+                }
+                else
+                {
+                    //var connectionStringName = configurationSection.GetValue<string>("AzureConnectionName");
+                    var connectionString = secretClient.GetSecret("AzureConnectionString").Value.Value;
+                    return new MassTransitConfiguration(type, ConnectionString: connectionString);
+                }
         }
 
         return new MassTransitConfiguration(type);

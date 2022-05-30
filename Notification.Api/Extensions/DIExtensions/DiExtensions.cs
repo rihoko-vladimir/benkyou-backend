@@ -1,3 +1,4 @@
+using Azure.Security.KeyVault.Secrets;
 using MassTransit;
 using Notification.Api.Consumers;
 using Notification.Api.Extensions.ConfigurationExtensions;
@@ -18,9 +19,9 @@ public static class DiExtensions
         services.AddScoped<IEmailSenderService, EmailSenderService>();
     }
 
-    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
+    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration, SecretClient secretClient)
     {
-        var massConfig = configuration.GetMassTransitConfiguration();
+        var massConfig = configuration.GetMassTransitConfiguration(secretClient);
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<SendEmailCodeConsumer>();

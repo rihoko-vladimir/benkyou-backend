@@ -1,3 +1,5 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Notification.Api.Extensions.ConfigurationExtensions;
@@ -26,7 +28,9 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddEmailSender();
-    builder.Services.AddConfiguredMassTransit(configuration);
+    var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+    var secretClient = new SecretClient(uri, new DefaultAzureCredential()); 
+    builder.Services.AddConfiguredMassTransit(configuration, secretClient);
 
     var app = builder.Build();
 

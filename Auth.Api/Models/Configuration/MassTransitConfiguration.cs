@@ -6,7 +6,8 @@ public record MassTransitConfiguration(
     string VirtualHost = "",
     string UserName = "",
     string Password = "",
-    string ConnectionString = "");
+    string ConnectionString = "",
+    string ConnectionStringName = "");
 
 public static class MassTransitType
 {

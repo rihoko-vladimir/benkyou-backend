@@ -5,6 +5,7 @@ using Auth.Api.Interfaces.Services;
 using ConfigurationExtensionsApp = Auth.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 using Auth.Api.Models.Configuration;
 using Auth.Api.Services;
+using Azure.Security.KeyVault.Secrets;
 using MassTransit;
 
 namespace Auth.Api.Extensions.DIExtensions;
@@ -22,9 +23,9 @@ public static class DiExtensions
         services.AddScoped<IUserService, UserService>();
     }
 
-    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
+    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration, SecretClient secretClient)
     {
-        var massConfig = configuration.GetMassTransitConfiguration();
+        var massConfig = configuration.GetMassTransitConfiguration(secretClient);
         services.AddMassTransit(configurator =>
         {
             switch (massConfig.Type)
