@@ -4,6 +4,7 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Application;
 using Auth.Api.Models.Configuration;
+using ext = Auth.Api.Extensions.EnvironmentExtensions;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Services;
 using MassTransit;
@@ -36,20 +37,20 @@ public static class DiExtensions
         var massConfig = configuration.GetMassTransitConfiguration();
         services.AddMassTransit(configurator =>
         {
-            switch (massConfig.Type)
+            if (ext.IsDevelopment() || ext.IsLocal())
             {
-                case MassTransitType.RabbitMq:
-                    configurator.UsingRabbitMq((_, factoryConfigurator) =>
-                    {
-                        ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
-                    });
-                    break;
-                case MassTransitType.AzureServiceBus:
-                    configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
-                    {
-                        ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
-                    });
-                    break;
+                configurator.UsingRabbitMq((_, factoryConfigurator) =>
+                {
+                    ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
+                });
+            }
+
+            if (ext.IsProduction())
+            {
+                configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
+                {
+                    ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
+                });
             }
         });
     }

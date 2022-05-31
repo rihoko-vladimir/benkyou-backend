@@ -1,5 +1,6 @@
 using Auth.Api.Extensions.DIExtensions;
 using Auth.Api.Extensions.JWTExtensions;
+using Auth.Api.Models.Application;
 using Auth.Api.Models.DbContext;
 using Azure.Identity;
 using HealthChecks.UI.Client;
