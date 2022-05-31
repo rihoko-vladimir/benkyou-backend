@@ -2,17 +2,18 @@ using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Generators;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
-using ConfigurationExtensionsApp = Auth.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 using Auth.Api.Models.Configuration;
+using Auth.Api.Models.DbContext;
 using Auth.Api.Services;
-using Azure.Security.KeyVault.Secrets;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using ConfigurationExtensionsApp = Auth.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
 namespace Auth.Api.Extensions.DIExtensions;
 
 public static class DiExtensions
 {
-    public static void AddApplication(this IServiceCollection services)
+    public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IEmailCodeGenerator, EmailCodeGenerator>();
         services.AddSingleton<ITokenGenerator, TokenGenerator>();
@@ -21,11 +22,16 @@ public static class DiExtensions
         services.AddSingleton<IResetTokenService, ResetTokenService>();
         services.AddTransient<ISenderService, SenderService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddDbContext<ApplicationContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString("SqlServerConnectionString") ?? "",
+                builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+        });
     }
 
-    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration, SecretClient secretClient)
+    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
-        var massConfig = configuration.GetMassTransitConfiguration(secretClient);
+        var massConfig = configuration.GetMassTransitConfiguration();
         services.AddMassTransit(configurator =>
         {
             switch (massConfig.Type)
@@ -44,6 +50,5 @@ public static class DiExtensions
                     break;
             }
         });
-        
     }
 }

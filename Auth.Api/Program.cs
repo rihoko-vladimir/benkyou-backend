@@ -34,6 +34,13 @@ public class Program
             {
                 lc.WriteTo.Console()
                     .ReadFrom.Configuration(ctx.Configuration);
+            }).ConfigureAppConfiguration((context, builder) =>
+            {
+                builder.AddJsonFile("appsettings.json", true, true);
+                if (context.HostingEnvironment.EnvironmentName != "Production")
+                {
+                    builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");    
+                }
             });
     }
 }

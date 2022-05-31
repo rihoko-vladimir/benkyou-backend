@@ -2,12 +2,12 @@ using Azure.Security.KeyVault.Secrets;
 using MassTransit;
 using Notification.Api.Consumers;
 using Notification.Api.Extensions.ConfigurationExtensions;
-using ConfigurationExtensionsApp = Notification.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 using Notification.Api.Generators;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
 using Notification.Api.Services;
+using ConfigurationExtensionsApp = Notification.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
 namespace Notification.Api.Extensions.DIExtensions;
 
@@ -19,7 +19,8 @@ public static class DiExtensions
         services.AddScoped<IEmailSenderService, EmailSenderService>();
     }
 
-    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration, SecretClient secretClient)
+    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration,
+        SecretClient secretClient)
     {
         var massConfig = configuration.GetMassTransitConfiguration(secretClient);
         services.AddMassTransit(configurator =>
@@ -37,7 +38,8 @@ public static class DiExtensions
                 case MassTransitType.AzureServiceBus:
                     configurator.UsingAzureServiceBus((context, factoryConfigurator) =>
                     {
-                        ConfigurationExtensionsApp.ConfigureAzureServiceBus(context, factoryConfigurator, massConfig);
+                        ConfigurationExtensionsApp.ConfigureAzureServiceBus(context, factoryConfigurator,
+                            massConfig);
                     });
                     break;
             }

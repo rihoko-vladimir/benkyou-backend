@@ -18,7 +18,8 @@ public static class ConfigurationExtensions
         return new EmailConfiguration(server, serverPort, login, password);
     }
 
-    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration, SecretClient secretClient)
+    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration,
+        SecretClient secretClient)
     {
         var configurationSection = configuration.GetSection("MassTransitConfiguration");
         var stringType = configurationSection.GetValue<string>("BusType");
@@ -44,7 +45,7 @@ public static class ConfigurationExtensions
                 else
                 {
                     //var connectionStringName = configurationSection.GetValue<string>("AzureConnectionName");
-                    var connectionString = secretClient.GetSecret("AzureConnectionString").Value.Value;
+                    var connectionString = secretClient.GetSecret("AzureServiceBusConnectionString").Value.Value;
                     return new MassTransitConfiguration(type, ConnectionString: connectionString);
                 }
         }
@@ -76,14 +77,8 @@ public static class ConfigurationExtensions
         IBusRegistrationContext context)
     {
         factoryConfigurator.ReceiveEndpoint(QueueNames.EmailConfirmationQueue,
-            endpointConfigurator =>
-            {
-                endpointConfigurator.ConfigureConsumer<SendEmailCodeConsumer>(context);
-            });
+            endpointConfigurator => { endpointConfigurator.ConfigureConsumer<SendEmailCodeConsumer>(context); });
         factoryConfigurator.ReceiveEndpoint(QueueNames.PasswordResetQueue,
-            endpointConfigurator =>
-            {
-                endpointConfigurator.ConfigureConsumer<SendPasswordResetConsumer>(context);
-            });
+            endpointConfigurator => { endpointConfigurator.ConfigureConsumer<SendPasswordResetConsumer>(context); });
     }
 }
