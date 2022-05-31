@@ -1,5 +1,4 @@
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -17,12 +16,12 @@ Log.Information("Application is starting up...");
 try
 {
     var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
-    var secretClient = new SecretClient(uri, new DefaultAzureCredential());
     builder.Host.UseSerilog((ctx, lc) =>
     {
         lc.WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
     });
+    builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
     var emailConfiguration = configuration.GetEmailConfiguration();
     builder.Services.AddHealthChecks()
         .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server), tags: new List<string> {"Email"})
@@ -33,7 +32,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddEmailSender();
-    builder.Services.AddConfiguredMassTransit(configuration, secretClient);
+    builder.Services.AddConfiguredMassTransit(configuration);
 
     var app = builder.Build();
 

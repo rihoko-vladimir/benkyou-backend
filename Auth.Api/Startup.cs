@@ -1,6 +1,5 @@
 using Auth.Api.Extensions.DIExtensions;
 using Auth.Api.Extensions.JWTExtensions;
-using Auth.Api.Models.Application;
 using Auth.Api.Models.DbContext;
 using Azure.Identity;
 using HealthChecks.UI.Client;
@@ -16,14 +15,18 @@ public class Startup
 
     public Startup(IConfiguration configuration)
     {
-        _configuration = configuration;
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddConfiguration(configuration);
+        configurationBuilder.AddAzureKeyVault(uri, new DefaultAzureCredential());
+        _configuration = configurationBuilder.Build();
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
+        var uri = new Uri(_configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         services.AddApplication(_configuration);
         services.AddConfiguredMassTransit(_configuration);
-        var uri = new Uri(_configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

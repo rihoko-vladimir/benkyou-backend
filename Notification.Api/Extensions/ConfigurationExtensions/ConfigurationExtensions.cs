@@ -1,8 +1,8 @@
-using Azure.Security.KeyVault.Secrets;
 using MassTransit;
 using Messages.Contracts;
 using Notification.Api.Consumers;
 using Notification.Api.Models;
+using ext = Notification.Api.Extensions.EnvironmentExtensions;
 
 namespace Notification.Api.Extensions.ConfigurationExtensions;
 
@@ -11,53 +11,32 @@ public static class ConfigurationExtensions
     public static EmailConfiguration GetEmailConfiguration(this IConfiguration configuration)
     {
         var configurationSection = configuration.GetSection("SmtpConfiguration");
-        var server = configurationSection.GetValue<string>("Server");
-        var serverPort = configurationSection.GetValue<int>("ServerPort");
-        var login = configurationSection.GetValue<string>("Login");
-        var password = configurationSection.GetValue<string>("Password");
-        return new EmailConfiguration(server, serverPort, login, password);
+        var emailConfig = new EmailConfiguration();
+        configurationSection.Bind(emailConfig);
+        return emailConfig;
     }
 
-    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration,
-        SecretClient secretClient)
+    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
     {
-        var configurationSection = configuration.GetSection("MassTransitConfiguration");
-        var stringType = configurationSection.GetValue<string>("BusType");
-        var type = stringType is not (MassTransitType.RabbitMq or MassTransitType.AzureServiceBus)
-            ? "Unknown"
-            : stringType;
-        switch (type)
+        var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
+        if (ext.IsDevelopment() || ext.IsLocal())
         {
-            case MassTransitType.RabbitMq:
-            {
-                var host = configurationSection.GetValue<string>("host");
-                var virtualHost = configurationSection.GetValue<string>("VirtualHost");
-                var userName = configurationSection.GetValue<string>("UserName");
-                var password = configurationSection.GetValue<string>("Password");
-                return new MassTransitConfiguration(type, host, virtualHost, userName, password);
-            }
-            case MassTransitType.AzureServiceBus:
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-                {
-                    var connectionString = configurationSection.GetValue<string>("AzureConnection");
-                    return new MassTransitConfiguration(type, ConnectionString: connectionString);
-                }
-                else
-                {
-                    //var connectionStringName = configurationSection.GetValue<string>("AzureConnectionName");
-                    var connectionString = secretClient.GetSecret("AzureServiceBusConnectionString").Value.Value;
-                    return new MassTransitConfiguration(type, ConnectionString: connectionString);
-                }
+            var massConfig = new MassTransitConfiguration();
+            configurationSection.Bind(massConfig);
+            return massConfig;
         }
 
-        return new MassTransitConfiguration(type);
+        if (!ext.IsProduction()) throw new ConfigurationException("Configuration is incorrect");
+        return new MassTransitConfiguration
+        {
+            AzureServiceBusConnectionString = configurationSection.GetValue<string>("AzureServiceBusConnectionString")
+        };
     }
 
-    public static void ConfigureRabbitMq(IBusRegistrationContext context,
+    public static void ConfigureRabbitMq(
         IRabbitMqBusFactoryConfigurator factoryConfigurator,
         MassTransitConfiguration massConfig)
     {
-        factoryConfigurator.ConfigureEndpoints(context);
         factoryConfigurator.Host(massConfig.Host, massConfig.VirtualHost, hostConfigurator =>
         {
             hostConfigurator.Username(massConfig.UserName);
@@ -65,12 +44,11 @@ public static class ConfigurationExtensions
         });
     }
 
-    public static void ConfigureAzureServiceBus(IBusRegistrationContext context,
+    public static void ConfigureAzureServiceBus(
         IServiceBusBusFactoryConfigurator factoryConfigurator,
         MassTransitConfiguration massConfig)
     {
-        factoryConfigurator.ConfigureEndpoints(context);
-        factoryConfigurator.Host(massConfig.ConnectionString);
+        factoryConfigurator.Host(massConfig.AzureServiceBusConnectionString);
     }
 
     private static void ConfigureEndpoints(this IBusFactoryConfigurator factoryConfigurator,

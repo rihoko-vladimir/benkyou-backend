@@ -1,15 +1,11 @@
 namespace Notification.Api.Models;
 
-public record MassTransitConfiguration(
-    string Type,
-    string Host = "",
-    string VirtualHost = "",
-    string UserName = "",
-    string Password = "",
-    string ConnectionString = "");
-
-public static class MassTransitType
+public record MassTransitConfiguration
 {
-    public const string RabbitMq = "RabbitMQ";
-    public const string AzureServiceBus = "AzureServiceBus";
+    public const string Key = "MassTransitConfiguration";
+    public string Host { get; set; }
+    public string VirtualHost { get; set; }
+    public string UserName { get; set; }
+    public string Password { get; set; }
+    public string AzureServiceBusConnectionString { get; set; }
 }

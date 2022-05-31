@@ -64,7 +64,7 @@ public class EmailSenderService : IEmailSenderService
         try
         {
             using var smtpClient = new SmtpClient();
-            await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.Port,
+            await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.ServerPort,
                 SecureSocketOptions.StartTls);
             await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
             Log.Debug("Sending email message: {Message}", emailMessage.ToString());

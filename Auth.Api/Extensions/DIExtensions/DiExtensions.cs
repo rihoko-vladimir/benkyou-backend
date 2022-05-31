@@ -2,13 +2,11 @@ using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Generators;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models.Application;
-using Auth.Api.Models.Configuration;
-using ext = Auth.Api.Extensions.EnvironmentExtensions;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Services;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using ext = Auth.Api.Extensions.EnvironmentExtensions;
 using ConfigurationExtensionsApp = Auth.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
 namespace Auth.Api.Extensions.DIExtensions;
@@ -38,20 +36,16 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             if (ext.IsDevelopment() || ext.IsLocal())
-            {
                 configurator.UsingRabbitMq((_, factoryConfigurator) =>
                 {
                     ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
                 });
-            }
 
             if (ext.IsProduction())
-            {
                 configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
                 {
                     ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
                 });
-            }
         });
     }
 }

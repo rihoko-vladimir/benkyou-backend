@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Application;

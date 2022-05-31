@@ -1,7 +1,5 @@
 using Auth.Api.Models.Application;
 using Auth.Api.Models.Configuration;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using MassTransit;
 using ext = Auth.Api.Extensions.EnvironmentExtensions;
 
@@ -19,23 +17,19 @@ public static class ConfigurationExtensions
 
     public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
     {
+        var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
         if (ext.IsDevelopment() || ext.IsLocal())
         {
-            var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
             var massConfig = new MassTransitConfiguration();
             configurationSection.Bind(massConfig);
             return massConfig;
         }
 
         if (!ext.IsProduction()) throw new ConfigurationException("Configuration is incorrect");
-        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
-        var secretClient = new SecretClient(uri, new DefaultAzureCredential());
-        var connectionString = secretClient.GetSecret("AzureServiceBusConnectionString").Value.Value;
         return new MassTransitConfiguration
         {
-            ConnectionString = connectionString
+            AzureServiceBusConnectionString = configurationSection.GetValue<string>("AzureServiceBusConnectionString")
         };
-
     }
 
     public static void ConfigureRabbitMq(
@@ -53,6 +47,6 @@ public static class ConfigurationExtensions
         IServiceBusBusFactoryConfigurator factoryConfigurator,
         MassTransitConfiguration massConfig)
     {
-        factoryConfigurator.Host(massConfig.ConnectionString);
+        factoryConfigurator.Host(massConfig.AzureServiceBusConnectionString);
     }
 }

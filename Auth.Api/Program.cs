@@ -38,9 +38,7 @@ public class Program
             {
                 builder.AddJsonFile("appsettings.json", true, true);
                 if (context.HostingEnvironment.EnvironmentName != "Production")
-                {
-                    builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");    
-                }
+                    builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
             });
     }
 }

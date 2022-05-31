@@ -1,5 +1,3 @@
-using MassTransit.Futures.Contracts;
-
 namespace Auth.Api.Models.Application;
 
 public class JwtConfiguration
@@ -13,5 +11,4 @@ public class JwtConfiguration
     public int AccessExpiresIn { get; set; }
     public int RefreshExpiresIn { get; set; }
     public int ResetExpiresIn { get; set; }
-    
 }
