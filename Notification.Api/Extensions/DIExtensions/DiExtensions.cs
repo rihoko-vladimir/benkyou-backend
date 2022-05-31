@@ -26,13 +26,13 @@ public static class DiExtensions
             configurator.AddConsumer<SendEmailCodeConsumer>();
             configurator.AddConsumer<SendPasswordResetConsumer>();
             if (ext.IsDevelopment() || ext.IsLocal())
-                configurator.UsingRabbitMq((context, factoryConfigurator) =>
+                configurator.UsingRabbitMq((_, factoryConfigurator) =>
                 {
                     ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
                 });
 
             if (ext.IsProduction())
-                configurator.UsingAzureServiceBus((context, factoryConfigurator) =>
+                configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
                 {
                     ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
                 });
