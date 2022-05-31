@@ -15,10 +15,10 @@ public class AccessTokenService : IAccessTokenService
     private readonly JwtConfiguration _jwtConfiguration;
     private readonly ITokenGenerator _tokenGenerator;
 
-    public AccessTokenService(ITokenGenerator tokenGenerator, IConfiguration configuration)
+    public AccessTokenService(ITokenGenerator tokenGenerator, JwtConfiguration configuration)
     {
         _tokenGenerator = tokenGenerator;
-        _jwtConfiguration = configuration.GetJwtConfiguration();
+        _jwtConfiguration = configuration;
     }
 
     public string GetToken(Guid id)

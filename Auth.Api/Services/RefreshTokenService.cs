@@ -17,10 +17,10 @@ public class RefreshTokenService : IRefreshTokenService
 
     private readonly ITokenGenerator _tokenGenerator;
 
-    public RefreshTokenService(ITokenGenerator tokenGenerator, IConfiguration configuration)
+    public RefreshTokenService(ITokenGenerator tokenGenerator, JwtConfiguration configuration)
     {
         _tokenGenerator = tokenGenerator;
-        _jwtConfiguration = configuration.GetJwtConfiguration();
+        _jwtConfiguration = configuration;
     }
 
     public string GetToken(Guid id)

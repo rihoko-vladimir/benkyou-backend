@@ -2,6 +2,7 @@ using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Generators;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
+using Auth.Api.Models.Application;
 using Auth.Api.Models.Configuration;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Services;
@@ -20,6 +21,7 @@ public static class DiExtensions
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddSingleton<IRefreshTokenService, RefreshTokenService>();
         services.AddSingleton<IResetTokenService, ResetTokenService>();
+        services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddTransient<ISenderService, SenderService>();
         services.AddScoped<IUserService, UserService>();
         services.AddDbContext<ApplicationContext>(options =>
