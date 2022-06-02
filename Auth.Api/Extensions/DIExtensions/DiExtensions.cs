@@ -1,3 +1,4 @@
+using Auth.Api.Configurations;
 using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Extensions.JWTExtensions;
 using Auth.Api.Generators;
@@ -8,8 +9,11 @@ using Auth.Api.Services;
 using Azure.Identity;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using ext = Auth.Api.Extensions.EnvironmentExtensions;
 using ConfigurationExtensionsApp = Auth.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
@@ -26,7 +30,6 @@ public static class DiExtensions
         services.AddSingleton<IResetTokenService, ResetTokenService>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddTransient<ISenderService, SenderService>();
-        services.AddApiVersioning();
         services.AddScoped<IUserService, UserService>();
 
         services.AddDbContext<ApplicationContext>(options =>
@@ -46,6 +49,20 @@ public static class DiExtensions
             .AddDbContextCheck<ApplicationContext>("Users database", tags: new List<string> {"Database"})
             .AddAzureKeyVault(uri, new DefaultAzureCredential(), _ => { }, "Azure Key vault",
                 HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
+        services.AddEndpointsApiExplorer();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
+        services.AddApiVersioning(setup =>
+        {
+            setup.DefaultApiVersion = new ApiVersion(1, 0);
+            setup.AssumeDefaultVersionWhenUnspecified = true;
+            setup.ReportApiVersions = true;
+        });
+
+        services.AddVersionedApiExplorer(setup =>
+        {
+            setup.GroupNameFormat = "'v'VVV";
+            setup.SubstituteApiVersionInUrl = true;
+        });
     }
 
     public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
@@ -55,9 +72,10 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             if (ext.IsDevelopment() || ext.IsLocal())
-                configurator.UsingRabbitMq((_, factoryConfigurator) =>
+                configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {
                     ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
+                    factoryConfigurator.ConfigureEndpoints(context);
                 });
 
             if (ext.IsProduction())

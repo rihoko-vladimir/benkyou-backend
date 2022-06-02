@@ -1,5 +1,6 @@
 version: '3.4'
-services: 
+
+services:
   notification-api:
     build:
       context: .
@@ -8,7 +9,7 @@ services:
       - "8080:80"
       - "8081:443"
     environment:
-      ASPNETCORE_URLS : "https://+;http://+"
+      ASPNETCORE_URLS : "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT : 8081
       ASPNETCORE_ENVIRONMENT : Development
       AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
@@ -16,40 +17,46 @@ services:
       AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
     volumes:
       - "./Certificates:/Certificates"
-    links:
+    depends_on:
       - rabbitmq
+
+
   health-api:
     build:
+      context: .
       dockerfile: Health.Api/Dockerfile
     ports:
       - "9080:80"
       - "9081:443"
     environment:
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 9081
       ASPNETCORE_ENVIRONMENT : Development
     volumes:
       - "./Certificates:/Certificates"
+
+
   auth-api:
     build:
+      context: .
       dockerfile: Auth.Api/Dockerfile
     ports:
       - "7080:80"
       - "7081:443"
     environment:
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 7081
       ASPNETCORE_ENVIRONMENT : Development
     volumes:
       - "./Certificates:/Certificates"
-    links:
+    depends_on:
       - rabbitmq
+  
+  
   rabbitmq:
-    image: 
-      "masstransit/rabbitmq"
+    image: rabbitmq:3-management-alpine
+    container_name: RabbitMQ
     ports:
-      - "15672:15672"
       - "5672:5672"
-    environment:
-      RABBITMQ_URI: "rabbitmq://rabbitmq/"
-      
+      - "15672:15672"
+    restart: always

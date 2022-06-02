@@ -1,6 +1,7 @@
 using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Notification.Api.Extensions;
 using Notification.Api.Extensions.DIExtensions;
 using Serilog;
 
@@ -18,7 +19,10 @@ try
         lc.WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
     });
-    builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
+    if (EnvironmentExtensions.IsProduction())
+    {
+        builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());    
+    }
     builder.Services.AddApplication(configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -33,7 +37,7 @@ try
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     });
 
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
     {
         app.UseSwagger();
         app.UseSwaggerUI();

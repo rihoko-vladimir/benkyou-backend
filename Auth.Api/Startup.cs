@@ -2,7 +2,9 @@ using Auth.Api.Extensions.DIExtensions;
 using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using ext = Auth.Api.Extensions.EnvironmentExtensions;
 
 namespace Auth.Api;
@@ -26,16 +28,23 @@ public class Startup
     {
         services.AddApplication(_configuration);
         services.AddControllers();
-        services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
     {
-        if (env.IsDevelopment())
+        if (!ext.IsProduction())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(options =>
+            {
+                foreach (var desc in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint($"../swagger/{desc.GroupName}/swagger.json", desc.ApiVersion.ToString());
+                    options.DefaultModelsExpandDepth(-1);
+                    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+                }
+            });
             app.UseDeveloperExceptionPage();
         }
 
@@ -47,7 +56,7 @@ public class Startup
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
