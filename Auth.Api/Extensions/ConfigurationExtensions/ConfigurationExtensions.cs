@@ -16,40 +16,39 @@ public static class ConfigurationExtensions
         return jwtConfiguration;
     }
 
-    public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
+    public static RabbitMQConfiguration GetRabbitMqConfiguration(this IConfiguration configuration)
     {
-        var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
+        var section = configuration.GetSection(RabbitMQConfiguration.Key);
+        var rabbitConfiguration = new RabbitMQConfiguration();
+        section.Bind(rabbitConfiguration);
 
-        if (ext.IsDevelopment() || ext.IsLocal())
-        {
-            var massConfig = new MassTransitConfiguration();
-            configurationSection.Bind(massConfig);
+        return rabbitConfiguration;
+    }
+    
+    public static AzureServiceBusConfiguration GetServiceBusConfiguration(this IConfiguration configuration)
+    {
+        var section = configuration.GetSection(AzureServiceBusConfiguration.Key);
+        var serviceBusConfiguration = new AzureServiceBusConfiguration();
+        section.Bind(serviceBusConfiguration);
 
-            return massConfig;
-        }
-
-        if (!ext.IsProduction()) throw new ConfigurationException("Configuration is incorrect");
-        return new MassTransitConfiguration
-        {
-            AzureServiceBusConnectionString = configurationSection.GetValue<string>("AzureServiceBusConnectionString")
-        };
+        return serviceBusConfiguration;
     }
 
     public static void ConfigureRabbitMq(
         IRabbitMqBusFactoryConfigurator factoryConfigurator,
-        MassTransitConfiguration massConfig)
+        RabbitMQConfiguration rabbitConfig)
     {
-        factoryConfigurator.Host(massConfig.Host, massConfig.VirtualHost, hostConfigurator =>
+        factoryConfigurator.Host(rabbitConfig.Host, rabbitConfig.VirtualHost, hostConfigurator =>
         {
-            hostConfigurator.Username(massConfig.UserName);
-            hostConfigurator.Password(massConfig.Password);
+            hostConfigurator.Username(rabbitConfig.UserName);
+            hostConfigurator.Password(rabbitConfig.Password);
         });
     }
 
     public static void ConfigureAzureServiceBus(
         IServiceBusBusFactoryConfigurator factoryConfigurator,
-        MassTransitConfiguration massConfig)
+        AzureServiceBusConfiguration busConfig)
     {
-        factoryConfigurator.Host(massConfig.AzureServiceBusConnectionString);
+        factoryConfigurator.Host(busConfig.AzureServiceBusConnectionString);
     }
 }

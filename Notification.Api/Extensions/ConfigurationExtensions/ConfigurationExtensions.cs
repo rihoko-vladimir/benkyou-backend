@@ -2,6 +2,7 @@ using MassTransit;
 using Notification.Api.Consumers;
 using Notification.Api.Models;
 using Shared.Models;
+using Shared.Models.QueueNames;
 using ext = Notification.Api.Extensions.EnvironmentExtensions;
 
 namespace Notification.Api.Extensions.ConfigurationExtensions;

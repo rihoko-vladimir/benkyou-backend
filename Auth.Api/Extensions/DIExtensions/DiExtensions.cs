@@ -70,21 +70,20 @@ public static class DiExtensions
 
     public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
-        var massConfig = configuration.GetMassTransitConfiguration();
-
         services.AddMassTransit(configurator =>
         {
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {
-                    ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
-                    factoryConfigurator.ConfigureEndpoints(context);
+                    var rabbitConfig = configuration.GetRabbitMqConfiguration();
+                    ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, rabbitConfig);
                 });
 
             if (ext.IsProduction())
                 configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
                 {
-                    ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
+                    var busConfig = configuration.GetServiceBusConfiguration();
+                    ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, busConfig);
                 });
         });
     }

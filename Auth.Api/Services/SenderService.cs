@@ -3,6 +3,8 @@ using Auth.Api.Models;
 using MassTransit;
 using Serilog;
 using Shared.Models;
+using Shared.Models.Messages;
+using Shared.Models.QueueNames;
 
 namespace Auth.Api.Services;
 
