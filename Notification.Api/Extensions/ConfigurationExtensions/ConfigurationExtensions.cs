@@ -10,7 +10,7 @@ public static class ConfigurationExtensions
 {
     public static EmailConfiguration GetEmailConfiguration(this IConfiguration configuration)
     {
-        var configurationSection = configuration.GetSection("SmtpConfiguration");
+        var configurationSection = configuration.GetSection(EmailConfiguration.Key);
         var emailConfig = new EmailConfiguration();
 
         configurationSection.Bind(emailConfig);

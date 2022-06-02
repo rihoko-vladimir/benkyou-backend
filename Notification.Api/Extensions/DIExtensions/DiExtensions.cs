@@ -21,7 +21,7 @@ public static class DiExtensions
         var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
 
         services.AddHealthChecks()
-            .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server), tags: new List<string> {"Email"})
+            .AddCheck("SmtpCheck", new PingHealthCheck("sendgrid.net"), tags: new List<string> {"Email"})
             .AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
                 HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
 

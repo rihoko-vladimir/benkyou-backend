@@ -4,6 +4,8 @@ using MimeKit;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Serilog;
 
 namespace Notification.Api.Services;
@@ -22,18 +24,17 @@ public class EmailSenderService : IEmailSenderService
     public async Task<Result> SendAccountConfirmationCodeAsync(string userName, string emailAddress,
         string confirmationCode)
     {
-        var message = new MimeMessage();
-
-        message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
-        message.Subject = "Benkyou! Confirmation code";
+        var from = new EmailAddress(_emailConfiguration.Source, _emailConfiguration.SourceName);
+        var subject = "Benkyou! Confirmation code";
+        var to = new EmailAddress(emailAddress, userName);
         var mailString = await _templateGenerator.GetEmailCodeMailAsync(userName, confirmationCode);
-        var bodyBuilder = new BodyBuilder
+        var message = new SendGridMessage
         {
-            HtmlBody = mailString
+            From = from,
+            Subject = subject,
+            HtmlContent = mailString
         };
-        message.Body = bodyBuilder.ToMessageBody();
-        message.XPriority = XMessagePriority.High;
-        message.To.Add(MailboxAddress.Parse(emailAddress));
+        message.AddTo(to);
 
         Log.Information("Sending confirmation code {ConfirmationCode} to {Destination}", confirmationCode,
             emailAddress);
@@ -44,19 +45,18 @@ public class EmailSenderService : IEmailSenderService
     public async Task<Result> SendForgottenPasswordResetLinkAsync(string userName, string emailAddress,
         string passwordResetToken)
     {
-        var message = new MimeMessage();
-
-        message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
-        message.Subject = "Benkyou! Password reset";
+        var from = new EmailAddress(_emailConfiguration.Source, _emailConfiguration.SourceName);
+        var subject = "Benkyou! Password reset";
+        var to = new EmailAddress(emailAddress, userName);
         var mailString =
-            await _templateGenerator.GetForgottenPasswordMailAsync(userName, $"https://okok.ok/{passwordResetToken}");
-        var bodyBuilder = new BodyBuilder
+            await _templateGenerator.GetForgottenPasswordMailAsync(userName, $"https://benkyou.me/{passwordResetToken}");
+        var message = new SendGridMessage
         {
-            HtmlBody = mailString
+            From = from,
+            Subject = subject,
+            HtmlContent = mailString
         };
-        message.Body = bodyBuilder.ToMessageBody();
-        message.XPriority = XMessagePriority.High;
-        message.To.Add(MailboxAddress.Parse(emailAddress));
+        message.AddTo(to);
 
         Log.Information("Sending reset link with token {Token} to {Destination}", passwordResetToken,
             emailAddress);
@@ -64,22 +64,19 @@ public class EmailSenderService : IEmailSenderService
         return await SendEmailAsync(message);
     }
 
-    private async Task<Result> SendEmailAsync(MimeMessage emailMessage)
+    private async Task<Result> SendEmailAsync(SendGridMessage emailMessage)
     {
         try
         {
-            using var smtpClient = new SmtpClient();
-            await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.ServerPort,
-                SecureSocketOptions.StartTls);
-            await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
-            Log.Debug("Sending email message: {Message}", emailMessage.ToString());
+            var client = new SendGridClient(_emailConfiguration.ApiKey);
 
-            await smtpClient.SendAsync(emailMessage);
-            await smtpClient.DisconnectAsync(true);
+            var result = await client.SendEmailAsync(emailMessage);
+            
+            Log.Debug("Sending email message: {Message}", emailMessage.ToString());
 
             Log.Information("Sent successfully");
 
-            return Result.Success();
+            return result.IsSuccessStatusCode ? Result.Success() : Result.Error();
         }
         catch (Exception e)
         {

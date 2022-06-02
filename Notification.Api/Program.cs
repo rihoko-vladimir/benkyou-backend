@@ -24,6 +24,13 @@ try
         var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
     }
+    else
+    {
+        builder.Configuration.AddEnvironmentVariables(source =>
+        {
+            source.Prefix = "APP_";
+        });
+    }
 
     builder.Services.AddApplication(configuration);
     builder.Services.AddEndpointsApiExplorer();
