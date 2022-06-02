@@ -1,11 +1,10 @@
 using Auth.Api.Interfaces.Generators;
+using Auth.Api.Interfaces.Repositories;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models;
-using Auth.Api.Models.DbContext;
 using Auth.Api.Models.Entities;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Bcrypt = BCrypt.Net.BCrypt;
 
@@ -14,28 +13,29 @@ namespace Auth.Api.Services;
 public class UserService : IUserService
 {
     private readonly IAccessTokenService _accessTokenService;
-    private readonly ApplicationContext _applicationContext;
     private readonly IEmailCodeGenerator _emailCodeGenerator;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IResetTokenService _resetTokenService;
     private readonly ISenderService _senderService;
+    private readonly IUserCredentialsRepository _userCredentialsRepository;
 
-    public UserService(ApplicationContext applicationContext, IAccessTokenService accessTokenService,
+    public UserService(IAccessTokenService accessTokenService,
         IRefreshTokenService refreshTokenService, IResetTokenService resetTokenService,
         IEmailCodeGenerator emailCodeGenerator,
-        ISenderService senderService)
+        ISenderService senderService,
+        IUserCredentialsRepository userCredentialsRepository)
     {
-        _applicationContext = applicationContext;
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
         _resetTokenService = resetTokenService;
         _emailCodeGenerator = emailCodeGenerator;
         _senderService = senderService;
+        _userCredentialsRepository = userCredentialsRepository;
     }
 
     public async Task<Result<TokensResponse>> LoginAsync(string email, string password)
     {
-        if (!await IsUserExistsByEmailAsync(email))
+        if (!await _userCredentialsRepository.IsUserExistsByEmailAsync(email))
         {
             Log.Warning("Login attempt with incorrect email address. Email: {Email}, Password: {Password}", email,
                 password);
@@ -43,9 +43,7 @@ public class UserService : IUserService
             return Result.Error<TokensResponse>("User not found");
         }
 
-        var user = (await _applicationContext.UserCredentials
-            .Include(user => user.Tokens)
-            .FirstOrDefaultAsync(user => user.Email == email))!;
+        var user = await _userCredentialsRepository.GetUserByEmailAsync(email);
 
         if (!user.IsEmailConfirmed)
         {
@@ -79,8 +77,7 @@ public class UserService : IUserService
 
         user.Tokens.Add(token);
 
-        _applicationContext.UserCredentials.Update(user);
-        await _applicationContext.SaveChangesAsync();
+        await _userCredentialsRepository.UpdateUserAsync(user);
 
         return Result.Success(new TokensResponse(access, refresh));
     }
@@ -88,9 +85,7 @@ public class UserService : IUserService
     public async Task<Result<Guid>> RegisterAsync(RegistrationRequest registrationRequest)
     {
         var isUserRegistered =
-            await _applicationContext.UserCredentials.FirstOrDefaultAsync(user =>
-                    user.Email == registrationRequest.Email) is not
-                null;
+            await _userCredentialsRepository.IsUserExistsByEmailAsync(registrationRequest.Email);
 
         if (isUserRegistered)
         {
@@ -112,8 +107,7 @@ public class UserService : IUserService
             IsEmailConfirmed = false
         };
 
-        await _applicationContext.UserCredentials.AddAsync(user);
-        await _applicationContext.SaveChangesAsync();
+        await _userCredentialsRepository.CreateUserCredentialAsync(user);
 
         var result = await _senderService.SendEmailCodeAsync(emailCode, registrationRequest.Email);
 
@@ -125,16 +119,14 @@ public class UserService : IUserService
         if (!_refreshTokenService.GetGuidFromRefreshToken(refreshToken, out var userId))
             return Result.Error<TokensResponse>("Token is invalid");
 
-        if (!await IsUserExistsByIdAsync(userId))
+        if (!await _userCredentialsRepository.IsUserExistsByIdAsync(userId))
         {
             Log.Warning("Someone tried to refresh token of not existing user, Token: {Token}", refreshToken);
 
             return Result.Error<TokensResponse>("User not found");
         }
 
-        var user = await _applicationContext.UserCredentials
-            .Include(user1 => user1.Tokens)
-            .FirstAsync(user1 => user1.Id == userId);
+        var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
 
         var token = user.Tokens.FirstOrDefault(token1 => token1.RefreshToken == refreshToken);
 
@@ -168,24 +160,21 @@ public class UserService : IUserService
         };
 
         user.Tokens.Add(newToken);
-        _applicationContext.UserCredentials.Update(user);
-        await _applicationContext.SaveChangesAsync();
+        await _userCredentialsRepository.UpdateUserAsync(user);
 
         return Result.Success(new TokensResponse(access, refresh));
     }
 
     public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string confirmationCode)
     {
-        if (!await IsUserExistsByIdAsync(userId))
+        if (!await _userCredentialsRepository.IsUserExistsByIdAsync(userId))
         {
             Log.Warning("Someone tried to confirm email of not existing user, User: {User}", userId);
 
             return Result.Error<Guid>("User not found");
         }
 
-        var user = (await _applicationContext.UserCredentials
-            .Include(user => user.Tokens)
-            .FirstOrDefaultAsync(user => user.Id == userId))!;
+        var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
 
         var isCodeCorrect = _emailCodeGenerator.VerifyCode(confirmationCode, user);
         if (!isCodeCorrect)
@@ -199,24 +188,21 @@ public class UserService : IUserService
         user.EmailConfirmationCode = null;
         user.IsEmailConfirmed = true;
 
-        _applicationContext.UserCredentials.Update(user);
-        await _applicationContext.SaveChangesAsync();
+        await _userCredentialsRepository.UpdateUserAsync(user);
 
         return Result.Success(user.Id);
     }
 
     public async Task<Result> ResetPasswordAsync(string email)
     {
-        if (!await IsUserExistsByEmailAsync(email))
+        if (!await _userCredentialsRepository.IsUserExistsByEmailAsync(email))
         {
             Log.Warning("Someone tried to reset password of not existing user, Email: {Email}", email);
 
             return Result.Error("User not found");
         }
 
-        var user = (await _applicationContext.UserCredentials
-            .Include(user => user.Tokens)
-            .FirstOrDefaultAsync(user => user.Email == email))!;
+        var user = await _userCredentialsRepository.GetUserByEmailAsync(email);
 
         var resetCode = _resetTokenService.GetToken(user.Id);
 
@@ -227,7 +213,7 @@ public class UserService : IUserService
 
     public async Task<Result> ConfirmPasswordResetAsync(string email, string token, string newPassword)
     {
-        if (!await IsUserExistsByEmailAsync(email))
+        if (!await _userCredentialsRepository.IsUserExistsByEmailAsync(email))
         {
             Log.Warning(
                 "Someone tried to confirm password resetting of not existing user, Email: {Email}. Token: {Token}",
@@ -236,7 +222,7 @@ public class UserService : IUserService
             return Result.Error("User not found");
         }
 
-        var user = await _applicationContext.UserCredentials.FirstAsync(user1 => user1.Email == email);
+        var user = await _userCredentialsRepository.GetUserByEmailAsync(email);
 
         var isCorrect = _resetTokenService.VerifyToken(user.Id, token);
         if (!isCorrect)
@@ -249,25 +235,8 @@ public class UserService : IUserService
         var newPasswordHash = Bcrypt.HashPassword(newPassword);
         user.PasswordHash = newPasswordHash;
 
-        _applicationContext.UserCredentials.Update(user);
-        await _applicationContext.SaveChangesAsync();
+        await _userCredentialsRepository.UpdateUserAsync(user);
 
         return Result.Success();
-    }
-
-    private async Task<bool> IsUserExistsByIdAsync(Guid userId)
-    {
-        var user = await _applicationContext.UserCredentials
-            .FirstOrDefaultAsync(user => user.Id == userId);
-
-        return user is not null;
-    }
-
-    private async Task<bool> IsUserExistsByEmailAsync(string email)
-    {
-        var user = await _applicationContext.UserCredentials
-            .FirstOrDefaultAsync(user => user.Email == email);
-
-        return user is not null;
     }
 }

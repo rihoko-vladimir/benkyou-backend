@@ -8,18 +8,18 @@ namespace Auth.Api.Services;
 
 public class SenderService : ISenderService
 {
-    private readonly IBus _bus;
+    private readonly ISendEndpointProvider _sendEndpointProvider;
 
-    public SenderService(IBus bus)
+    public SenderService(ISendEndpointProvider sendEndpointProvider)
     {
-        _bus = bus;
+        _sendEndpointProvider = sendEndpointProvider;
     }
 
     public async Task<Result> SendEmailCodeAsync(string emailCode, string emailAddress)
     {
         try
         {
-            var endpoint = await _bus.GetSendEndpoint(new Uri(QueueNames.EmailConfirmationQueueWithProtocol));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(QueueNames.EmailConfirmationQueueWithProtocol));
             Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
             await endpoint.Send(new SendEmailConfirmationCode
             {
@@ -41,7 +41,7 @@ public class SenderService : ISenderService
     {
         try
         {
-            var endpoint = await _bus.GetSendEndpoint(new Uri(QueueNames.PasswordResetQueueWithProtocol));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(QueueNames.PasswordResetQueueWithProtocol));
             Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
             await endpoint.Send(new SendEmailResetLink
             {

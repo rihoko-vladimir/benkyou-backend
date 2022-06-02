@@ -10,7 +10,7 @@ namespace Auth.Api.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "UserCredentials",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -21,7 +21,7 @@ namespace Auth.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_UserCredentials", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -29,24 +29,25 @@ namespace Auth.Api.Migrations
                 columns: table => new
                 {
                     RecordId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IssuedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    IssuedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserCredentialId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Token", x => x.RecordId);
                     table.ForeignKey(
-                        name: "FK_Token_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Token_UserCredentials_UserCredentialId",
+                        column: x => x.UserCredentialId,
+                        principalTable: "UserCredentials",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Token_UserId",
+                name: "IX_Token_UserCredentialId",
                 table: "Token",
-                column: "UserId");
+                column: "UserCredentialId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -55,7 +56,7 @@ namespace Auth.Api.Migrations
                 name: "Token");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "UserCredentials");
         }
     }
 }

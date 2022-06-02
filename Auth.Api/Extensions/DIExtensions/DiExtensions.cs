@@ -3,8 +3,10 @@ using Auth.Api.Extensions.ConfigurationExtensions;
 using Auth.Api.Extensions.JWTExtensions;
 using Auth.Api.Generators;
 using Auth.Api.Interfaces.Generators;
+using Auth.Api.Interfaces.Repositories;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.DbContext;
+using Auth.Api.Repositories;
 using Auth.Api.Services;
 using Azure.Identity;
 using MassTransit;
@@ -30,6 +32,7 @@ public static class DiExtensions
         services.AddSingleton<IResetTokenService, ResetTokenService>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddTransient<ISenderService, SenderService>();
+        services.AddTransient<IUserCredentialsRepository, UserCredentialsRepository>();
         services.AddScoped<IUserService, UserService>();
 
         services.AddDbContext<ApplicationContext>(options =>

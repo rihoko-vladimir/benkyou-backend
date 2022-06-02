@@ -31,7 +31,8 @@ public class Startup
         services.AddSwaggerGen();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+        IApiVersionDescriptionProvider apiVersionDescriptionProvider)
     {
         if (!ext.IsProduction())
         {
@@ -42,7 +43,7 @@ public class Startup
                 {
                     options.SwaggerEndpoint($"../swagger/{desc.GroupName}/swagger.json", desc.ApiVersion.ToString());
                     options.DefaultModelsExpandDepth(-1);
-                    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+                    options.DocExpansion(DocExpansion.None);
                 }
             });
             app.UseDeveloperExceptionPage();

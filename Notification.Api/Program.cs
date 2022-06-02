@@ -19,10 +19,7 @@ try
         lc.WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
     });
-    if (EnvironmentExtensions.IsProduction())
-    {
-        builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());    
-    }
+    if (EnvironmentExtensions.IsProduction()) builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
     builder.Services.AddApplication(configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
