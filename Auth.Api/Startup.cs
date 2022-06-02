@@ -1,11 +1,9 @@
 using Auth.Api.Extensions.DIExtensions;
-using Auth.Api.Extensions.JWTExtensions;
-using Auth.Api.Models.DbContext;
 using Azure.Identity;
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Serilog;
+using ext = Auth.Api.Extensions.EnvironmentExtensions;
 
 namespace Auth.Api;
 
@@ -17,26 +15,16 @@ public class Startup
     {
         var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         var configurationBuilder = new ConfigurationBuilder();
+
         configurationBuilder.AddConfiguration(configuration);
-        configurationBuilder.AddAzureKeyVault(uri, new DefaultAzureCredential());
+        if (ext.IsProduction()) configurationBuilder.AddAzureKeyVault(uri, new DefaultAzureCredential());
+
         _configuration = configurationBuilder.Build();
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var uri = new Uri(_configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         services.AddApplication(_configuration);
-        services.AddConfiguredMassTransit(_configuration);
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options => { options.ConfigureJwtBearer(_configuration); });
-        services.AddHealthChecks()
-            .AddDbContextCheck<ApplicationContext>("Users database", tags: new List<string> {"Database"})
-            .AddAzureKeyVault(uri, new DefaultAzureCredential(), _ => { }, "Azure Key vault",
-                HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -62,6 +50,9 @@ public class Startup
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
+
+        app.UseSerilogRequestLogging();
+
 
         app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
     }

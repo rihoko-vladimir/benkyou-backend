@@ -1,8 +1,8 @@
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models;
 using MassTransit;
-using Messages.Contracts;
 using Serilog;
+using Shared.Models;
 
 namespace Auth.Api.Services;
 

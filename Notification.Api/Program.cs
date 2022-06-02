@@ -1,10 +1,7 @@
 using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Extensions.DIExtensions;
-using Notification.Api.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,17 +19,9 @@ try
             .ReadFrom.Configuration(ctx.Configuration);
     });
     builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
-    var emailConfiguration = configuration.GetEmailConfiguration();
-    builder.Services.AddHealthChecks()
-        .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server), tags: new List<string> {"Email"})
-        .AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
-            HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
-
-    builder.Services.AddSingleton(logger);
+    builder.Services.AddApplication(configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddEmailSender();
-    builder.Services.AddConfiguredMassTransit(configuration);
 
     var app = builder.Build();
 

@@ -49,7 +49,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Messages.Contracts\Messages.Contracts.csproj"/>
+        <ProjectReference Include="..\Shared.Models\Shared.Models.csproj"/>
     </ItemGroup>
 
 </Project>

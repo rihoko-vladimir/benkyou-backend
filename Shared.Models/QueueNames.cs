@@ -1,4 +1,4 @@
-namespace Messages.Contracts;
+namespace Shared.Models;
 
 public static class QueueNames
 {

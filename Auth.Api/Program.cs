@@ -11,7 +11,9 @@ public class Program
             var logger = new LoggerConfiguration()
                 .WriteTo.Console().CreateLogger();
             Log.Logger = logger;
+
             Log.Information("Application is starting up...");
+
             await CreateHostBuilder(args).Build().RunAsync();
         }
         catch (Exception e)

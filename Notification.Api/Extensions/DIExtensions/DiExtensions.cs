@@ -1,7 +1,10 @@
+using Azure.Identity;
 using MassTransit;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Notification.Api.Consumers;
 using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Generators;
+using Notification.Api.HealthChecks;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Services;
@@ -12,6 +15,18 @@ namespace Notification.Api.Extensions.DIExtensions;
 
 public static class DiExtensions
 {
+    public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        var emailConfiguration = configuration.GetEmailConfiguration();
+        services.AddHealthChecks()
+            .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server), tags: new List<string> {"Email"})
+            .AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
+                HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
+        services.AddEmailSender();
+        services.AddConfiguredMassTransit(configuration);
+    }
+
     public static void AddEmailSender(this IServiceCollection services)
     {
         services.AddScoped<IEmailTemplateGenerator, EmailTemplateGenerator>();
@@ -26,15 +41,15 @@ public static class DiExtensions
             configurator.AddConsumer<SendEmailCodeConsumer>();
             configurator.AddConsumer<SendPasswordResetConsumer>();
             if (ext.IsDevelopment() || ext.IsLocal())
-                configurator.UsingRabbitMq((_, factoryConfigurator) =>
+                configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {
-                    ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, massConfig);
+                    ConfigurationExtensionsApp.ConfigureRabbitMq(context, factoryConfigurator, massConfig);
                 });
 
             if (ext.IsProduction())
-                configurator.UsingAzureServiceBus((_, factoryConfigurator) =>
+                configurator.UsingAzureServiceBus((context, factoryConfigurator) =>
                 {
-                    ConfigurationExtensionsApp.ConfigureAzureServiceBus(factoryConfigurator, massConfig);
+                    ConfigurationExtensionsApp.ConfigureAzureServiceBus(context, factoryConfigurator, massConfig);
                 });
         });
     }

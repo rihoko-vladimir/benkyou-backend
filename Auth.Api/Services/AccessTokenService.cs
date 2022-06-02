@@ -27,11 +27,13 @@ public class AccessTokenService : IAccessTokenService
             new(ClaimTypes.Id, id.ToString()),
             new(ClaimTypes.Role, Role.User)
         };
+
         var token = _tokenGenerator.GenerateToken(_jwtConfiguration.AccessSecret,
             _jwtConfiguration.Issuer,
             _jwtConfiguration.Audience,
             _jwtConfiguration.AccessExpiresIn,
             claims);
+
         Log.Information("Generated JWT Access token {Token} for User {UserId}", token, id);
         return token;
     }
@@ -45,6 +47,7 @@ public class AccessTokenService : IAccessTokenService
             var id = token.Claims.First(claim => claim.Type == ClaimTypes.Id).Value;
             var guid = Guid.Parse(id);
             userId = guid;
+
             return true;
         }
         catch (Exception e)
@@ -52,6 +55,7 @@ public class AccessTokenService : IAccessTokenService
             Log.Warning("Invalid Access token provided. Exception: {Type}, Message: {Message}", e.GetType().FullName,
                 e.Message);
             userId = Guid.Empty;
+
             return false;
         }
     }

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Auth.Api.Models.Entities;
 
-public class User
+public class UserCredential
 {
     [Key] public Guid Id { get; set; } = new();
 

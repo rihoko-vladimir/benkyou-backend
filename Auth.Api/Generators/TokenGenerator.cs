@@ -13,8 +13,15 @@ public class TokenGenerator : ITokenGenerator
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var jwtSecurityToken = new JwtSecurityToken(issuer, audience, claims, DateTime.Now,
-            DateTime.Now.AddMinutes(expiresInMinutes), credentials);
+
+        var jwtSecurityToken = new JwtSecurityToken(
+            issuer,
+            audience,
+            claims,
+            DateTime.Now,
+            DateTime.Now.AddMinutes(expiresInMinutes),
+            credentials);
+
         return new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
     }
 }

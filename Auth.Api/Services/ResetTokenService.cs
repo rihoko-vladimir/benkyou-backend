@@ -28,11 +28,13 @@ public class ResetTokenService : IResetTokenService
         {
             new(ClaimTypes.Id, id.ToString())
         };
+
         var token = _tokenGenerator.GenerateToken(_jwtConfiguration.ResetSecret,
             _jwtConfiguration.Issuer,
             _jwtConfiguration.Audience,
             _jwtConfiguration.ResetExpiresIn,
             claims);
+
         Log.Information("Generated Password reset token {Token} for User {UserId}", token, id);
         return token;
     }
@@ -49,17 +51,20 @@ public class ResetTokenService : IResetTokenService
             ValidIssuer = _jwtConfiguration.Issuer,
             ValidAudience = _jwtConfiguration.Audience
         };
+
         var tokenHandler = new JwtSecurityTokenHandler();
         try
         {
             var claimsPrincipal = tokenHandler.ValidateToken(resetToken, verificationProperties, out _);
             var id = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Id)?.Value;
+
             return id == userId.ToString();
         }
         catch (Exception)
         {
             Log.Warning("Verification failed: Password reset token is invalid. User: {UserId}, Token: {Token}", userId,
                 resetToken);
+
             return false;
         }
     }

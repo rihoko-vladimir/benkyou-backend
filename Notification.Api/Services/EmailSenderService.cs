@@ -24,6 +24,7 @@ public class EmailSenderService : IEmailSenderService
         string confirmationCode)
     {
         var message = new MimeMessage();
+
         message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
         message.Subject = "Benkyou! Confirmation code";
         var mailString = await _templateGenerator.GetEmailCodeMailAsync(userName, confirmationCode);
@@ -34,8 +35,10 @@ public class EmailSenderService : IEmailSenderService
         message.Body = bodyBuilder.ToMessageBody();
         message.XPriority = XMessagePriority.High;
         message.To.Add(MailboxAddress.Parse(emailAddress));
+
         Log.Information("Sending confirmation code {ConfirmationCode} to {Destination}", confirmationCode,
             emailAddress);
+
         return await SendEmailAsync(message);
     }
 
@@ -43,6 +46,7 @@ public class EmailSenderService : IEmailSenderService
         string passwordResetToken)
     {
         var message = new MimeMessage();
+
         message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
         message.Subject = "Benkyou! Password reset";
         var mailString =
@@ -54,8 +58,10 @@ public class EmailSenderService : IEmailSenderService
         message.Body = bodyBuilder.ToMessageBody();
         message.XPriority = XMessagePriority.High;
         message.To.Add(MailboxAddress.Parse(emailAddress));
+
         Log.Information("Sending reset link with token {Token} to {Destination}", passwordResetToken,
             emailAddress);
+
         return await SendEmailAsync(message);
     }
 
@@ -68,15 +74,19 @@ public class EmailSenderService : IEmailSenderService
                 SecureSocketOptions.StartTls);
             await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
             Log.Debug("Sending email message: {Message}", emailMessage.ToString());
+
             await smtpClient.SendAsync(emailMessage);
             await smtpClient.DisconnectAsync(true);
+
             Log.Information("Sent successfully");
+
             return Result.Success();
         }
         catch (Exception e)
         {
             Log.Error("An exception {Type} was thrown while trying to send an email message: {EmailMessage}",
                 e.GetType().FullName, emailMessage);
+
             return Result.Error(e);
         }
     }

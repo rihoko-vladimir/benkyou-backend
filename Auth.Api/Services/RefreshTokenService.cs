@@ -28,12 +28,15 @@ public class RefreshTokenService : IRefreshTokenService
         {
             new(ClaimTypes.Id, id.ToString())
         };
+
         var token = _tokenGenerator.GenerateToken(_jwtConfiguration.RefreshSecret,
             _jwtConfiguration.Issuer,
             _jwtConfiguration.Audience,
             _jwtConfiguration.RefreshExpiresIn,
             claims);
+
         Log.Information("Generated JWT Refresh token {Token} for User {UserId}", token, id);
+
         return token;
     }
 
@@ -49,17 +52,20 @@ public class RefreshTokenService : IRefreshTokenService
             ValidIssuer = _jwtConfiguration.Issuer,
             ValidAudience = _jwtConfiguration.Audience
         };
+
         var tokenHandler = new JwtSecurityTokenHandler();
         try
         {
             var claimsPrincipal = tokenHandler.ValidateToken(refreshToken, verificationProperties, out _);
             var id = claimsPrincipal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Id)?.Value;
+
             return id == userId.ToString();
         }
         catch (Exception)
         {
             Log.Warning("Verification failed: Refresh token is invalid. User: {UserId}, Token: {Token}", userId,
                 refreshToken);
+
             return false;
         }
     }
@@ -70,9 +76,11 @@ public class RefreshTokenService : IRefreshTokenService
         {
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(refreshToken);
+
             var id = token.Claims.First(claim => claim.Type == ClaimTypes.Id).Value;
             var guid = Guid.Parse(id);
             userId = guid;
+
             return true;
         }
         catch (Exception e)
@@ -80,6 +88,7 @@ public class RefreshTokenService : IRefreshTokenService
             Log.Warning("Invalid Refresh token provided. Exception: {Type}, Message: {Message}", e.GetType().FullName,
                 e.Message);
             userId = Guid.Empty;
+
             return false;
         }
     }

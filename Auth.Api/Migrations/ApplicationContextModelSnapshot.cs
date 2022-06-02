@@ -35,17 +35,20 @@ namespace Auth.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("UserCredentialId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("RecordId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserCredentialId");
 
                     b.ToTable("Token");
                 });
 
-            modelBuilder.Entity("Auth.Api.Models.Entities.User", b =>
+            modelBuilder.Entity("Auth.Api.Models.Entities.UserCredential", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,19 +71,17 @@ namespace Auth.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("UserCredentials");
                 });
 
             modelBuilder.Entity("Auth.Api.Models.Entities.Token", b =>
                 {
-                    b.HasOne("Auth.Api.Models.Entities.User", null)
+                    b.HasOne("Auth.Api.Models.Entities.UserCredential", null)
                         .WithMany("Tokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserCredentialId");
                 });
 
-            modelBuilder.Entity("Auth.Api.Models.Entities.User", b =>
+            modelBuilder.Entity("Auth.Api.Models.Entities.UserCredential", b =>
                 {
                     b.Navigation("Tokens");
                 });

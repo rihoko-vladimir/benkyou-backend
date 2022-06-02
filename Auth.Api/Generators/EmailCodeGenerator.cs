@@ -11,12 +11,14 @@ public class EmailCodeGenerator : IEmailCodeGenerator
         var random = new Random();
         var randomCode = new string(Enumerable.Repeat(chars, 6)
             .Select(s => s[random.Next(s.Length)]).ToArray());
+
         return randomCode;
     }
 
-    public bool VerifyCode(string token, User user)
+    public bool VerifyCode(string token, UserCredential userCredential)
     {
-        var userCode = user.EmailConfirmationCode;
+        var userCode = userCredential.EmailConfirmationCode;
+
         return token.Equals(userCode);
     }
 }

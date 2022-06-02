@@ -9,5 +9,5 @@ public class ApplicationContext : Microsoft.EntityFrameworkCore.DbContext
     {
     }
 
-    public DbSet<User> Users { get; init; }
+    public DbSet<UserCredential> UserCredentials { get; init; } = null!;
 }

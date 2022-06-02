@@ -1,7 +1,7 @@
 using MassTransit;
-using Messages.Contracts;
 using Notification.Api.Interfaces.Services;
 using Serilog;
+using Shared.Models;
 
 namespace Notification.Api.Consumers;
 

@@ -1,7 +1,7 @@
 using MassTransit;
-using Messages.Contracts;
 using Notification.Api.Consumers;
 using Notification.Api.Models;
+using Shared.Models;
 using ext = Notification.Api.Extensions.EnvironmentExtensions;
 
 namespace Notification.Api.Extensions.ConfigurationExtensions;
@@ -12,6 +12,7 @@ public static class ConfigurationExtensions
     {
         var configurationSection = configuration.GetSection("SmtpConfiguration");
         var emailConfig = new EmailConfiguration();
+
         configurationSection.Bind(emailConfig);
         return emailConfig;
     }
@@ -19,10 +20,12 @@ public static class ConfigurationExtensions
     public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
     {
         var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
+
         if (ext.IsDevelopment() || ext.IsLocal())
         {
             var massConfig = new MassTransitConfiguration();
             configurationSection.Bind(massConfig);
+
             return massConfig;
         }
 
@@ -34,20 +37,26 @@ public static class ConfigurationExtensions
     }
 
     public static void ConfigureRabbitMq(
+        IBusRegistrationContext context,
         IRabbitMqBusFactoryConfigurator factoryConfigurator,
         MassTransitConfiguration massConfig)
     {
         factoryConfigurator.Host(massConfig.Host, massConfig.VirtualHost, hostConfigurator =>
         {
+            factoryConfigurator.ConfigureEndpoints(context);
+
             hostConfigurator.Username(massConfig.UserName);
             hostConfigurator.Password(massConfig.Password);
         });
     }
 
     public static void ConfigureAzureServiceBus(
+        IBusRegistrationContext context,
         IServiceBusBusFactoryConfigurator factoryConfigurator,
         MassTransitConfiguration massConfig)
     {
+        factoryConfigurator.ConfigureEndpoints(context);
+
         factoryConfigurator.Host(massConfig.AzureServiceBusConnectionString);
     }
 

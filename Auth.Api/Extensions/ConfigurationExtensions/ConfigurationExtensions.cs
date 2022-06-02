@@ -12,16 +12,19 @@ public static class ConfigurationExtensions
         var section = configuration.GetSection(JwtConfiguration.Key);
         var jwtConfiguration = new JwtConfiguration();
         section.Bind(jwtConfiguration);
+
         return jwtConfiguration;
     }
 
     public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
     {
         var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
+
         if (ext.IsDevelopment() || ext.IsLocal())
         {
             var massConfig = new MassTransitConfiguration();
             configurationSection.Bind(massConfig);
+
             return massConfig;
         }
 
