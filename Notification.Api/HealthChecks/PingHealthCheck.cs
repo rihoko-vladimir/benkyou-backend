@@ -18,7 +18,7 @@ public class PingHealthCheck : IHealthCheck
         var pingClient = new Ping();
         bool isSuccess;
         var errorMessage = string.Empty;
-        
+
         try
         {
             var result = await pingClient.SendPingAsync(_server);

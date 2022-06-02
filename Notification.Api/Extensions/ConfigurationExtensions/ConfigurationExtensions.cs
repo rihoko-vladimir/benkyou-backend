@@ -14,7 +14,7 @@ public static class ConfigurationExtensions
         var emailConfig = new EmailConfiguration();
 
         configurationSection.Bind(emailConfig);
-        
+
         return emailConfig;
     }
 

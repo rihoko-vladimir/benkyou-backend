@@ -1,6 +1,3 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
@@ -49,7 +46,8 @@ public class EmailSenderService : IEmailSenderService
         var subject = "Benkyou! Password reset";
         var to = new EmailAddress(emailAddress, userName);
         var mailString =
-            await _templateGenerator.GetForgottenPasswordMailAsync(userName, $"https://benkyou.me/{passwordResetToken}");
+            await _templateGenerator.GetForgottenPasswordMailAsync(userName,
+                $"https://benkyou.me/{passwordResetToken}");
         var message = new SendGridMessage
         {
             From = from,
@@ -71,7 +69,7 @@ public class EmailSenderService : IEmailSenderService
             var client = new SendGridClient(_emailConfiguration.ApiKey);
 
             var result = await client.SendEmailAsync(emailMessage);
-            
+
             Log.Debug("Sending email message: {Message}", emailMessage.ToString());
 
             Log.Information("Sent successfully");

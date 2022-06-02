@@ -4,7 +4,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Notification.Api.Consumers;
 using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Generators;
-using Notification.Api.HealthChecks;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Services;
@@ -21,7 +20,7 @@ public static class DiExtensions
         var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
 
         services.AddHealthChecks()
-            .AddCheck("SmtpCheck", new PingHealthCheck("sendgrid.net"), tags: new List<string> {"Email"})
+            .AddSendGrid(emailConfiguration.ApiKey, tags: new List<string> {"sendgrid", "email", "ready"})
             .AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
                 HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
 

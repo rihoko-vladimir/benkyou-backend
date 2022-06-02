@@ -26,10 +26,7 @@ try
     }
     else
     {
-        builder.Configuration.AddEnvironmentVariables(source =>
-        {
-            source.Prefix = "APP_";
-        });
+        builder.Configuration.AddEnvironmentVariables(source => { source.Prefix = "APP_"; });
     }
 
     builder.Services.AddApplication(configuration);
