@@ -33,27 +33,38 @@ public static class DiExtensions
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddTransient<ISenderService, SenderService>();
         services.AddTransient<IUserCredentialsRepository, UserCredentialsRepository>();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         services.AddScoped<IUserService, UserService>();
+
+        services.AddConfiguredMassTransit(configuration);
 
         services.AddDbContext<ApplicationContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString("SqlServerConnectionString") ?? "",
                 builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
-        services.AddConfiguredMassTransit(configuration);
-        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options => { options.ConfigureJwtBearer(configuration); });
+
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+
         services.AddHealthChecks()
-            .AddDbContextCheck<ApplicationContext>("Users database", tags: new List<string> {"Database"})
-            .AddAzureKeyVault(uri, new DefaultAzureCredential(), _ => { }, "Azure Key vault",
-                HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
+            .AddDbContextCheck<ApplicationContext>("Users database",
+                tags: new List<string> {"Database"})
+            .AddAzureKeyVault(uri,
+                new DefaultAzureCredential(),
+                _ => { },
+                "Azure Key vault",
+                HealthStatus.Unhealthy,
+                new List<string> {"Azure Key Vault"});
+
         services.AddEndpointsApiExplorer();
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
+
         services.AddApiVersioning(setup =>
         {
             setup.DefaultApiVersion = new ApiVersion(1, 0);

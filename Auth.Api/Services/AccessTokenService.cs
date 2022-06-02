@@ -35,6 +35,7 @@ public class AccessTokenService : IAccessTokenService
             claims);
 
         Log.Information("Generated JWT Access token {Token} for User {UserId}", token, id);
+
         return token;
     }
 

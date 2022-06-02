@@ -36,6 +36,7 @@ public class ResetTokenService : IResetTokenService
             claims);
 
         Log.Information("Generated Password reset token {Token} for User {UserId}", token, id);
+
         return token;
     }
 

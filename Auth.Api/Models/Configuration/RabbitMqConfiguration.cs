@@ -1,6 +1,6 @@
 namespace Auth.Api.Models.Configuration;
 
-public class RabbitMQConfiguration
+public class RabbitMqConfiguration
 {
     public const string Key = "RabbitMQConfiguration";
     public string Host { get; set; }

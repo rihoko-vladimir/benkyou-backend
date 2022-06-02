@@ -16,15 +16,15 @@ public static class ConfigurationExtensions
         return jwtConfiguration;
     }
 
-    public static RabbitMQConfiguration GetRabbitMqConfiguration(this IConfiguration configuration)
+    public static RabbitMqConfiguration GetRabbitMqConfiguration(this IConfiguration configuration)
     {
-        var section = configuration.GetSection(RabbitMQConfiguration.Key);
-        var rabbitConfiguration = new RabbitMQConfiguration();
+        var section = configuration.GetSection(RabbitMqConfiguration.Key);
+        var rabbitConfiguration = new RabbitMqConfiguration();
         section.Bind(rabbitConfiguration);
 
         return rabbitConfiguration;
     }
-    
+
     public static AzureServiceBusConfiguration GetServiceBusConfiguration(this IConfiguration configuration)
     {
         var section = configuration.GetSection(AzureServiceBusConfiguration.Key);
@@ -36,7 +36,7 @@ public static class ConfigurationExtensions
 
     public static void ConfigureRabbitMq(
         IRabbitMqBusFactoryConfigurator factoryConfigurator,
-        RabbitMQConfiguration rabbitConfig)
+        RabbitMqConfiguration rabbitConfig)
     {
         factoryConfigurator.Host(rabbitConfig.Host, rabbitConfig.VirtualHost, hostConfigurator =>
         {

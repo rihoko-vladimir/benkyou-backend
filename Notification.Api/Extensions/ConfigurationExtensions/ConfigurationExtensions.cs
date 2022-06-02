@@ -1,7 +1,6 @@
 using MassTransit;
 using Notification.Api.Consumers;
 using Notification.Api.Models;
-using Shared.Models;
 using Shared.Models.QueueNames;
 using ext = Notification.Api.Extensions.EnvironmentExtensions;
 
@@ -15,6 +14,7 @@ public static class ConfigurationExtensions
         var emailConfig = new EmailConfiguration();
 
         configurationSection.Bind(emailConfig);
+        
         return emailConfig;
     }
 
@@ -42,10 +42,9 @@ public static class ConfigurationExtensions
         IRabbitMqBusFactoryConfigurator factoryConfigurator,
         MassTransitConfiguration massConfig)
     {
+        factoryConfigurator.ConfigureEndpoints(context);
         factoryConfigurator.Host(massConfig.Host, massConfig.VirtualHost, hostConfigurator =>
         {
-            factoryConfigurator.ConfigureEndpoints(context);
-
             hostConfigurator.Username(massConfig.UserName);
             hostConfigurator.Password(massConfig.Password);
         });

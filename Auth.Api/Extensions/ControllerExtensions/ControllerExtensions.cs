@@ -15,6 +15,7 @@ public static class ControllerExtensions
     {
         var refreshCookieKey = "refresh";
         var accessCookieKey = "access";
+
         var accessCookieOptions = new CookieOptions
         {
             Secure = true,
@@ -27,6 +28,7 @@ public static class ControllerExtensions
             HttpOnly = true,
             SameSite = SameSiteMode.Unspecified
         };
+
         controllerBase.Response.Cookies.Append(accessCookieKey, accessToken, accessCookieOptions);
         controllerBase.Response.Cookies.Append(refreshCookieKey, refreshToken, refreshCookieOptions);
     }

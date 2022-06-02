@@ -13,13 +13,18 @@ Log.Logger = logger;
 Log.Information("Application is starting up...");
 try
 {
-    var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
     builder.Host.UseSerilog((ctx, lc) =>
     {
         lc.WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
     });
-    if (EnvironmentExtensions.IsProduction()) builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
+
+    if (EnvironmentExtensions.IsProduction())
+    {
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
+    }
+
     builder.Services.AddApplication(configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();

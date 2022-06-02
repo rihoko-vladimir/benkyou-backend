@@ -1,7 +1,6 @@
 using MassTransit;
 using Notification.Api.Interfaces.Services;
 using Serilog;
-using Shared.Models;
 using Shared.Models.Messages;
 
 namespace Notification.Api.Consumers;
@@ -19,6 +18,7 @@ public class SendEmailCodeConsumer : IConsumer<SendEmailConfirmationCode>
     {
         Log.Information("Received confirmation code: {Code} And email to send: {Email}", context.Message.EmailCode,
             context.Message.EmailAddress);
+
         await _emailSenderService.SendAccountConfirmationCodeAsync("Test", context.Message.EmailAddress,
             context.Message.EmailCode);
     }

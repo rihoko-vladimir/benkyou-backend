@@ -17,13 +17,16 @@ public static class DiExtensions
 {
     public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         var emailConfiguration = configuration.GetEmailConfiguration();
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+
         services.AddHealthChecks()
             .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server), tags: new List<string> {"Email"})
             .AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
                 HealthStatus.Unhealthy, new List<string> {"Azure Key Vault"});
+
         services.AddEmailSender();
+        services.AddSingleton(emailConfiguration);
         services.AddConfiguredMassTransit(configuration);
     }
 
@@ -36,10 +39,12 @@ public static class DiExtensions
     public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         var massConfig = configuration.GetMassTransitConfiguration();
+
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<SendEmailCodeConsumer>();
             configurator.AddConsumer<SendPasswordResetConsumer>();
+
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {

@@ -1,7 +1,6 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
@@ -14,9 +13,9 @@ public class EmailSenderService : IEmailSenderService
     private readonly EmailConfiguration _emailConfiguration;
     private readonly IEmailTemplateGenerator _templateGenerator;
 
-    public EmailSenderService(IConfiguration configuration, IEmailTemplateGenerator templateGenerator)
+    public EmailSenderService(EmailConfiguration emailConfiguration, IEmailTemplateGenerator templateGenerator)
     {
-        _emailConfiguration = configuration.GetEmailConfiguration();
+        _emailConfiguration = emailConfiguration;
         _templateGenerator = templateGenerator;
     }
 

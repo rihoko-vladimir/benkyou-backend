@@ -2,7 +2,6 @@ using Auth.Api.Interfaces.Services;
 using Auth.Api.Models;
 using MassTransit;
 using Serilog;
-using Shared.Models;
 using Shared.Models.Messages;
 using Shared.Models.QueueNames;
 
@@ -21,13 +20,17 @@ public class SenderService : ISenderService
     {
         try
         {
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(QueueNames.EmailConfirmationQueueWithProtocol));
+            var endpoint =
+                await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{QueueNames.EmailConfirmationQueue}"));
+
             Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
+
             await endpoint.Send(new SendEmailConfirmationCode
             {
                 EmailCode = emailCode,
                 EmailAddress = emailAddress
             });
+
             return Result.Success();
         }
         catch (Exception e)
@@ -35,6 +38,7 @@ public class SenderService : ISenderService
             Log.Error(
                 "An error occured while attempting to send confirmation code. Exception: {Type}, Message: {Message}",
                 e.GetType().FullName, e.Message);
+
             return Result.Error();
         }
     }
@@ -43,13 +47,17 @@ public class SenderService : ISenderService
     {
         try
         {
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri(QueueNames.PasswordResetQueueWithProtocol));
+            var endpoint =
+                await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{QueueNames.PasswordResetQueue}"));
+
             Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
+
             await endpoint.Send(new SendEmailResetLink
             {
                 ResetToken = resetToken,
                 EmailAddress = emailAddress
             });
+
             return Result.Success();
         }
         catch (Exception e)
@@ -57,6 +65,7 @@ public class SenderService : ISenderService
             Log.Error(
                 "An error occured while attempting to send password reset token. Exception: {Type}, Message: {Message}",
                 e.GetType().FullName, e.Message);
+
             return Result.Error();
         }
     }

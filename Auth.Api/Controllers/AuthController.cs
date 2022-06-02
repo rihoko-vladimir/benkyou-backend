@@ -27,6 +27,7 @@ public class AuthController : ControllerBase
         if (!result.IsSuccess) return BadRequest(result.Message);
 
         this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken);
+
         return Ok();
     }
 
@@ -51,6 +52,7 @@ public class AuthController : ControllerBase
         if (!result.IsSuccess) return BadRequest(result.Message);
 
         this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken);
+
         return Ok();
     }
 
@@ -61,6 +63,7 @@ public class AuthController : ControllerBase
         var result = await _userService.ConfirmEmailAsync(confirmEmailRequest.UserId, confirmEmailRequest.EmailCode);
 
         if (!result.IsSuccess) return BadRequest(result.Message);
+
         return Ok(result.Value);
     }
 
@@ -71,6 +74,7 @@ public class AuthController : ControllerBase
         var result = await _userService.ResetPasswordAsync(email);
 
         if (!result.IsSuccess) return BadRequest(result.Message);
+
         return Ok();
     }
 
@@ -82,6 +86,7 @@ public class AuthController : ControllerBase
         var result = await _userService.ConfirmPasswordResetAsync(email, token, confirmationRequest.Password);
 
         if (!result.IsSuccess) return BadRequest(result.Message);
+
         return Ok(result);
     }
 }

@@ -16,28 +16,32 @@ public class UserCredentialsRepository : IUserCredentialsRepository
 
     public async Task<UserCredential> GetUserByEmailAsync(string email)
     {
-        return (await _applicationContext.UserCredentials
+        var user = (await _applicationContext.UserCredentials
             .Include(user => user.Tokens)
             .FirstOrDefaultAsync(user => user.Email == email))!;
+        return user;
     }
 
     public async Task UpdateUserAsync(UserCredential userCredential)
     {
         _applicationContext.UserCredentials.Update(userCredential);
+
         await _applicationContext.SaveChangesAsync();
     }
 
     public async Task CreateUserCredentialAsync(UserCredential userCredential)
     {
         await _applicationContext.UserCredentials.AddAsync(userCredential);
+
         await _applicationContext.SaveChangesAsync();
     }
 
     public async Task<UserCredential> GetUserByIdAsync(Guid id)
     {
-        return await _applicationContext.UserCredentials
+        var user = await _applicationContext.UserCredentials
             .Include(user1 => user1.Tokens)
             .FirstAsync(user1 => user1.Id == id);
+        return user;
     }
 
     public async Task<bool> IsUserExistsByIdAsync(Guid userId)
