@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Health.Api", "Health.Api\He
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Api", "Auth.Api\Auth.Api.csproj", "{D45015D0-62B7-4300-BCBF-326417D7F76F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Models", "Shared.Models\Shared.Models.csproj", "{C4A7171D-0DEA-4B85-AA22-D2AC2BE69324}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D45015D0-62B7-4300-BCBF-326417D7F76F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4A7171D-0DEA-4B85-AA22-D2AC2BE69324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4A7171D-0DEA-4B85-AA22-D2AC2BE69324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4A7171D-0DEA-4B85-AA22-D2AC2BE69324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4A7171D-0DEA-4B85-AA22-D2AC2BE69324}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

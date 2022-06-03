@@ -1,8 +1,8 @@
+using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Notification.Api.Extensions.ConfigurationExtensions;
+using Notification.Api.Extensions;
 using Notification.Api.Extensions.DIExtensions;
-using Notification.Api.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,15 +18,20 @@ try
         lc.WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
     });
-    var emailConfiguration = configuration.GetEmailConfiguration();
-    builder.Services.AddHealthChecks()
-        .AddCheck("SmtpCheck", new PingHealthCheck(emailConfiguration.Server));
 
-    builder.Services.AddSingleton(logger);
-    builder.Services.AddControllers();
+    if (EnvironmentExtensions.IsProduction())
+    {
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        builder.Configuration.AddAzureKeyVault(uri, new DefaultAzureCredential());
+    }
+    else
+    {
+        builder.Configuration.AddEnvironmentVariables(source => { source.Prefix = "APP_"; });
+    }
+
+    builder.Services.AddApplication(configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddEmailSender();
 
     var app = builder.Build();
 
@@ -38,7 +43,7 @@ try
         ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
     });
 
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
     {
         app.UseSwagger();
         app.UseSwaggerUI();
@@ -46,13 +51,12 @@ try
 
     //app.UseHttpsRedirection();
 
-    app.MapDefaultControllerRoute();
-
     app.Run();
 }
 catch (Exception e)
 {
-    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName, e.Message ,e.StackTrace);
+    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+        e.Message, e.StackTrace);
 }
 finally
 {

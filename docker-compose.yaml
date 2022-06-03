@@ -1,5 +1,6 @@
-version: '3.8'
-services: 
+version: '3.4'
+
+services:
   notification-api:
     build:
       context: .
@@ -8,19 +9,60 @@ services:
       - "8080:80"
       - "8081:443"
     environment:
-      ASPNETCORE_URLS : "https://+;http://+"
+      ASPNETCORE_URLS : "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT : 8081
+      ASPNETCORE_ENVIRONMENT : Production
+      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
+      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
+      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
+      APP_EMAILCONFIGURATION__APIKEY: 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
+      APP_EMAILCONFIGURATION__SOURCE: support@benkyou.me
+      APP_EMAILCONFIGURATION__SOURCENAME: "Benkyou! Support"
     volumes:
       - "./Certificates:/Certificates"
+    depends_on:
+      - rabbitmq
+
+
   health-api:
     build:
+      context: .
       dockerfile: Health.Api/Dockerfile
     ports:
       - "9080:80"
       - "9081:443"
     environment:
-      ASPNETCORE_URLS: "https://+;http://+"
+      ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 9081
+      ASPNETCORE_ENVIRONMENT : Production
     volumes:
       - "./Certificates:/Certificates"
-      
+
+
+  auth-api:
+    build:
+      context: .
+      dockerfile: Auth.Api/Dockerfile
+    ports:
+      - "7080:80"
+      - "7081:443"
+    environment:
+      ASPNETCORE_URLS: "https://+:443;http://+:80"
+      ASPNETCORE_HTTPS_PORT: 7081
+      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
+      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
+      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
+      ASPNETCORE_ENVIRONMENT : Production
+    volumes:
+      - "./Certificates:/Certificates"
+    depends_on:
+      - rabbitmq
+  
+  
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: RabbitMQ
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: always

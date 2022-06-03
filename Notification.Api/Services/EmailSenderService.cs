@@ -1,10 +1,8 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
-using Notification.Api.Extensions.ConfigurationExtensions;
 using Notification.Api.Interfaces.Generators;
 using Notification.Api.Interfaces.Services;
 using Notification.Api.Models;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Serilog;
 
 namespace Notification.Api.Services;
@@ -14,69 +12,75 @@ public class EmailSenderService : IEmailSenderService
     private readonly EmailConfiguration _emailConfiguration;
     private readonly IEmailTemplateGenerator _templateGenerator;
 
-    public EmailSenderService(IConfiguration configuration, IEmailTemplateGenerator templateGenerator)
+    public EmailSenderService(EmailConfiguration emailConfiguration, IEmailTemplateGenerator templateGenerator)
     {
-        _emailConfiguration = configuration.GetEmailConfiguration();
+        _emailConfiguration = emailConfiguration;
         _templateGenerator = templateGenerator;
     }
 
     public async Task<Result> SendAccountConfirmationCodeAsync(string userName, string emailAddress,
-        int confirmationCode)
+        string confirmationCode)
     {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
-        message.Subject = "Benkyou! Confirmation code";
+        var from = new EmailAddress(_emailConfiguration.Source, _emailConfiguration.SourceName);
+        var subject = "Benkyou! Confirmation code";
+        var to = new EmailAddress(emailAddress, userName);
         var mailString = await _templateGenerator.GetEmailCodeMailAsync(userName, confirmationCode);
-        var bodyBuilder = new BodyBuilder
+        var message = new SendGridMessage
         {
-            HtmlBody = mailString
+            From = from,
+            Subject = subject,
+            HtmlContent = mailString
         };
-        message.Body = bodyBuilder.ToMessageBody();
-        message.XPriority = XMessagePriority.High;
-        message.To.Add(MailboxAddress.Parse(emailAddress));
+        message.AddTo(to);
+
         Log.Information("Sending confirmation code {ConfirmationCode} to {Destination}", confirmationCode,
             emailAddress);
+
         return await SendEmailAsync(message);
     }
 
     public async Task<Result> SendForgottenPasswordResetLinkAsync(string userName, string emailAddress,
         string passwordResetToken)
     {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Benkyou! Bot", "botbenkyou@gmail.com"));
-        message.Subject = "Benkyou! Password reset";
+        var from = new EmailAddress(_emailConfiguration.Source, _emailConfiguration.SourceName);
+        var subject = "Benkyou! Password reset";
+        var to = new EmailAddress(emailAddress, userName);
         var mailString =
-            await _templateGenerator.GetForgottenPasswordMailAsync(userName, $"https://okok.ok/{passwordResetToken}");
-        var bodyBuilder = new BodyBuilder
+            await _templateGenerator.GetForgottenPasswordMailAsync(userName,
+                $"https://benkyou.me/{passwordResetToken}");
+        var message = new SendGridMessage
         {
-            HtmlBody = mailString
+            From = from,
+            Subject = subject,
+            HtmlContent = mailString
         };
-        message.Body = bodyBuilder.ToMessageBody();
-        message.XPriority = XMessagePriority.High;
-        message.To.Add(MailboxAddress.Parse(emailAddress));
+        message.AddTo(to);
+
         Log.Information("Sending reset link with token {Token} to {Destination}", passwordResetToken,
             emailAddress);
+
         return await SendEmailAsync(message);
     }
 
-    private async Task<Result> SendEmailAsync(MimeMessage emailMessage)
+    private async Task<Result> SendEmailAsync(SendGridMessage emailMessage)
     {
         try
         {
-            using var smtpClient = new SmtpClient();
-            await smtpClient.ConnectAsync(_emailConfiguration.Server, _emailConfiguration.Port,
-                SecureSocketOptions.StartTls);
-            await smtpClient.AuthenticateAsync(_emailConfiguration.Login, _emailConfiguration.Password);
+            var client = new SendGridClient(_emailConfiguration.ApiKey);
+
+            var result = await client.SendEmailAsync(emailMessage);
+
             Log.Debug("Sending email message: {Message}", emailMessage.ToString());
-            await smtpClient.SendAsync(emailMessage);
-            await smtpClient.DisconnectAsync(true);
+
             Log.Information("Sent successfully");
-            return Result.Success();
+
+            return result.IsSuccessStatusCode ? Result.Success() : Result.Error();
         }
         catch (Exception e)
         {
             Log.Error("An exception {Type} was thrown while trying to send an email message: {EmailMessage}",
                 e.GetType().FullName, emailMessage);
+
             return Result.Error(e);
         }
     }
