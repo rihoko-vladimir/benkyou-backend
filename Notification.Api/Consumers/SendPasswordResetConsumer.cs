@@ -5,7 +5,7 @@ using Shared.Models.Messages;
 
 namespace Notification.Api.Consumers;
 
-public class SendPasswordResetConsumer : IConsumer<SendEmailResetLink>
+public class SendPasswordResetConsumer : IConsumer<SendEmailResetLinkMessage>
 {
     private readonly IEmailSenderService _emailSenderService;
 
@@ -14,7 +14,7 @@ public class SendPasswordResetConsumer : IConsumer<SendEmailResetLink>
         _emailSenderService = emailSenderService;
     }
 
-    public async Task Consume(ConsumeContext<SendEmailResetLink> context)
+    public async Task Consume(ConsumeContext<SendEmailResetLinkMessage> context)
     {
         Log.Information("Received reset token: {Code} And email to send: {Email}", context.Message.ResetToken,
             context.Message.EmailAddress);

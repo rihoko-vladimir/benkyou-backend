@@ -1,46 +1,65 @@
+using Auth.Api;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Serilog;
 
-namespace Auth.Api;
-
-public class Program
+var builder = WebApplication.CreateBuilder(args);
+var logger = new LoggerConfiguration()
+    .WriteTo.Console().CreateLogger();
+Log.Logger = logger;
+Log.Information("Application is starting up...");
+try
 {
-    public static async Task Main(string[] args)
+    builder.Host.UseSerilog((ctx, lc) =>
     {
-        try
-        {
-            var logger = new LoggerConfiguration()
-                .WriteTo.Console().CreateLogger();
-            Log.Logger = logger;
+        lc.WriteTo.Console()
+            .ReadFrom.Configuration(ctx.Configuration);
+    });
 
-            Log.Information("Application is starting up...");
+    builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
+    {
+        configurationBuilder.AddJsonFile("appsettings.json", true, true);
+        if (context.HostingEnvironment.EnvironmentName != "Production")
+            configurationBuilder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
+    });
 
-            await CreateHostBuilder(args).Build().RunAsync();
-        }
-        catch (Exception e)
-        {
-            Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
-                e.Message, e.StackTrace);
-        }
-        finally
-        {
-            Log.Information("Application is shutting down...");
-            Log.CloseAndFlush();
-        }
+    var startup = new Startup(builder.Configuration);
+    
+    startup.ConfigureServices(builder.Services);
+
+    var app = builder.Build();
+    
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    
+    startup.Configure(app, app.Environment, provider);
+
+
+    app.UseSerilogRequestLogging();
+
+    app.UseHealthChecks("/hc", new HealthCheckOptions
+    {
+        Predicate = _ => true,
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
+
+    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-            .UseSerilog((ctx, lc) =>
-            {
-                lc.WriteTo.Console()
-                    .ReadFrom.Configuration(ctx.Configuration);
-            }).ConfigureAppConfiguration((context, builder) =>
-            {
-                builder.AddJsonFile("appsettings.json", true, true);
-                if (context.HostingEnvironment.EnvironmentName != "Production")
-                    builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
-            });
-    }
+    //app.UseHttpsRedirection();
+
+    app.Run();
+}
+catch (Exception e)
+{
+    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+        e.Message, e.StackTrace);
+}
+finally
+{
+    Log.Information("Application is shutting down...");
+    Log.CloseAndFlush();
 }

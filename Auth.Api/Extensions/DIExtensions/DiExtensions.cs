@@ -40,7 +40,7 @@ public static class DiExtensions
 
         services.AddDbContext<ApplicationContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("SqlServerConnectionString") ?? "",
+            options.UseSqlServer(configuration.GetConnectionString("AuthSqlServerConnectionString") ?? "",
                 builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
 

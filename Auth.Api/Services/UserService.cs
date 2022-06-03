@@ -109,7 +109,7 @@ public class UserService : IUserService
 
         await _userCredentialsRepository.CreateUserCredentialAsync(user);
 
-        var result = await _senderService.SendEmailCodeAsync(emailCode, registrationRequest.Email);
+        var result = await _senderService.SendEmailCodeMessageAsync(emailCode, registrationRequest.Email);
 
         return !result.IsSuccess ? Result.Error<Guid>("Message broker error") : Result.Success(user.Id);
     }
@@ -177,6 +177,7 @@ public class UserService : IUserService
         var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
 
         var isCodeCorrect = _emailCodeGenerator.VerifyCode(confirmationCode, user);
+        
         if (!isCodeCorrect)
         {
             Log.Warning("Provided confirmation code is incorrect. User : {User}, EmailCode: {Code}", userId,
@@ -206,7 +207,7 @@ public class UserService : IUserService
 
         var resetCode = _resetTokenService.GetToken(user.Id);
 
-        var result = await _senderService.SendResetPasswordAsync(resetCode, email);
+        var result = await _senderService.SendResetPasswordMessageAsync(resetCode, email);
 
         return !result.IsSuccess ? Result.Error("Message broker error") : Result.Success();
     }

@@ -1,7 +1,7 @@
 namespace Shared.Models.Messages;
 
-public class SendEmailConfirmationCode
+public class SendEmailResetLinkMessage
 {
-    public string EmailCode { get; set; }
+    public string ResetToken { get; set; }
     public string EmailAddress { get; set; }
 }

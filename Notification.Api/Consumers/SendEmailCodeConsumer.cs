@@ -5,7 +5,7 @@ using Shared.Models.Messages;
 
 namespace Notification.Api.Consumers;
 
-public class SendEmailCodeConsumer : IConsumer<SendEmailConfirmationCode>
+public class SendEmailCodeConsumer : IConsumer<SendEmailConfirmationCodeMessage>
 {
     private readonly IEmailSenderService _emailSenderService;
 
@@ -14,7 +14,7 @@ public class SendEmailCodeConsumer : IConsumer<SendEmailConfirmationCode>
         _emailSenderService = emailSenderService;
     }
 
-    public async Task Consume(ConsumeContext<SendEmailConfirmationCode> context)
+    public async Task Consume(ConsumeContext<SendEmailConfirmationCodeMessage> context)
     {
         Log.Information("Received confirmation code: {Code} And email to send: {Email}", context.Message.EmailCode,
             context.Message.EmailAddress);

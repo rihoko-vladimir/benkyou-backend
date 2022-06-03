@@ -16,9 +16,10 @@ public class UserCredentialsRepository : IUserCredentialsRepository
 
     public async Task<UserCredential> GetUserByEmailAsync(string email)
     {
-        var user = (await _applicationContext.UserCredentials
+        var user = await _applicationContext.UserCredentials
             .Include(user => user.Tokens)
-            .FirstOrDefaultAsync(user => user.Email == email))!;
+            .FirstOrDefaultAsync(user => user.Email.Equals(email));
+        
         return user;
     }
 
@@ -41,6 +42,7 @@ public class UserCredentialsRepository : IUserCredentialsRepository
         var user = await _applicationContext.UserCredentials
             .Include(user1 => user1.Tokens)
             .FirstAsync(user1 => user1.Id == id);
+        
         return user;
     }
 
@@ -55,7 +57,7 @@ public class UserCredentialsRepository : IUserCredentialsRepository
     public async Task<bool> IsUserExistsByEmailAsync(string email)
     {
         var user = await _applicationContext.UserCredentials
-            .FirstOrDefaultAsync(user => user.Email == email);
+            .FirstOrDefaultAsync(user => user.Email.Equals(email));
 
         return user is not null;
     }
