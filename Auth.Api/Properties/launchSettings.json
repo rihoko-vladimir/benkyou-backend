@@ -16,7 +16,7 @@
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7080;http://localhost:7081",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Local",
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "AZURE_TENANT_ID": "c0ab88e5-7624-4c0c-ac14-2ffc48b685e9",
         "AZURE_CLIENT_ID": "b8c7b5f0-58cd-48d7-a596-245b30e1bfe2",
         "AZURE_CLIENT_SECRET": "f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1"
