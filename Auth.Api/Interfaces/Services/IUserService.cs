@@ -1,6 +1,7 @@
 using Auth.Api.Models;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
+using Shared.Models.Models;
 
 namespace Auth.Api.Interfaces.Services;
 

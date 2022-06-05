@@ -6,6 +6,7 @@ using Auth.Api.Models.Entities;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using Serilog;
+using Shared.Models.Models;
 using Bcrypt = BCrypt.Net.BCrypt;
 
 namespace Auth.Api.Services;

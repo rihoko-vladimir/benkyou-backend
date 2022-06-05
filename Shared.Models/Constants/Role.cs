@@ -1,4 +1,4 @@
-namespace Auth.Api.Models.Constants;
+namespace Shared.Models.Constants;
 
 public static class Role
 {
