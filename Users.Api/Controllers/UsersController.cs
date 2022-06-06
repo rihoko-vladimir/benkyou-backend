@@ -32,4 +32,18 @@ public class UsersController : ControllerBase
 
         return BadRequest();
     }
+
+    [HttpPut]
+    [Route("upload_avatar")]
+    public async Task<ActionResult> UploadUserAvatar(IFormFile formFile)
+    {
+        var userId = await this.GetAccessTokenAsync();
+        var result = await _userInformationService.UpdateUserAvatar(formFile, Guid.Parse(userId));
+        if (result.IsSuccess)
+        {
+            return Ok();
+        }
+
+        return BadRequest();
+    }
 }

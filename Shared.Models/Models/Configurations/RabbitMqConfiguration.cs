@@ -1,4 +1,4 @@
-namespace Auth.Api.Models.Configuration;
+namespace Shared.Models.Models.Configurations;
 
 public class RabbitMqConfiguration
 {

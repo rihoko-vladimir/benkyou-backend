@@ -1,4 +1,3 @@
-using Auth.Api.Models.Configuration;
 using MassTransit;
 using Shared.Models.Models.Configurations;
 using ext = Auth.Api.Extensions.EnvironmentExtensions;

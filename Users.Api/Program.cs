@@ -2,21 +2,10 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Users.Api.Extensions.DiExtensions;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Host.UseSerilog((ctx, lc) =>
-{
-    lc.WriteTo.Console()
-        .ReadFrom.Configuration(ctx.Configuration);
-});
 
 builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
 {
@@ -29,9 +18,20 @@ builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
     if (context.HostingEnvironment.EnvironmentName != "Production")
         configurationBuilder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
 });
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddApplication(builder.Configuration);
+
+builder.Host.UseSerilog((ctx, lc) =>
+{
+    lc.WriteTo.Console()
+        .ReadFrom.Configuration(ctx.Configuration);
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!ext.IsProduction())
 {
     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();

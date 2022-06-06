@@ -1,13 +1,17 @@
 using Shared.Models.Models;
 using Users.Api.Models;
+using Users.Api.Models.Entities;
+using Users.Api.Models.Requests;
 
 namespace Users.Api.Interfaces.Repositories;
 
 public interface IUserInfoRepository
 {
-    public Task UpdateUserInfoAsync(UserInformation userInformation);
+    public Task UpdateUserInfoAsync(UpdateUserInfoRequest userInformation, Guid id);
 
     public Task<UserInformation> GetUserInfoAsync(Guid userId);
 
     public Task CreateUserAsync(UserInformation userInformation);
+
+    public Task UpdateUserAvatarUrl(string avatarUrl, Guid userId);
 }

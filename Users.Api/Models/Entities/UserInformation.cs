@@ -1,4 +1,4 @@
-namespace Users.Api.Models;
+namespace Users.Api.Models.Entities;
 
 public class UserInformation
 {

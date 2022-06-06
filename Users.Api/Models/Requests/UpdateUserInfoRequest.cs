@@ -9,8 +9,6 @@ public class UpdateUserInfoRequest
     public string UserName { get; set; }
 
     public DateTime BirthDay { get; set; }
-    
-    public string Avatar { get; set; }
 
     public bool IsAccountPublic { get; set; }
     

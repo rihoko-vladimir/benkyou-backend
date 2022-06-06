@@ -22,13 +22,17 @@ public static class DiExtensions
     {
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         services.AddSingleton<DapperContext>();
+        services.AddSingleton(configuration.GetJwtConfiguration());
+        services.AddSingleton(configuration.GetBlobConfiguration());
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
         services.AddConfiguredMassTransit(configuration);
+        
         services.AddAutoMapper(expression =>
         {
             expression.AddProfile<AutoMappingProfile>();
         });
+        
         services.AddEndpointsApiExplorer();
 
         services.AddApiVersioning(setup =>
@@ -44,8 +48,8 @@ public static class DiExtensions
             setup.SubstituteApiVersionInUrl = true;
         });
     }
-    
-    public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
+
+    private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(configurator =>
         {

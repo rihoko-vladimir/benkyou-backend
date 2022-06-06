@@ -1,8 +1,8 @@
-using Auth.Api.Models.Configuration;
 using MassTransit;
 using Shared.Models.Models.Configurations;
 using Shared.Models.QueueNames;
 using Users.Api.Consumers;
+using Users.Api.Models.Configurations;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
 
 namespace Users.Api.Extensions.ConfigurationExtensions;
@@ -16,6 +16,16 @@ public static class ConfigurationExtensions
         section.Bind(jwtConfiguration);
 
         return jwtConfiguration;
+    }
+
+    public static AzureBlobConfiguration GetBlobConfiguration(this IConfiguration configuration)
+    {
+        var section = configuration.GetSection(AzureBlobConfiguration.Key);
+        var blobConfiguration = new AzureBlobConfiguration();
+        section.Bind(blobConfiguration);
+        blobConfiguration.ConnectionString = configuration.GetConnectionString("AzureStorageBlobConnectionString");
+
+        return blobConfiguration;
     }
     public static RabbitMqConfiguration GetRabbitMqConfiguration(this IConfiguration configuration)
     {
