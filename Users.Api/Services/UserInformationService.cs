@@ -6,6 +6,7 @@ using Shared.Models.Models;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
 using Users.Api.Models.Configurations;
+using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 
 namespace Users.Api.Services;
@@ -24,7 +25,7 @@ public class UserInformationService : IUserInformationService
     }
     
 
-    public async Task<Result> UpdateUserInfo(JsonPatchDocument<UpdateUserInfoRequest> updateRequest, Guid userId)
+    public async Task<Result> UpdateUserInfoAsync(JsonPatchDocument<UpdateUserInfoRequest> updateRequest, Guid userId)
     {
         try
         {
@@ -44,7 +45,7 @@ public class UserInformationService : IUserInformationService
         }
     }
 
-    public async Task<Result> UpdateUserAvatar(IFormFile file, Guid userId)
+    public async Task<Result> UpdateUserAvatarAsync(IFormFile file, Guid userId)
     {
         try
         {
@@ -60,6 +61,20 @@ public class UserInformationService : IUserInformationService
         catch (Exception e)
         {
             Log.Error("An error occured while uploading avatar. Exception : {Exception}, Stacktrace: {StackTrace}", e.GetType().FullName, e.StackTrace);
+            return Result.Error(e);
+        }
+    }
+
+    public async Task<Result> CreateUserAsync(UserInformation userInformation)
+    {
+        try
+        {
+            await _userInfoRepository.CreateUserAsync(userInformation);
+            return Result.Success();
+        }
+        catch (Exception e)
+        {
+            Log.Error("An error occured while creating user. Exception : {Exception}, Stacktrace: {StackTrace}", e.GetType().FullName, e.StackTrace);
             return Result.Error(e);
         }
     }

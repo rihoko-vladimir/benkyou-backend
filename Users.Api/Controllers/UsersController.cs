@@ -24,7 +24,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> PatchUserInfo([FromBody] JsonPatchDocument<UpdateUserInfoRequest> updateRequest)
     {
         var userId = await this.GetAccessTokenAsync();
-        var result = await _userInformationService.UpdateUserInfo(updateRequest, Guid.Parse(userId));
+        var result = await _userInformationService.UpdateUserInfoAsync(updateRequest, Guid.Parse(userId));
         if (result.IsSuccess)
         {
             return Ok();
@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
     public async Task<ActionResult> UploadUserAvatar(IFormFile formFile)
     {
         var userId = await this.GetAccessTokenAsync();
-        var result = await _userInformationService.UpdateUserAvatar(formFile, Guid.Parse(userId));
+        var result = await _userInformationService.UpdateUserAvatarAsync(formFile, Guid.Parse(userId));
         if (result.IsSuccess)
         {
             return Ok();

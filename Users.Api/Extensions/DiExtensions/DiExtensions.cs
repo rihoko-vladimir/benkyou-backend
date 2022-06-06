@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Users.Api.Common.Helpers;
 using Users.Api.Configurations;
+using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
@@ -53,6 +54,7 @@ public static class DiExtensions
     {
         services.AddMassTransit(configurator =>
         {
+            configurator.AddConsumer<RegisterUserMessageConsumer>();
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {

@@ -51,6 +51,7 @@ public static class ConfigurationExtensions
         RabbitMqConfiguration rabbitConfig)
     {
         factoryConfigurator.ConfigureEndpoints(context);
+        
         factoryConfigurator.Host(rabbitConfig.Host, rabbitConfig.VirtualHost, hostConfigurator =>
         {
             hostConfigurator.Username(rabbitConfig.UserName);
