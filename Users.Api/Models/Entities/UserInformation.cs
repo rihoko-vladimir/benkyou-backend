@@ -11,8 +11,8 @@ public class UserInformation
     public string UserName { get; set; }
     
     public string UserRole { get; set; }
-    
-    public DateTime BirthDay { get; set; }
+
+    public DateTime? BirthDay { get; set; } = null;
     
     public string AvatarUrl { get; set; }
     

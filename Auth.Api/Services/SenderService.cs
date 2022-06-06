@@ -38,7 +38,7 @@ public class SenderService : ISenderService
     {
         Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
 
-        var result = await SendMessage<>(new Uri($"queue:{QueueNames.PasswordResetQueue}"),
+        var result = await SendMessage(new Uri($"queue:{QueueNames.PasswordResetQueue}"),
             new SendEmailResetLinkMessage
             {
                 ResetToken = resetToken,

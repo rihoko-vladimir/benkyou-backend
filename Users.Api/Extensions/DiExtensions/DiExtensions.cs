@@ -2,7 +2,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Users.Api.Common.Helpers;
 using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
@@ -22,7 +21,6 @@ public static class DiExtensions
     public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
-        services.AddSingleton<DapperContext>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddSingleton(configuration.GetBlobConfiguration());
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();

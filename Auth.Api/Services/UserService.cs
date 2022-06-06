@@ -112,7 +112,11 @@ public class UserService : IUserService
 
         var result = await _senderService.SendEmailCodeMessageAsync(emailCode, registrationRequest.Email);
 
-        return !result.IsSuccess ? Result.Error<Guid>("Message broker error") : Result.Success(user.Id);
+        var registrationCredResult =
+            await _senderService.SendRegistrationMessageAsync(user.Id, registrationRequest.FirstName,
+                registrationRequest.LastName, registrationRequest.UserName, registrationRequest.IsTermsAccepted);
+
+        return !result.IsSuccess && !registrationCredResult.IsSuccess ? Result.Error<Guid>("Message broker error") : Result.Success(user.Id);
     }
 
     public async Task<Result<TokensResponse>> RefreshTokensAsync(string refreshToken)
