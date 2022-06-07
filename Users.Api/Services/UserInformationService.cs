@@ -1,5 +1,6 @@
 using AutoMapper;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Serilog;
 using Shared.Models.Models;
@@ -49,7 +50,12 @@ public class UserInformationService : IUserInformationService
     {
         try
         {
-            var fileName = $"{new Guid()}.png";
+            var serviceClient = new BlobServiceClient(_blobConfiguration.ConnectionString);
+            if (!await serviceClient.GetBlobContainerClient(_blobConfiguration.ContainerName).ExistsAsync())
+            {
+                await serviceClient.CreateBlobContainerAsync(_blobConfiguration.ContainerName, PublicAccessType.BlobContainer);
+            }
+            var fileName = $"{Guid.NewGuid()}.png";
             var blobClient = new BlobClient(_blobConfiguration.ConnectionString, _blobConfiguration.ContainerName,
                 fileName);
             await using var fileStream = file.OpenReadStream();

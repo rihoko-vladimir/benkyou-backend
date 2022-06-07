@@ -13,18 +13,21 @@ namespace Users.Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserInformationService _userInformationService;
+    private readonly IAccessTokenService _accessTokenService;
 
-    public UsersController(IUserInformationService userInformationService)
+    public UsersController(IUserInformationService userInformationService, IAccessTokenService accessTokenService)
     {
         _userInformationService = userInformationService;
+        _accessTokenService = accessTokenService;
     }
 
     [HttpPatch]
     [Route("update_info")]
     public async Task<ActionResult> PatchUserInfo([FromBody] JsonPatchDocument<UpdateUserInfoRequest> updateRequest)
     {
-        var userId = await this.GetAccessTokenAsync();
-        var result = await _userInformationService.UpdateUserInfoAsync(updateRequest, Guid.Parse(userId));
+        var token = await this.GetAccessTokenAsync();
+        _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+        var result = await _userInformationService.UpdateUserInfoAsync(updateRequest, userId);
         if (result.IsSuccess)
         {
             return Ok();
@@ -37,8 +40,9 @@ public class UsersController : ControllerBase
     [Route("upload_avatar")]
     public async Task<ActionResult> UploadUserAvatar(IFormFile formFile)
     {
-        var userId = await this.GetAccessTokenAsync();
-        var result = await _userInformationService.UpdateUserAvatarAsync(formFile, Guid.Parse(userId));
+        var token = await this.GetAccessTokenAsync();
+        _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+        var result = await _userInformationService.UpdateUserAvatarAsync(formFile, userId);
         if (result.IsSuccess)
         {
             return Ok();

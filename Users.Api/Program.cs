@@ -19,7 +19,8 @@ builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
         configurationBuilder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication(builder.Configuration);
@@ -47,6 +48,7 @@ if (!ext.IsProduction())
     });
     app.UseDeveloperExceptionPage();
 }
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

@@ -24,9 +24,9 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task UpdateUserInfoAsync(UpdateUserInfoRequest userInformation, Guid id)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         var queryParams = new DynamicParameters();
-        queryParams.Add("userId", id.ToString(), DbType.Guid);
+        queryParams.Add("userId", id, DbType.Guid);
         queryParams.Add("firstName", userInformation.FirstName, DbType.StringFixedLength);
         queryParams.Add("lastName", userInformation.LastName, DbType.StringFixedLength);
         queryParams.Add("userName", userInformation.UserName, DbType.StringFixedLength);
@@ -39,19 +39,19 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task<UserInformation> GetUserInfoAsync(Guid userId)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
         
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
 
-        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(GetUserQuery, userId);
+        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(GetUserQuery, queryParams);
 
         return userInfo;
     }
 
     public async Task CreateUserAsync(UserInformation userInformation)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
 
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userInformation.Id, DbType.Guid);
@@ -64,11 +64,11 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task UpdateUserAvatarUrl(string avatarUrl, Guid userId)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        using var connection = new SqlConnection(_connectionString);
 
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
-        queryParams.Add("avatarUrl", avatarUrl, DbType.String);
+        queryParams.Add("avatarUrl", avatarUrl, DbType.StringFixedLength);
         await connection.ExecuteAsync(UpdateUserAvatarQuery, queryParams);
     }
 }

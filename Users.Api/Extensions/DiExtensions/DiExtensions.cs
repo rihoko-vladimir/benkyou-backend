@@ -1,10 +1,12 @@
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
+using Users.Api.Extensions.JWTExtensions;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
 using Users.Api.MapperProfiles;
@@ -23,6 +25,7 @@ public static class DiExtensions
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddSingleton(configuration.GetBlobConfiguration());
+        services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
         services.AddConfiguredMassTransit(configuration);
@@ -40,6 +43,13 @@ public static class DiExtensions
             setup.AssumeDefaultVersionWhenUnspecified = true;
             setup.ReportApiVersions = true;
         });
+        
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options => { options.ConfigureJwtBearer(configuration); });
 
         services.AddVersionedApiExplorer(setup =>
         {
