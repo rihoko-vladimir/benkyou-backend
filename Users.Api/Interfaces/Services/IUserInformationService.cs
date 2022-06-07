@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Shared.Models.Models;
-using Users.Api.Models;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 
@@ -13,4 +12,6 @@ public interface IUserInformationService
     public Task<Result> UpdateUserAvatarAsync(IFormFile file, Guid userId);
 
     public Task<Result> CreateUserAsync(UserInformation userInformation);
+
+    public Task<Result<UserInformation>> GetUserInformation(Guid userId);
 }

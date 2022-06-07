@@ -1,7 +1,6 @@
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Repositories;
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models;
 using Auth.Api.Models.Entities;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;

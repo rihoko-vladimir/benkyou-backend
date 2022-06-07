@@ -1,8 +1,8 @@
 using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
+using Serilog;
 using Users.Api.Interfaces.Repositories;
-using Users.Api.Models;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 
@@ -24,8 +24,9 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task UpdateUserInfoAsync(UpdateUserInfoRequest userInformation, Guid id)
     {
-        using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_connectionString);
         var queryParams = new DynamicParameters();
+        
         queryParams.Add("userId", id, DbType.Guid);
         queryParams.Add("firstName", userInformation.FirstName, DbType.StringFixedLength);
         queryParams.Add("lastName", userInformation.LastName, DbType.StringFixedLength);
@@ -33,17 +34,27 @@ public class UserInfoRepository : IUserInfoRepository
         queryParams.Add("birthDay", userInformation.BirthDay, DbType.DateTime2);
         queryParams.Add("isAccountPublic", userInformation.IsAccountPublic, DbType.Byte);
         queryParams.Add("about", userInformation.About, DbType.StringFixedLength);
+        
+        Log.Information("Updating user info: {FirstName}, {LastName}, {UserName}, {BirthDay}, {IsPublic}, {About}", 
+            userInformation.FirstName,
+            userInformation.LastName,
+            userInformation.UserName,
+            userInformation.BirthDay ?? new DateTime(),
+            userInformation.IsAccountPublic,
+            userInformation.About);
 
         await connection.ExecuteAsync(UpdateUserQuery, queryParams);
     }
 
     public async Task<UserInformation> GetUserInfoAsync(Guid userId)
     {
-        using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_connectionString);
         
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
 
+        Log.Information("Querying for user info with id {UserId}", userId);
+        
         var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(GetUserQuery, queryParams);
 
         return userInfo;
@@ -51,24 +62,34 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task CreateUserAsync(UserInformation userInformation)
     {
-        using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_connectionString);
 
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userInformation.Id, DbType.Guid);
         queryParams.Add("userName", userInformation.UserName, DbType.StringFixedLength);
         queryParams.Add("firstName", userInformation.FirstName, DbType.StringFixedLength);
         queryParams.Add("lastName", userInformation.LastName, DbType.StringFixedLength);
-
+        
+        Log.Information("Creating new user: {Id}, {UserName}, {FirstName}, {LastName}", 
+            userInformation.Id,
+            userInformation.UserName,
+            userInformation.FirstName,
+            userInformation.LastName);
+        
         await connection.ExecuteAsync(CreateUserQuery, queryParams);
     }
 
     public async Task UpdateUserAvatarUrl(string avatarUrl, Guid userId)
     {
-        using var connection = new SqlConnection(_connectionString);
+        await using var connection = new SqlConnection(_connectionString);
 
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
         queryParams.Add("avatarUrl", avatarUrl, DbType.StringFixedLength);
+        
+        Log.Information("Changing user's {Id} avatar url with new value : {AvatarUrl}", 
+            userId,
+            avatarUrl);
         
         await connection.ExecuteAsync(UpdateUserAvatarQuery, queryParams);
     }

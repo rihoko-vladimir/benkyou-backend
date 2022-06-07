@@ -1,5 +1,4 @@
 using AutoMapper;
-using Users.Api.Models;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 

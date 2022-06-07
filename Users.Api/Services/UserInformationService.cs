@@ -65,7 +65,7 @@ public class UserInformationService : IUserInformationService
             await using var fileStream = file.OpenReadStream();
             await blobClient.UploadAsync(fileStream);
             
-            Log.Debug("Uploaded avatar to the server. Url is {Url}", blobClient.Uri);
+            Log.Debug("Uploaded avatar into the blob. Url is {Url}", blobClient.Uri);
             
             await _userInfoRepository.UpdateUserAvatarUrl(blobClient.Uri.ToString(), userId);
             
@@ -91,5 +91,12 @@ public class UserInformationService : IUserInformationService
             Log.Error("An error occured while creating user. Exception : {Exception}, Stacktrace: {StackTrace}", e.GetType().FullName, e.StackTrace);
             return Result.Error(e);
         }
+    }
+
+    public async Task<Result<UserInformation>> GetUserInformation(Guid userId)
+    {
+        var user = await _userInfoRepository.GetUserInfoAsync(userId);
+
+        return Result.Success(user);
     }
 }

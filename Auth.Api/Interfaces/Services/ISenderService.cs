@@ -1,4 +1,3 @@
-using Auth.Api.Models;
 using Shared.Models.Models;
 
 namespace Auth.Api.Interfaces.Services;

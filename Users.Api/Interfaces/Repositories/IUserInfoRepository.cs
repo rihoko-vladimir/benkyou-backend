@@ -1,5 +1,3 @@
-using Shared.Models.Models;
-using Users.Api.Models;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 

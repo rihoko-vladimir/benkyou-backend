@@ -1,8 +1,10 @@
+using Dapper;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Users.Api.Common.TypeHandlers;
 using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
@@ -57,6 +59,8 @@ public static class DiExtensions
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
+        
+        SqlMapper.AddTypeHandler(new TrimmedStringHandler());
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)

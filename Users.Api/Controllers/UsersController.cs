@@ -9,7 +9,7 @@ namespace Users.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("/api/v{version:apiVersion}/users")]
+[Route("/api/v{version:apiVersion}/user")]
 public class UsersController : ControllerBase
 {
     private readonly IUserInformationService _userInformationService;
@@ -48,6 +48,22 @@ public class UsersController : ControllerBase
         if (result.IsSuccess)
         {
             return Ok();
+        }
+
+        return BadRequest();
+    }
+
+    [HttpGet]
+    [Route("")]
+    public async Task<ActionResult> GetUserInfo()
+    {
+        var token = await this.GetAccessTokenAsync();
+        _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+        var result = await _userInformationService.GetUserInformation(userId);
+        
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
         }
 
         return BadRequest();
