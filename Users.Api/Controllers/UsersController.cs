@@ -28,6 +28,7 @@ public class UsersController : ControllerBase
         var token = await this.GetAccessTokenAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
         var result = await _userInformationService.UpdateUserInfoAsync(updateRequest, userId);
+        
         if (result.IsSuccess)
         {
             return Ok();
@@ -43,6 +44,7 @@ public class UsersController : ControllerBase
         var token = await this.GetAccessTokenAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
         var result = await _userInformationService.UpdateUserAvatarAsync(formFile, userId);
+        
         if (result.IsSuccess)
         {
             return Ok();

@@ -28,6 +28,7 @@ public static class DiExtensions
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
+        
         services.AddConfiguredMassTransit(configuration);
         
         services.AddAutoMapper(expression =>
@@ -63,6 +64,7 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<RegisterUserMessageConsumer>();
+            
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {

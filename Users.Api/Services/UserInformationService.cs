@@ -42,6 +42,7 @@ public class UserInformationService : IUserInformationService
         catch (Exception e)
         {
             Log.Error("An error occured while trying to update user's information. Exception : {Exception}, stacktrace: {Stacktrace}", e.GetType().FullName, e.StackTrace);
+            
             return Result.Error(e);
         }
     }
@@ -51,22 +52,29 @@ public class UserInformationService : IUserInformationService
         try
         {
             var serviceClient = new BlobServiceClient(_blobConfiguration.ConnectionString);
+            
             if (!await serviceClient.GetBlobContainerClient(_blobConfiguration.ContainerName).ExistsAsync())
             {
                 await serviceClient.CreateBlobContainerAsync(_blobConfiguration.ContainerName, PublicAccessType.BlobContainer);
             }
+            
             var fileName = $"{Guid.NewGuid()}.png";
+            
             var blobClient = new BlobClient(_blobConfiguration.ConnectionString, _blobConfiguration.ContainerName,
                 fileName);
             await using var fileStream = file.OpenReadStream();
             await blobClient.UploadAsync(fileStream);
+            
             Log.Debug("Uploaded avatar to the server. Url is {Url}", blobClient.Uri);
+            
             await _userInfoRepository.UpdateUserAvatarUrl(blobClient.Uri.ToString(), userId);
+            
             return Result.Success();
         }
         catch (Exception e)
         {
             Log.Error("An error occured while uploading avatar. Exception : {Exception}, Stacktrace: {StackTrace}", e.GetType().FullName, e.StackTrace);
+            
             return Result.Error(e);
         }
     }

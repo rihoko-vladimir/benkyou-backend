@@ -21,8 +21,11 @@ builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson();
+
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddApplication(builder.Configuration);
 
 builder.Host.UseSerilog((ctx, lc) =>

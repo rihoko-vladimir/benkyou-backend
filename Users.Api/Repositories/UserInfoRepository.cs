@@ -59,7 +59,7 @@ public class UserInfoRepository : IUserInfoRepository
         queryParams.Add("firstName", userInformation.FirstName, DbType.StringFixedLength);
         queryParams.Add("lastName", userInformation.LastName, DbType.StringFixedLength);
 
-        var result = await connection.ExecuteAsync(CreateUserQuery, queryParams);
+        await connection.ExecuteAsync(CreateUserQuery, queryParams);
     }
 
     public async Task UpdateUserAvatarUrl(string avatarUrl, Guid userId)
@@ -69,6 +69,7 @@ public class UserInfoRepository : IUserInfoRepository
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
         queryParams.Add("avatarUrl", avatarUrl, DbType.StringFixedLength);
+        
         await connection.ExecuteAsync(UpdateUserAvatarQuery, queryParams);
     }
 }

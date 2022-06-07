@@ -17,7 +17,7 @@ public class RegisterUserMessageConsumer : IConsumer<RegisterUserMessage>
     public async Task Consume(ConsumeContext<RegisterUserMessage> context)
     {
         var user = context.Message;
-        var userInformation = new UserInformation()
+        var userInformation = new UserInformation
         {
             Id = user.UserId,
             FirstName = user.FirstName,
@@ -25,6 +25,7 @@ public class RegisterUserMessageConsumer : IConsumer<RegisterUserMessage>
             UserName = user.UserName,
             IsTermsAccepted = user.IsTermsAccepted
         };
+        
         await _userInformationService.CreateUserAsync(userInformation);
     }
 }
