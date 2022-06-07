@@ -14,7 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7080;http://localhost:7081",
+      "applicationUrl": "https://localhost:7081;http://localhost:7080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Local",
         "AZURE_TENANT_ID": "c0ab88e5-7624-4c0c-ac14-2ffc48b685e9",

@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" Version="6.0.2" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.4" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Core" Version="6.0.4" />
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
         <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.3.0" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />

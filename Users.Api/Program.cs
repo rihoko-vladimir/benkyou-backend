@@ -1,4 +1,6 @@
 using Azure.Identity;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -51,9 +53,18 @@ if (!ext.IsProduction())
     });
     app.UseDeveloperExceptionPage();
 }
+
+app.UseRouting();
+
+app.UseHealthChecks("/hc", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
 app.UseAuthentication();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

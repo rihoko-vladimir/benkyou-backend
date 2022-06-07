@@ -1,7 +1,9 @@
+using Azure.Identity;
 using Dapper;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Users.Api.Common.TypeHandlers;
@@ -12,6 +14,7 @@ using Users.Api.Extensions.JWTExtensions;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
 using Users.Api.MapperProfiles;
+using Users.Api.Models.Configurations;
 using Users.Api.Repositories;
 using Users.Api.Services;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
@@ -59,6 +62,23 @@ public static class DiExtensions
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
+        
+        var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        var blobUri = configuration.GetConnectionString("AzureStorageBlobConnectionString");
+        var containerName = configuration.GetSection(AzureBlobConfiguration.Key).GetValue<string>("ContainerName");
+        services.AddHealthChecks()
+            .AddAzureKeyVault(vaultUri,
+                new DefaultAzureCredential(),
+                _ => { },
+                "Azure Key vault",
+                HealthStatus.Unhealthy,
+                new List<string> {"Azure Key Vault"})
+            .AddAzureBlobStorage(
+                blobUri,
+                containerName: containerName,
+                name:"Storage Blob",
+                failureStatus:HealthStatus.Unhealthy,
+                tags:new List<string>{"Storage Blob"});
         
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
     }

@@ -9,6 +9,8 @@
 
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.AzureKeyVault" Version="6.0.2" />
+        <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="6.0.4" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Core" Version="6.0.4" />
         <PackageReference Include="AutoMapper" Version="11.0.1" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
@@ -37,6 +39,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="HealthChecks.UI.Client">
+        <HintPath>..\..\..\.nuget\packages\aspnetcore.healthchecks.ui.client\6.0.4\lib\net6.0\HealthChecks.UI.Client.dll</HintPath>
+      </Reference>
       <Reference Include="Microsoft.Data.SqlClient">
         <HintPath>..\..\..\.nuget\packages\microsoft.data.sqlclient\4.0.0\ref\netcoreapp3.1\Microsoft.Data.SqlClient.dll</HintPath>
       </Reference>
