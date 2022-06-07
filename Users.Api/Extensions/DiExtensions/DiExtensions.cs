@@ -11,6 +11,7 @@ using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
 using Users.Api.Extensions.JWTExtensions;
+using Users.Api.HealthChecks;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
 using Users.Api.MapperProfiles;
@@ -30,6 +31,7 @@ public static class DiExtensions
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddSingleton(configuration.GetBlobConfiguration());
+        services.AddSingleton<DbHealthCheck>(new DbHealthCheck(configuration));
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
@@ -67,6 +69,8 @@ public static class DiExtensions
         var blobUri = configuration.GetConnectionString("AzureStorageBlobConnectionString");
         var containerName = configuration.GetSection(AzureBlobConfiguration.Key).GetValue<string>("ContainerName");
         services.AddHealthChecks()
+            .AddCheck<DbHealthCheck>("User information database",
+                tags: new List<string>{"Database"})
             .AddAzureKeyVault(vaultUri,
                 new DefaultAzureCredential(),
                 _ => { },
@@ -79,7 +83,7 @@ public static class DiExtensions
                 name:"Storage Blob",
                 failureStatus:HealthStatus.Unhealthy,
                 tags:new List<string>{"Storage Blob"});
-        
+
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
     }
 
