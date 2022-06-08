@@ -1,5 +1,6 @@
 using Azure.Identity;
 using Dapper;
+using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ using Users.Api.MapperProfiles;
 using Users.Api.Models.Configurations;
 using Users.Api.Repositories;
 using Users.Api.Services;
+using Users.Api.Validators;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
 using massExt = Users.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
@@ -85,6 +87,8 @@ public static class DiExtensions
                 tags:new List<string>{"Storage Blob"});
 
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
+
+        services.AddValidatorsFromAssemblyContaining<UserInfoValidator>();
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)

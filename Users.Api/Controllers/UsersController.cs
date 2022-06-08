@@ -34,7 +34,7 @@ public class UsersController : ControllerBase
             return Ok();
         }
 
-        return BadRequest();
+        return BadRequest(result.Message);
     }
 
     [HttpPut]
