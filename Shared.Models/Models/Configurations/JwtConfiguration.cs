@@ -1,4 +1,4 @@
-namespace Auth.Api.Models.Application;
+namespace Shared.Models.Models.Configurations;
 
 public class JwtConfiguration
 {

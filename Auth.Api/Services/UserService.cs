@@ -1,11 +1,11 @@
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Repositories;
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models;
 using Auth.Api.Models.Entities;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using Serilog;
+using Shared.Models.Models;
 using Bcrypt = BCrypt.Net.BCrypt;
 
 namespace Auth.Api.Services;
@@ -111,7 +111,11 @@ public class UserService : IUserService
 
         var result = await _senderService.SendEmailCodeMessageAsync(emailCode, registrationRequest.Email);
 
-        return !result.IsSuccess ? Result.Error<Guid>("Message broker error") : Result.Success(user.Id);
+        var registrationCredResult =
+            await _senderService.SendRegistrationMessageAsync(user.Id, registrationRequest.FirstName,
+                registrationRequest.LastName, registrationRequest.UserName, registrationRequest.IsTermsAccepted);
+
+        return !result.IsSuccess && !registrationCredResult.IsSuccess ? Result.Error<Guid>("Message broker error") : Result.Success(user.Id);
     }
 
     public async Task<Result<TokensResponse>> RefreshTokensAsync(string refreshToken)

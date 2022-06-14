@@ -37,6 +37,8 @@ try
 
     app.UseSerilogRequestLogging();
 
+    app.UseRouting();
+    
     app.UseHealthChecks("/hc", new HealthCheckOptions
     {
         Predicate = _ => true,

@@ -1,6 +1,5 @@
-using Auth.Api.Models.Application;
-using Auth.Api.Models.Configuration;
 using MassTransit;
+using Shared.Models.Models.Configurations;
 using ext = Auth.Api.Extensions.EnvironmentExtensions;
 
 namespace Auth.Api.Extensions.ConfigurationExtensions;

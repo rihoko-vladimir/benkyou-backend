@@ -4,6 +4,7 @@ using Notification.Api.Models;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Serilog;
+using Shared.Models.Models;
 
 namespace Notification.Api.Services;
 

@@ -8,7 +8,9 @@ using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Repositories;
 using Auth.Api.Services;
+using Auth.Api.Validators;
 using Azure.Identity;
+using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -77,6 +79,10 @@ public static class DiExtensions
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
+
+        services.AddValidatorsFromAssemblyContaining<RegistrationDataValidator>();
+
+        services.AddValidatorsFromAssemblyContaining<ResetPasswordDataValidator>();
     }
 
     public static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
@@ -84,7 +90,7 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             if (ext.IsDevelopment() || ext.IsLocal())
-                configurator.UsingRabbitMq((context, factoryConfigurator) =>
+                configurator.UsingRabbitMq((_, factoryConfigurator) =>
                 {
                     var rabbitConfig = configuration.GetRabbitMqConfiguration();
                     ConfigurationExtensionsApp.ConfigureRabbitMq(factoryConfigurator, rabbitConfig);

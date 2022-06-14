@@ -1,8 +1,8 @@
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models;
 using MassTransit;
 using Serilog;
 using Shared.Models.Messages;
+using Shared.Models.Models;
 using Shared.Models.QueueNames;
 
 namespace Auth.Api.Services;
@@ -18,52 +18,71 @@ public class SenderService : ISenderService
 
     public async Task<Result> SendEmailCodeMessageAsync(string emailCode, string emailAddress)
     {
-        try
-        {
-            var endpoint =
-                await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{QueueNames.EmailConfirmationQueue}"));
 
-            Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
 
-            await endpoint.Send(new SendEmailConfirmationCodeMessage
+        Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
+
+        var result = await SendMessage(new Uri($"queue:{QueueNames.EmailConfirmationQueue}"),
+            new SendEmailConfirmationCodeMessage
             {
                 EmailCode = emailCode,
                 EmailAddress = emailAddress
             });
-
-            return Result.Success();
-        }
-        catch (Exception e)
-        {
-            Log.Error(
-                "An error occured while attempting to send confirmation code. Exception: {Type}, Message: {Message}",
-                e.GetType().FullName, e.Message);
-
-            return Result.Error();
-        }
+        
+        return result;
     }
+
+    
 
     public async Task<Result> SendResetPasswordMessageAsync(string resetToken, string emailAddress)
     {
-        try
-        {
-            var endpoint =
-                await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{QueueNames.PasswordResetQueue}"));
+        Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
 
-            Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
-
-            await endpoint.Send(new SendEmailResetLinkMessage
+        var result = await SendMessage(new Uri($"queue:{QueueNames.PasswordResetQueue}"),
+            new SendEmailResetLinkMessage
             {
                 ResetToken = resetToken,
                 EmailAddress = emailAddress
             });
 
+        return result;
+    }
+
+    public async Task<Result> SendRegistrationMessageAsync(Guid userId, string firstName, string lastName,
+        string userName, bool isTermsAccepted)
+    {
+        Log.Information("Sending registered user info: {Id}, {FirstName}, {LastName}, {UserName} via message broker", userId, firstName, lastName, userName);
+
+        var result = await SendMessage(new Uri($"queue:{QueueNames.RegistrationQueue}"),
+            new RegisterUserMessage
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                UserId = userId,
+                UserName = userName,
+                IsTermsAccepted = isTermsAccepted
+            });
+
+        return result;
+    }
+
+    private async Task<Result> SendMessage<T>(Uri endpointUri, T message)
+    {
+        try
+        {
+            var endpoint =
+                await _sendEndpointProvider.GetSendEndpoint(endpointUri);
+
+            Log.Information("Sending to {Uri}", endpointUri.ToString());
+
+            await endpoint.Send(message);
+
             return Result.Success();
         }
         catch (Exception e)
         {
             Log.Error(
-                "An error occured while attempting to send password reset token. Exception: {Type}, Message: {Message}",
+                "An error occured while attempting to send a message. Exception: {Type}, Message: {Message}",
                 e.GetType().FullName, e.Message);
 
             return Result.Error();

@@ -2,10 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models.Application;
-using Auth.Api.Models.Constants;
 using Serilog;
-using ClaimTypes = Auth.Api.Models.Constants.ClaimTypes;
+using Shared.Models.Constants;
+using Shared.Models.Models.Configurations;
+using ClaimTypes = Shared.Models.Constants.ClaimTypes;
 
 namespace Auth.Api.Services;
 

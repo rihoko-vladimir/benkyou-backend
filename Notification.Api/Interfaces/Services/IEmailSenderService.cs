@@ -1,4 +1,4 @@
-using Notification.Api.Models;
+using Shared.Models.Models;
 
 namespace Notification.Api.Interfaces.Services;
 

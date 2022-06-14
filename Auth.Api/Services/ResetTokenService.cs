@@ -3,10 +3,10 @@ using System.Security.Claims;
 using System.Text;
 using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Services;
-using Auth.Api.Models.Application;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using ClaimTypes = Auth.Api.Models.Constants.ClaimTypes;
+using Shared.Models.Models.Configurations;
+using ClaimTypes = Shared.Models.Constants.ClaimTypes;
 
 namespace Auth.Api.Services;
 
