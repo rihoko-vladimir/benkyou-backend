@@ -1,7 +1,7 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Users.Api.HealthChecks;
+namespace Users.Api.Common.HealthChecks;
 
 public class DbHealthCheck : IHealthCheck
 {

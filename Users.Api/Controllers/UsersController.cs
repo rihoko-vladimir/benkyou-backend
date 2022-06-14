@@ -1,3 +1,5 @@
+using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -14,19 +16,36 @@ public class UsersController : ControllerBase
 {
     private readonly IUserInformationService _userInformationService;
     private readonly IAccessTokenService _accessTokenService;
+    private readonly IValidator<UpdateUserInfoRequest> _userInfoValidator;
+    private readonly IMapper _mapper;
 
-    public UsersController(IUserInformationService userInformationService, IAccessTokenService accessTokenService)
+    public UsersController(IUserInformationService userInformationService, 
+        IAccessTokenService accessTokenService,
+        IValidator<UpdateUserInfoRequest> userInfoValidator,
+        IMapper mapper)
     {
         _userInformationService = userInformationService;
         _accessTokenService = accessTokenService;
+        _userInfoValidator = userInfoValidator;
+        _mapper = mapper;
     }
 
     [HttpPatch]
-    [Route("update_info")]
+    [Route("update-info")]
     public async Task<ActionResult> PatchUserInfo([FromBody] JsonPatchDocument<UpdateUserInfoRequest> updateRequest)
     {
         var token = await this.GetAccessTokenAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+
+        var userResult = await _userInformationService.GetUserInformation(userId);
+        if (!userResult.IsSuccess) return BadRequest(userResult.Message);
+        
+        var updateDto = _mapper.Map<UpdateUserInfoRequest>(userResult.Value);
+        updateRequest.ApplyTo(updateDto);
+        var validationResult = await _userInfoValidator.ValidateAsync(updateDto);
+        
+        if (!validationResult.IsValid) return BadRequest(validationResult.ToString("~"));
+        
         var result = await _userInformationService.UpdateUserInfoAsync(updateRequest, userId);
         
         if (result.IsSuccess)
@@ -38,7 +57,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut]
-    [Route("upload_avatar")]
+    [Route("upload-avatar")]
     public async Task<ActionResult> UploadUserAvatar(IFormFile formFile)
     {
         var token = await this.GetAccessTokenAsync();

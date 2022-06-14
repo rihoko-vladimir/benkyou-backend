@@ -1,7 +1,6 @@
 using AutoMapper;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.JsonPatch;
 using Serilog;
 using Shared.Models.Models;
@@ -18,17 +17,14 @@ public class UserInformationService : IUserInformationService
     private readonly IUserInfoRepository _userInfoRepository;
     private readonly IMapper _mapper;
     private readonly AzureBlobConfiguration _blobConfiguration;
-    private readonly IValidator<UpdateUserInfoRequest> _userInfoValidator;
 
     public UserInformationService(IUserInfoRepository userInfoRepository, 
         IMapper mapper, 
-        AzureBlobConfiguration blobConfiguration, 
-        IValidator<UpdateUserInfoRequest> userInfoValidator)
+        AzureBlobConfiguration blobConfiguration)
     {
         _userInfoRepository = userInfoRepository;
         _mapper = mapper;
         _blobConfiguration = blobConfiguration;
-        _userInfoValidator = userInfoValidator;
     }
     
 
@@ -41,10 +37,6 @@ public class UserInformationService : IUserInformationService
             var updateDto = _mapper.Map<UpdateUserInfoRequest>(user);
             updateRequest.ApplyTo(updateDto);
 
-            var validationResult = await _userInfoValidator.ValidateAsync(updateDto);
-            
-            if (!validationResult.IsValid) return Result.Error(validationResult.ToString("~"));
-        
             await _userInfoRepository.UpdateUserInfoAsync(updateDto, user.Id);
             
             return Result.Success();

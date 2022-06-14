@@ -12,7 +12,7 @@ public class UserInformation
     
     public string UserRole { get; set; }
 
-    public DateTime? BirthDay { get; set; } = null;
+    public DateTime? BirthDay { get; set; }
     
     public string AvatarUrl { get; set; }
     

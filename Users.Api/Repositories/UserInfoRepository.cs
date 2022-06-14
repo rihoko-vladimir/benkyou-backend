@@ -5,18 +5,14 @@ using Serilog;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
+using SqlCommand = Users.Api.Models.Constants.SqlCommand;
 
 namespace Users.Api.Repositories;
 
 public class UserInfoRepository : IUserInfoRepository
 {
     private readonly string _connectionString;
-    private const string GetUserQuery = "exec getUserById @userId";
-    private const string CreateUserQuery = "exec createUser @userId, @userName, @firstName, @lastName";
-    private const string UpdateUserQuery =
-        "exec updateUser @userId, @firstName, @lastName, @userName, @birthDay, @isAccountPublic, @about";
-    private const string UpdateUserAvatarQuery = "exec updateUserAvatar @userId, @avatarUrl";
-
+    
     public UserInfoRepository(IConfiguration configuration)
     {
         _connectionString = configuration.GetConnectionString("UsersSqlServerConnectionString");
@@ -43,7 +39,7 @@ public class UserInfoRepository : IUserInfoRepository
             userInformation.IsAccountPublic,
             userInformation.About);
 
-        await connection.ExecuteAsync(UpdateUserQuery, queryParams);
+        await connection.ExecuteAsync(SqlCommand.UpdateUserQuery, queryParams);
     }
 
     public async Task<UserInformation> GetUserInfoAsync(Guid userId)
@@ -55,7 +51,7 @@ public class UserInfoRepository : IUserInfoRepository
 
         Log.Information("Querying for user info with id {UserId}", userId);
         
-        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(GetUserQuery, queryParams);
+        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(SqlCommand.GetUserQuery, queryParams);
 
         return userInfo;
     }
@@ -76,7 +72,7 @@ public class UserInfoRepository : IUserInfoRepository
             userInformation.FirstName,
             userInformation.LastName);
         
-        await connection.ExecuteAsync(CreateUserQuery, queryParams);
+        await connection.ExecuteAsync(SqlCommand.CreateUserQuery, queryParams);
     }
 
     public async Task UpdateUserAvatarUrl(string avatarUrl, Guid userId)
@@ -91,6 +87,6 @@ public class UserInfoRepository : IUserInfoRepository
             userId,
             avatarUrl);
         
-        await connection.ExecuteAsync(UpdateUserAvatarQuery, queryParams);
+        await connection.ExecuteAsync(SqlCommand.UpdateUserAvatarQuery, queryParams);
     }
 }

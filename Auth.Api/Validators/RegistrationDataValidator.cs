@@ -1,4 +1,3 @@
-using System.Data;
 using Auth.Api.Models.Requests;
 using FluentValidation;
 

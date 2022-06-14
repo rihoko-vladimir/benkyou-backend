@@ -1,5 +1,4 @@
 using FluentValidation;
-using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 
 namespace Users.Api.Validators;
