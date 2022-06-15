@@ -1,7 +1,7 @@
 using FluentValidation;
 using Users.Api.Models.Requests;
 
-namespace Users.Api.Validators;
+namespace Users.Api.Common.Validators;
 
 public class UserInfoValidator : AbstractValidator<UpdateUserInfoRequest>
 {

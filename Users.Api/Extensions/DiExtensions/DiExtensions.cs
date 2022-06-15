@@ -10,6 +10,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using Users.Api.Common.HealthChecks;
 using Users.Api.Common.MapperProfiles;
 using Users.Api.Common.TypeHandlers;
+using Users.Api.Common.Validators;
 using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
@@ -19,7 +20,6 @@ using Users.Api.Interfaces.Services;
 using Users.Api.Models.Configurations;
 using Users.Api.Repositories;
 using Users.Api.Services;
-using Users.Api.Validators;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
 using massExt = Users.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
