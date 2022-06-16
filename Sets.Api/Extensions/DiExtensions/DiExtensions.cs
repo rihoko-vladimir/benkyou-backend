@@ -1,8 +1,10 @@
+using Azure.Identity;
 using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Sets.Api.Common.MappingProfiles;
 using Sets.Api.Common.Validators;
 using Sets.Api.Consumers;
@@ -62,6 +64,16 @@ public static class DiExtensions
         services.AddValidatorsFromAssemblyContaining<SetValidator>();
         services.AddValidatorsFromAssemblyContaining<OnyomiValidator>();
         services.AddValidatorsFromAssemblyContaining<KunyomiValidator>();
+
+        var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        services.AddHealthChecks()
+            .AddDbContextCheck<ApplicationContext>()
+            .AddAzureKeyVault(vaultUri,
+                new DefaultAzureCredential(),
+                _ => { },
+                "Azure Key vault",
+                HealthStatus.Unhealthy,
+                new List<string> {"Azure Key Vault"});
 
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<ISetsService, SetsService>();

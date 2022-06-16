@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Sets.Api.Extensions.DiExtensions;
 
@@ -17,6 +19,12 @@ try
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    
+    builder.Host.UseSerilog((ctx, lc) =>
+    {
+        lc.WriteTo.Console()
+            .ReadFrom.Configuration(ctx.Configuration);
+    });
 
     var app = builder.Build();
 
@@ -27,9 +35,15 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
 
     app.UseRouting();
+    
+    app.UseHealthChecks("/hc", new HealthCheckOptions
+    {
+        Predicate = _ => true,
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    });
 
     app.UseAuthentication();
 
