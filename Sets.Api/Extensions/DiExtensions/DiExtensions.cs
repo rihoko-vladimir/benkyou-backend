@@ -1,14 +1,18 @@
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sets.Api.Common.MappingProfiles;
 using Sets.Api.Common.Validators;
+using Sets.Api.Consumers;
 using Sets.Api.Extensions.ConfigurationExtensions;
 using Sets.Api.Extensions.JWTExtensions;
+using Sets.Api.Interfaces.Repositories;
+using Sets.Api.Interfaces.Services;
 using Sets.Api.Models.DbContext;
+using Sets.Api.Repositories;
+using Sets.Api.Services;
 using ext = Sets.Api.Extensions.EnvironmentExtensions;
 using ConfigurationExtensionsApp = Sets.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
@@ -20,7 +24,9 @@ public static class DiExtensions
     {
         services.AddDbContext<ApplicationContext>(builder =>
         {
-            builder.UseSqlServer(configuration.GetConnectionString("SetsSqlServerConnectionString"));
+            builder.UseSqlServer(configuration.GetConnectionString("SetsSqlServerConnectionString"),
+                builder1 =>
+                    builder1.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
 
         services.AddAutoMapper(expression =>
@@ -56,12 +62,18 @@ public static class DiExtensions
         services.AddValidatorsFromAssemblyContaining<SetValidator>();
         services.AddValidatorsFromAssemblyContaining<OnyomiValidator>();
         services.AddValidatorsFromAssemblyContaining<KunyomiValidator>();
+
+        services.AddScoped<ISetsRepository, SetsRepository>();
+        services.AddScoped<ISetsService, SetsService>();
+        services.AddSingleton<IAccessTokenService, AccessTokenService>();
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(configurator =>
         {
+            configurator.AddConsumer<UpdateAccountVisibilityConsumer>();
+            
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {

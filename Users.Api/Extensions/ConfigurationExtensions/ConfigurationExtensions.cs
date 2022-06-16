@@ -73,6 +73,9 @@ public static class ConfigurationExtensions
         IBusRegistrationContext context)
     {
         factoryConfigurator.ReceiveEndpoint(QueueNames.RegistrationQueue,
-            endpointConfigurator => { endpointConfigurator.ConfigureConsumer<RegisterUserMessageConsumer>(context); });
+            endpointConfigurator =>
+            {
+                endpointConfigurator.ConfigureConsumer<RegisterUserMessageConsumer>(context);
+            });
     }
 }

@@ -20,6 +20,13 @@ public class ApplicationProfile : Profile
         CreateMap<Kunyomi, KunyomiResponse>();
         CreateMap<Onyomi, OnyomiResponse>();
         CreateMap<Kanji, KanjiResponse>();
-        CreateMap<Set, SetResponse>();
+        CreateMap<Set, SetResponse>()
+            .ForMember(
+                response => 
+                    response.AuthorId, 
+                expression => 
+                    expression.MapFrom(
+                        set => 
+                            set.UserId));
     }
 }

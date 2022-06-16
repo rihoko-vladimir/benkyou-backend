@@ -37,7 +37,11 @@ public class SetsRepository : ISetsRepository
     {
         try
         {
-            var oldSet = await _dbContext.Sets.Where(set1 => set1.Id == set.Id).FirstOrDefaultAsync();
+            var oldSet = await _dbContext.Sets
+                .Where(set1 => set1.Id == set.Id)
+                .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+                .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings)
+                .FirstOrDefaultAsync();
             if (oldSet is null) return Result.Error<Set>("This set does not exist");
             oldSet = set;
             _dbContext.Sets.Update(oldSet);
@@ -76,7 +80,11 @@ public class SetsRepository : ISetsRepository
     {
         try
         {
-            var set = await _dbContext.Sets.Where(set1 => set1.Id == setId).FirstOrDefaultAsync();
+            var set = await _dbContext.Sets
+                .Where(set1 => set1.Id == setId)
+                .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
+                .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings)
+                .FirstOrDefaultAsync();
             return set is null ? Result.Error<Set>("No such set is present") : Result.Success(set);
         }
         catch (Exception e)

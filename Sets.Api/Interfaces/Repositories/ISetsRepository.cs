@@ -1,5 +1,4 @@
 using Sets.Api.Models.Entities;
-using Sets.Api.Models.Responses;
 using Shared.Models.Models;
 
 namespace Sets.Api.Interfaces.Repositories;

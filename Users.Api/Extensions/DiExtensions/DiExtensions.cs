@@ -33,7 +33,7 @@ public static class DiExtensions
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddSingleton(configuration.GetBlobConfiguration());
-        services.AddSingleton<DbHealthCheck>(new DbHealthCheck(configuration));
+        services.AddSingleton(new DbHealthCheck(configuration));
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();

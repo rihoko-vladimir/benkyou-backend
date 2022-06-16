@@ -12,7 +12,8 @@ try
 {
     builder.Services.AddApplication(builder.Configuration);
     
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .AddNewtonsoftJson();
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -27,6 +28,10 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    app.UseRouting();
+
+    app.UseAuthentication();
 
     app.UseAuthorization();
 

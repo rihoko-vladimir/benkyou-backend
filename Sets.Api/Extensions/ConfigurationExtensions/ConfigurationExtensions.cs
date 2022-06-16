@@ -56,10 +56,14 @@ public static class ConfigurationExtensions
         factoryConfigurator.Host(busConfig.AzureServiceBusConnectionString);
     }
     
-    private static void ConfigureEndpoints(this IBusFactoryConfigurator factoryConfigurator,
+    private static void ConfigureEndpoints(
+        this IBusFactoryConfigurator factoryConfigurator,
         IBusRegistrationContext context)
     {
         factoryConfigurator.ReceiveEndpoint(QueueNames.AccountVisibilityChangeQueue,
-            endpointConfigurator => { endpointConfigurator.ConfigureConsumer<UpdateAccountVisibilityConsumer>(context); });
+            endpointConfigurator =>
+            {
+                endpointConfigurator.ConfigureConsumer<UpdateAccountVisibilityConsumer>(context);
+            });
     }
 }
