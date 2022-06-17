@@ -89,6 +89,12 @@ public static class DiExtensions
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
 
         services.AddValidatorsFromAssemblyContaining<UserInfoValidator>();
+
+        services.AddOptions<MassTransitHostOptions>()
+            .Configure(options =>
+            {
+                options.WaitUntilStarted = true;
+            });
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
@@ -96,7 +102,7 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<RegisterUserMessageConsumer>();
-            
+
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {
