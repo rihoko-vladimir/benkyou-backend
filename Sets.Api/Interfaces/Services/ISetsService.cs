@@ -17,7 +17,7 @@ public interface ISetsService
 
     public Task<Result<PagedSetsResponse>> GetAllSetsAsync(Guid userId, int pageNumber, int pageSize, string searchQuery);
 
-    public Task<Result<Set>> GetSet(Guid setId);
+    public Task<Result<Set>> GetSetAsync(Guid setId);
 
     public Task<Result> ChangeSetsVisibilityAsync(Guid userId, bool arePublic);
 }

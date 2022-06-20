@@ -1,6 +1,5 @@
 using System.Data;
 using Dapper;
-using Microsoft.Data.SqlClient;
 using Serilog;
 using Users.Api.Interfaces.Factories;
 using Users.Api.Interfaces.Repositories;

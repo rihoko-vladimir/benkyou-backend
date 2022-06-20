@@ -62,7 +62,7 @@ public class SetsController : ControllerBase
         JsonPatchDocument<SetRequest> patchDocument,
         [FromQuery] Guid setId)
     {
-        var setResult = await _setsService.GetSet(setId);
+        var setResult = await _setsService.GetSetAsync(setId);
 
         if (!setResult.IsSuccess)
         {

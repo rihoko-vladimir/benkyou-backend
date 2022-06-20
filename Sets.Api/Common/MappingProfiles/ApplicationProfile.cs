@@ -17,9 +17,12 @@ public class ApplicationProfile : Profile
             .ReverseMap();
         CreateMap<SetRequest, Set>()
             .ReverseMap();
-        CreateMap<Kunyomi, KunyomiResponse>();
-        CreateMap<Onyomi, OnyomiResponse>();
-        CreateMap<Kanji, KanjiResponse>();
+        CreateMap<Kunyomi, KunyomiResponse>()
+            .ReverseMap();
+        CreateMap<Onyomi, OnyomiResponse>()
+            .ReverseMap();
+        CreateMap<Kanji, KanjiResponse>()
+            .ReverseMap();
         CreateMap<Set, SetResponse>()
             .ForMember(
                 response => 
@@ -28,5 +31,10 @@ public class ApplicationProfile : Profile
                     expression.MapFrom(
                         set => 
                             set.UserId));
+        CreateMap<SetResponse, Set>()
+            .ForMember(
+                set => set.UserId,
+                expression => expression.MapFrom(
+                    response => response.AuthorId));
     }
 }

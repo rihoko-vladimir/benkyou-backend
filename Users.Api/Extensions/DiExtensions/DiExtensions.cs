@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Azure.Identity;
 using Dapper;
 using FluentValidation;

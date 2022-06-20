@@ -52,7 +52,7 @@ public class SetsService : ISetsService
 
     public async Task<Result> RemoveSetAsync(Guid userId, Guid setId)
     {
-        var setResult = await GetSet(setId);
+        var setResult = await GetSetAsync(setId);
 
         if (!setResult.IsSuccess)
         {
@@ -114,7 +114,7 @@ public class SetsService : ISetsService
         return Result.Success(pagedSetResponse);
     }
 
-    public async Task<Result<Set>> GetSet(Guid setId)
+    public async Task<Result<Set>> GetSetAsync(Guid setId)
     {
         var setResult = await _setsRepository.GetSetAsync(setId);
         
