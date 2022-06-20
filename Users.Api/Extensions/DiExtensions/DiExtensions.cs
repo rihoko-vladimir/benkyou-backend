@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Azure.Identity;
 using Dapper;
 using FluentValidation;
@@ -15,6 +16,7 @@ using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
 using Users.Api.Extensions.JWTExtensions;
+using Users.Api.Interfaces.Factories;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
 using Users.Api.Models.Configurations;
@@ -35,6 +37,7 @@ public static class DiExtensions
         services.AddSingleton(configuration.GetBlobConfiguration());
         services.AddSingleton(new DbHealthCheck(configuration));
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
+        services.AddSingleton<IDbConnectionFactory, IDbConnectionFactory>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
         

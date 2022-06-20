@@ -2,6 +2,7 @@ using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Serilog;
+using Users.Api.Interfaces.Factories;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
@@ -11,16 +12,16 @@ namespace Users.Api.Repositories;
 
 public class UserInfoRepository : IUserInfoRepository
 {
-    private readonly string _connectionString;
-    
-    public UserInfoRepository(IConfiguration configuration)
+    private readonly IDbConnectionFactory _connectionFactory;
+
+    public UserInfoRepository(IDbConnectionFactory connectionFactory)
     {
-        _connectionString = configuration.GetConnectionString("UsersSqlServerConnectionString");
+        _connectionFactory = connectionFactory;
     }
 
     public async Task UpdateUserInfoAsync(UpdateUserInfoRequest userInformation, Guid id)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = _connectionFactory.GetConnection();
         var queryParams = new DynamicParameters();
         
         queryParams.Add("userId", id, DbType.Guid);
@@ -44,7 +45,7 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task<UserInformation> GetUserInfoAsync(Guid userId)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = _connectionFactory.GetConnection();
         
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
@@ -58,7 +59,7 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task CreateUserAsync(UserInformation userInformation)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = _connectionFactory.GetConnection();
 
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userInformation.Id, DbType.Guid);
@@ -77,7 +78,7 @@ public class UserInfoRepository : IUserInfoRepository
 
     public async Task UpdateUserAvatarUrl(string avatarUrl, Guid userId)
     {
-        await using var connection = new SqlConnection(_connectionString);
+        await using var connection = _connectionFactory.GetConnection();
 
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
