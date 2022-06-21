@@ -45,6 +45,7 @@ public class SetsServiceTest
         {
             expression.AddProfile<ApplicationProfile>();
         }).CreateMapper();
+        
         _service = new SetsService(new MockedSetsRepo(), _mapper);
     }
 
@@ -52,6 +53,7 @@ public class SetsServiceTest
     public async Task CreateSetAsyncTest()
     {
         //Arrange
+        
         var authorId = Guid.NewGuid();
 
         var expectedResult = new SetResponse
@@ -67,9 +69,13 @@ public class SetsServiceTest
             Description = expectedResult.Description,
             KanjiList = _mapper.Map<List<KanjiRequest>>(_kanjiList)
         };
+        
         //Act
+        
         var createdSet = (await _service.CreateSetAsync(authorId, setRequest)).Value;
+        
         //Assert
+        
         Assert.Equal(expectedResult.Name, createdSet.Name);
         Assert.Equal(expectedResult.Description, createdSet.Description);
         Assert.Equal(expectedResult.KanjiList.Count, expectedResult.KanjiList.Count);
@@ -79,6 +85,7 @@ public class SetsServiceTest
     public async Task PatchSetAsyncTest()
     {
         //Arrange
+        
         var authorId = Guid.NewGuid();
 
         var expectedResult = new SetResponse
@@ -95,11 +102,16 @@ public class SetsServiceTest
             KanjiList = _mapper.Map<List<KanjiRequest>>(_kanjiList)
         };
         var createdSet = (await _service.CreateSetAsync(authorId, setRequest)).Value;
+        
         var mappedSet = _mapper.Map<Set>(createdSet);
         mappedSet.Name = "Test 123";
+        
         //Act
+        
         var patchedSet = (await _service.PatchSetAsync(authorId, createdSet.Id, mappedSet)).Value;
+        
         //Assert
+        
         Assert.Equal(_mapper.Map<SetResponse>(mappedSet).Name, patchedSet.Name);
     }
 
@@ -107,6 +119,7 @@ public class SetsServiceTest
     public async Task RemoveSetAsyncTest()
     {
         //Arrange
+        
         var authorId = Guid.NewGuid();
 
         var expectedResult = new SetResponse
@@ -122,10 +135,15 @@ public class SetsServiceTest
             Description = expectedResult.Description,
             KanjiList = _mapper.Map<List<KanjiRequest>>(_kanjiList)
         };
+        
         var createdSet = (await _service.CreateSetAsync(authorId, setRequest)).Value;
+        
         //Act
+        
         await _service.RemoveSetAsync(authorId, createdSet.Id);
+        
         //Assert
+        
         Assert.Null((await _service.GetSetAsync(createdSet.Id)).Value);
     }
     

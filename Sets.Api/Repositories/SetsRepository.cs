@@ -22,6 +22,7 @@ public class SetsRepository : ISetsRepository
         {
             await _dbContext.Sets.AddAsync(set);
             await _dbContext.SaveChangesAsync();
+            
             return Result.Success(set);
         }
         catch (Exception e)
@@ -29,6 +30,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while creating new set. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error<Set>(e.Message);
         }
     }
@@ -42,10 +44,14 @@ public class SetsRepository : ISetsRepository
                 .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
                 .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings)
                 .FirstOrDefaultAsync();
-            if (oldSet is null) return Result.Error<Set>("This set does not exist");
+            
+            if (oldSet is null) 
+                return Result.Error<Set>("This set does not exist");
+            
             oldSet = set;
             _dbContext.Sets.Update(oldSet);
             await _dbContext.SaveChangesAsync();
+            
             return Result.Success(set);
         }
         catch (Exception e)
@@ -53,6 +59,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while modifying an existing set. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error<Set>(e.Message);
         }
     }
@@ -62,9 +69,13 @@ public class SetsRepository : ISetsRepository
         try
         {
             var set = await _dbContext.Sets.Where(set1 => set1.Id == setId).FirstOrDefaultAsync();
-            if (set is null) return Result.Error("This set does not exist");
+            
+            if (set is null) 
+                return Result.Error("This set does not exist");
+            
             _dbContext.Remove(set);
             await _dbContext.SaveChangesAsync();
+            
             return Result.Success();
         }
         catch (Exception e)
@@ -72,6 +83,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while removing set. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error(e.Message);
         }
     }
@@ -85,6 +97,7 @@ public class SetsRepository : ISetsRepository
                 .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.KunyomiReadings)
                 .Include(set1 => set1.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings)
                 .FirstOrDefaultAsync();
+            
             return set is null ? Result.Error<Set>("No such set is present") : Result.Success(set);
         }
         catch (Exception e)
@@ -92,6 +105,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while getting set. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error<Set>(e.Message);
         }
     }
@@ -108,6 +122,7 @@ public class SetsRepository : ISetsRepository
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+            
             return Result.Success(userSets);
         }
         catch (Exception e)
@@ -115,6 +130,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while querying user sets. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error<List<Set>>(e.Message);
         }
     }
@@ -131,7 +147,10 @@ public class SetsRepository : ISetsRepository
                 .Include(set => set.KanjiList).ThenInclude(kanji => kanji.OnyomiReadings)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
-            if (searchQuery != string.Empty) allSetsQuery = allSetsQuery.Where(set => set.Name.Contains(searchQuery));
+            
+            if (searchQuery != string.Empty) 
+                allSetsQuery = allSetsQuery.Where(set => set.Name.Contains(searchQuery));
+            
             return Result.Success(await allSetsQuery.ToListAsync());
         }
         catch (Exception e)
@@ -139,6 +158,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while querying all sets. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error<List<Set>>(e.Message);
         }
     }
@@ -149,8 +169,10 @@ public class SetsRepository : ISetsRepository
         {
             var userSets = await _dbContext.Sets.Where(set => set.UserId == userId).ToListAsync();
             userSets.ForEach(set => set.IsPublic = arePublic);
+            
             _dbContext.Sets.UpdateRange(userSets);
             await _dbContext.SaveChangesAsync();
+            
             return Result.Success();
         }
         catch (Exception e)
@@ -158,6 +180,7 @@ public class SetsRepository : ISetsRepository
             Log.Error("An error occured while querying all sets. Exception : {Exception}, Message: {Message}",
                 e.GetType().FullName,
                 e.Message);
+            
             return Result.Error(e.Message);
         }
     }
@@ -168,6 +191,7 @@ public class SetsRepository : ISetsRepository
             .Where(set => set.IsPublic)
             .Where(set => set.UserId != userId)
             .CountAsync();
+        
         return count;
     }
 
@@ -176,6 +200,7 @@ public class SetsRepository : ISetsRepository
         var count = await _dbContext.Sets
             .Where(set => set.UserId == userId)
             .CountAsync();
+        
         return count;
     }
 }

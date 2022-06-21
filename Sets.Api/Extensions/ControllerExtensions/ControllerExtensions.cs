@@ -9,9 +9,4 @@ public static class ControllerExtensions
     {
         return (await controllerBase.HttpContext.GetTokenAsync("access_token"))!;
     }
-
-    public static string GetRefreshTokenFromCookie(this ControllerBase controllerBase)
-    {
-        return controllerBase.Request.Cookies["refresh"] ?? "";
-    }
 }
