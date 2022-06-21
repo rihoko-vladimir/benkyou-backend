@@ -16,6 +16,7 @@ public class DbConnectionFactory : IDbConnectionFactory
     public DbConnection GetConnection()
     {
         var connection = new SqlConnection(_connectionString);
+        
         return connection;
     }
 }

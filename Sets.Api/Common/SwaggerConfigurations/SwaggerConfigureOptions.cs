@@ -19,7 +19,7 @@ public class SwaggerConfigureOptions : IConfigureOptions<SwaggerGenOptions>
         foreach (var desc in _provider.ApiVersionDescriptions)
             options.SwaggerDoc(desc.GroupName, new OpenApiInfo
             {
-                Title = "Benkyou_auth",
+                Title = "Benkyou_sets",
                 Version = desc.ApiVersion.ToString()
             });
     }

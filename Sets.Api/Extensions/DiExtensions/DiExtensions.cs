@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Sets.Api.Common.MappingProfiles;
+using Sets.Api.Common.SwaggerConfigurations;
 using Sets.Api.Common.Validators;
 using Sets.Api.Consumers;
 using Sets.Api.Extensions.ConfigurationExtensions;
@@ -15,6 +17,7 @@ using Sets.Api.Interfaces.Services;
 using Sets.Api.Models.DbContext;
 using Sets.Api.Repositories;
 using Sets.Api.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using ext = Sets.Api.Extensions.EnvironmentExtensions;
 using ConfigurationExtensionsApp = Sets.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
@@ -27,8 +30,8 @@ public static class DiExtensions
         services.AddDbContext<ApplicationContext>(builder =>
         {
             builder.UseSqlServer(configuration.GetConnectionString("SetsSqlServerConnectionString"),
-                builder1 =>
-                    builder1.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                serverOptions =>
+                    serverOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
         });
 
         services.AddAutoMapper(expression =>
@@ -78,6 +81,7 @@ public static class DiExtensions
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<ISetsService, SetsService>();
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
+        services.AddSingleton<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
