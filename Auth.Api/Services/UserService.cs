@@ -63,16 +63,19 @@ public class UserService : IUserService
         var access = _accessTokenService.GetToken(user.Id);
         var refresh = _refreshTokenService.GetToken(user.Id);
 
-        if (user.Tokens.Count == 3)
+        if (user.Tokens.Count >= 3)
         {
-            var oldestSession = user.Tokens.OrderBy(token => token.IssuedDateTime).First();
-            user.Tokens.Remove(oldestSession);
+            var oldestSessions = user.Tokens.OrderBy(token => token.IssuedDateTime).Take(user.Tokens.Count - 3);
+            foreach (var oldSession in oldestSessions)
+            {
+                user.Tokens.Remove(oldSession);
+            }
         }
 
         var token = new Token
         {
             RefreshToken = refresh,
-            UserId = user.Id
+            UserCredentialId = user.Id
         };
 
         user.Tokens.Add(token);
@@ -160,7 +163,7 @@ public class UserService : IUserService
         var newToken = new Token
         {
             RefreshToken = refresh,
-            UserId = userId
+            UserCredentialId = userId
         };
 
         user.Tokens.Add(newToken);

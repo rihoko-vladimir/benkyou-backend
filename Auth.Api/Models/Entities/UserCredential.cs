@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auth.Api.Models.Entities;
 
@@ -12,9 +13,9 @@ public class UserCredential
     public string PasswordHash { get; set; }
 
     public bool IsEmailConfirmed { get; set; }
-
-    public ICollection<Token> Tokens { get; set; }
+    
+    public ICollection<Token>? Tokens { get; set; }
 
     [MaxLength(6)] 
-    public string EmailConfirmationCode { get; set; }
+    public string? EmailConfirmationCode { get; set; }
 }
