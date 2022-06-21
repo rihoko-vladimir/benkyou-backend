@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Users.Api.Common.Factories;
 using Users.Api.Common.HealthChecks;
 using Users.Api.Common.MapperProfiles;
 using Users.Api.Common.TypeHandlers;
@@ -36,7 +37,7 @@ public static class DiExtensions
         services.AddSingleton(configuration.GetBlobConfiguration());
         services.AddSingleton(new DbHealthCheck(configuration));
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
-        services.AddSingleton<IDbConnectionFactory, IDbConnectionFactory>();
+        services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
         

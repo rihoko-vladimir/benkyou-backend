@@ -16,9 +16,8 @@ namespace Users.Tests;
 
 public class RepositoryTest : IDisposable
 {
-    private readonly IUserInfoRepository _userInfoRepository;
+    private IUserInfoRepository _userInfoRepository;
     private readonly IMapper _mapper;
-    private readonly Mock<IDbConnectionFactory> _mockedFactory;
 
     public RepositoryTest()
     {
@@ -29,10 +28,10 @@ public class RepositoryTest : IDisposable
             expression.AddProfile<AutoMappingProfile>();
         }).CreateMapper();
         
-        _mockedFactory = new Mock<IDbConnectionFactory>();
-        _mockedFactory.Setup(factory => factory.GetConnection()).Returns(new SqlConnection(
+        var mockedFactory = new Mock<IDbConnectionFactory>();
+        mockedFactory.Setup(factory => factory.GetConnection()).Returns(()=> new SqlConnection(
             "Server=172.17.0.1; Database=TEST_Benkyou_users; User Id = sa; Password = nandesukaanatawa1A; TrustServerCertificate=True;"));
-        _userInfoRepository = new UserInfoRepository(_mockedFactory.Object);
+        _userInfoRepository = new UserInfoRepository(mockedFactory.Object);
     }
 
     [Fact]
@@ -51,18 +50,11 @@ public class RepositoryTest : IDisposable
             IsTermsAccepted = true,
             IsAccountPublic = false
         };
-        
-        var connection = _mockedFactory.Object.GetConnection();
-        
-        var queryParams = new DynamicParameters();
-        queryParams.Add("userId", expectedInfo.Id, DbType.Guid);
-        queryParams.Add("userName", expectedInfo.UserName, DbType.StringFixedLength);
-        queryParams.Add("firstName", expectedInfo.FirstName, DbType.StringFixedLength);
-        queryParams.Add("lastName", expectedInfo.LastName, DbType.StringFixedLength);
-        
-        await connection.ExecuteAsync(SqlCommands.CreateUserQuery,queryParams);
+
+        await _userInfoRepository.CreateUserAsync(expectedInfo);
+
         //Act
-        
+
         var user = await _userInfoRepository.GetUserInfoAsync(userId);
         
         //Assert
