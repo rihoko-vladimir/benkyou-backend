@@ -7,19 +7,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Users.Api.Common.Factories;
 using Users.Api.Common.HealthChecks;
 using Users.Api.Common.MapperProfiles;
 using Users.Api.Common.TypeHandlers;
+using Users.Api.Common.Validators;
 using Users.Api.Configurations;
 using Users.Api.Consumers;
 using Users.Api.Extensions.ConfigurationExtensions;
 using Users.Api.Extensions.JWTExtensions;
+using Users.Api.Interfaces.Factories;
 using Users.Api.Interfaces.Repositories;
 using Users.Api.Interfaces.Services;
 using Users.Api.Models.Configurations;
 using Users.Api.Repositories;
 using Users.Api.Services;
-using Users.Api.Validators;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
 using massExt = Users.Api.Extensions.ConfigurationExtensions.ConfigurationExtensions;
 
@@ -33,8 +35,9 @@ public static class DiExtensions
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
         services.AddSingleton(configuration.GetJwtConfiguration());
         services.AddSingleton(configuration.GetBlobConfiguration());
-        services.AddSingleton<DbHealthCheck>(new DbHealthCheck(configuration));
+        services.AddSingleton(new DbHealthCheck(configuration));
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
+        services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
         
@@ -89,6 +92,12 @@ public static class DiExtensions
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
 
         services.AddValidatorsFromAssemblyContaining<UserInfoValidator>();
+
+        services.AddOptions<MassTransitHostOptions>()
+            .Configure(options =>
+            {
+                options.WaitUntilStarted = true;
+            });
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)
@@ -96,7 +105,7 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<RegisterUserMessageConsumer>();
-            
+
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {

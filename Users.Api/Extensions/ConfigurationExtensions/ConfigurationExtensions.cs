@@ -69,10 +69,14 @@ public static class ConfigurationExtensions
         factoryConfigurator.Host(azureConfig.AzureServiceBusConnectionString);
     }
 
-    private static void ConfigureEndpoints(this IBusFactoryConfigurator factoryConfigurator,
+    private static void ConfigureEndpoints(
+        this IBusFactoryConfigurator factoryConfigurator,
         IBusRegistrationContext context)
     {
         factoryConfigurator.ReceiveEndpoint(QueueNames.RegistrationQueue,
-            endpointConfigurator => { endpointConfigurator.ConfigureConsumer<RegisterUserMessageConsumer>(context); });
+            endpointConfigurator =>
+            {
+                endpointConfigurator.ConfigureConsumer<RegisterUserMessageConsumer>(context);
+            });
     }
 }

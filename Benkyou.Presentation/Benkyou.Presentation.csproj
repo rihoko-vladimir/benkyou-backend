@@ -8,22 +8,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="11.0.1"/>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0"/>
-        <PackageReference Include="Firebase.Auth" Version="1.0.0"/>
-        <PackageReference Include="FirebaseStorage.net" Version="1.0.3"/>
-        <PackageReference Include="MailKit" Version="3.2.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.5"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0-preview.1.22076.6"/>
+        <PackageReference Include="AutoMapper" Version="11.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+        <PackageReference Include="Firebase.Auth" Version="1.0.0" />
+        <PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
+        <PackageReference Include="MailKit" Version="3.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0-preview.1.22076.6" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.1.22076.6">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0-preview.1.22076.6"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0-preview.1.22076.6" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Benkyou.Domain\Benkyou.Domain.csproj"/>
-        <ProjectReference Include="..\Benkyou.Infrastructure\Benkyou.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Benkyou.Domain\Benkyou.Domain.csproj" />
+        <ProjectReference Include="..\Benkyou.Infrastructure\Benkyou.Infrastructure.csproj" />
     </ItemGroup>
 </Project>
