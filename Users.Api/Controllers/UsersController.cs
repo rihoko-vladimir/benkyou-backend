@@ -73,7 +73,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    [Route("")]
+    [Route("get-info")]
     public async Task<ActionResult> GetUserInfo()
     {
         var token = await this.GetAccessTokenAsync();

@@ -10,4 +10,6 @@ public class ApplicationContext : Microsoft.EntityFrameworkCore.DbContext
     }
 
     public DbSet<UserCredential> UserCredentials { get; init; } = null!;
+    
+    public DbSet<Token> Tokens { get; init; } = null!;
 }
