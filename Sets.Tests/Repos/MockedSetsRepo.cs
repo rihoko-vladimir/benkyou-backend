@@ -117,7 +117,7 @@ public class MockedSetsRepo : ISetsRepository
         }
     }
 
-    public async Task<int> GetAllSetsPagesCountAsync(Guid userId)
+    public async Task<int> GetAllSetsPagesCountAsync(Guid userId, int pageSize)
     {
         var count = Sets
             .Where(set => set.IsPublic)
@@ -126,7 +126,7 @@ public class MockedSetsRepo : ISetsRepository
         return await Task.FromResult(count);
     }
 
-    public async Task<int> GetUserSetsPagesCountAsync(Guid userId)
+    public async Task<int> GetUserSetsPagesCountAsync(Guid userId, int pageSize)
     {
         var count = Sets
             .Count(set => set.UserId == userId);

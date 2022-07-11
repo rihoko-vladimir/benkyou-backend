@@ -77,7 +77,7 @@ public class SetsService : ISetsService
         if (!setsResult.IsSuccess) return Result.Error<PagedSetsResponse>(setsResult.Message);
         
         var mappedSets = _mapper.Map<List<SetResponse>>(setsResult.Value);
-        var mySetsCount = await _setsRepository.GetUserSetsPagesCountAsync(userId);
+        var mySetsCount = await _setsRepository.GetUserSetsPagesCountAsync(userId, pageSize);
         
         var pagedSetResponse = new PagedSetsResponse
         {
@@ -99,7 +99,7 @@ public class SetsService : ISetsService
         if (!setsResult.IsSuccess) return Result.Error<PagedSetsResponse>(setsResult.Message);
         
         var mappedSets = _mapper.Map<List<SetResponse>>(setsResult.Value);
-        var allCount = await _setsRepository.GetAllSetsPagesCountAsync(userId);
+        var allCount = await _setsRepository.GetAllSetsPagesCountAsync(userId, pageSize);
         
         var pagedSetResponse = new PagedSetsResponse
         {

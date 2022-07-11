@@ -30,7 +30,7 @@ try
 }
 catch (Exception e)
 {
-    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+    Log.Error("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
         e.Message, e.StackTrace);
 }
 finally

@@ -25,35 +25,35 @@ namespace Auth.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Token",
+                name: "Tokens",
                 columns: table => new
                 {
                     RecordId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IssuedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserCredentialId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UserCredentialId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IssuedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Token", x => x.RecordId);
+                    table.PrimaryKey("PK_Tokens", x => x.RecordId);
                     table.ForeignKey(
-                        name: "FK_Token_UserCredentials_UserCredentialId",
+                        name: "FK_Tokens_UserCredentials_UserCredentialId",
                         column: x => x.UserCredentialId,
                         principalTable: "UserCredentials",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Token_UserCredentialId",
-                table: "Token",
+                name: "IX_Tokens_UserCredentialId",
+                table: "Tokens",
                 column: "UserCredentialId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Token");
+                name: "Tokens");
 
             migrationBuilder.DropTable(
                 name: "UserCredentials");

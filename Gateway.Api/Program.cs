@@ -31,10 +31,24 @@ try
         });
     
     builder.Services.AddOcelot();
+    
+    builder.Services.AddCors(builder =>
+    {
+        builder.AddDefaultPolicy(policyBuilder =>
+        {
+            policyBuilder
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials();
+        });
+    });
 
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
+
+    app.UseCors();
 
     app.UseOcelot().Wait();
 
@@ -42,7 +56,7 @@ try
 }
 catch (Exception e)
 {
-    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+    Log.Error("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
         e.Message, e.StackTrace);
 }
 finally

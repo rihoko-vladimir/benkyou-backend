@@ -10,7 +10,9 @@
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
-      "UpstreamHttpMethod": [ "Post" ]
+      "UpstreamHttpMethod": [
+        "Post"
+      ]
     },
     {
       "DownstreamPathTemplate": "/health-ui",
@@ -22,7 +24,9 @@
         }
       ],
       "UpstreamPathTemplate": "/health",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [
+        "Get"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/v1/user/{everything}",
@@ -38,7 +42,11 @@
         "AllowedScopes": []
       },
       "UpstreamPathTemplate": "/user/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Patch", "Put" ]
+      "UpstreamHttpMethod": [
+        "Get",
+        "Patch",
+        "Put"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/v1/sets/{everything}",
@@ -54,7 +62,12 @@
         "AllowedScopes": []
       },
       "UpstreamPathTemplate": "/sets/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post", "Patch", "Delete" ]
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Patch",
+        "Delete"
+      ]
     }
   ],
   "GlobalConfiguration": {

@@ -19,7 +19,7 @@ public class UserCredentialsRepository : IUserCredentialsRepository
         var user = await _applicationContext.UserCredentials
             .Include(user => user.Tokens)
             .FirstOrDefaultAsync(user => user.Email.Equals(email));
-        
+
         return user;
     }
 
@@ -42,7 +42,7 @@ public class UserCredentialsRepository : IUserCredentialsRepository
         var user = await _applicationContext.UserCredentials
             .Include(user1 => user1.Tokens)
             .FirstAsync(user1 => user1.Id == id);
-        
+
         return user;
     }
 
