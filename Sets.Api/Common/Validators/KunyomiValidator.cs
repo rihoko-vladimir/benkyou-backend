@@ -9,6 +9,6 @@ public class KunyomiValidator : AbstractValidator<KunyomiRequest>
     {
         RuleFor(request => request.Reading)
             .MaximumLength(10)
-            .Matches(@"[ぁ-ん]");
+            .Matches(@"[ぁ-ん]+");
     }
 }
