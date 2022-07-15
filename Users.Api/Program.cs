@@ -28,7 +28,14 @@ try
             configurationBuilder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
     });
 
-    builder.Services.AddControllers()
+    builder.Services.AddControllers(options =>
+        {
+            var supportedTypes = options.InputFormatters
+                .OfType<Microsoft.AspNetCore.Mvc.Formatters.SystemTextJsonInputFormatter>()
+                .Single().SupportedMediaTypes;
+            supportedTypes.Add("image/jpeg");
+            supportedTypes.Add("image/png");
+        })
         .AddNewtonsoftJson();
 
     builder.Services.AddEndpointsApiExplorer();

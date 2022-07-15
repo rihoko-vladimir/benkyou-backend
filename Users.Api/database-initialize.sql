@@ -14,7 +14,7 @@ create table UsersInformation
     LastName        nvarchar(35) not null,
     UserRole        nvarchar(10) default N'User' not null,
     BirthDay        datetime2,
-    AvatarUrl       nvarchar(100),
+    AvatarUrl       nvarchar(150),
     IsTermsAccepted bit                              not null,
     IsAccountPublic bit                              not null,
     About           nvarchar(350),
@@ -71,7 +71,7 @@ go
 
 create procedure updateUserAvatar(
     @user_id as uniqueidentifier,
-    @avatar_url as nvarchar(100)
+    @avatar_url as nvarchar(150)
 ) as
 begin
 update UsersInformation

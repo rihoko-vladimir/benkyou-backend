@@ -28,7 +28,7 @@ public class UserInformationService : IUserInformationService
     }
     
 
-    public async Task<Result> UpdateUserInfoAsync(JsonPatchDocument<UpdateUserInfoRequest> updateRequest, Guid userId)
+    public async Task<Result<UserInformation>> UpdateUserInfoAsync(JsonPatchDocument<UpdateUserInfoRequest> updateRequest, Guid userId)
     {
         try
         {
@@ -38,18 +38,20 @@ public class UserInformationService : IUserInformationService
             updateRequest.ApplyTo(updateDto);
 
             await _userInfoRepository.UpdateUserInfoAsync(updateDto, user.Id);
+
+            var userInfo = (await GetUserInformation(userId)).Value!;
             
-            return Result.Success();
+            return Result.Success(userInfo);
         }
         catch (Exception e)
         {
             Log.Error("An error occured while trying to update user's information. Exception : {Exception}, stacktrace: {Stacktrace}", e.GetType().FullName, e.StackTrace);
             
-            return Result.Error(e);
+            return Result.Error<UserInformation>(e);
         }
     }
 
-    public async Task<Result> UpdateUserAvatarAsync(IFormFile file, Guid userId)
+    public async Task<Result<UserInformation>> UpdateUserAvatarAsync(IFormFile file, Guid userId)
     {
         try
         {
@@ -69,15 +71,17 @@ public class UserInformationService : IUserInformationService
             
             Log.Debug("Uploaded avatar into the blob. Url is {Url}", blobClient.Uri);
             
-            await _userInfoRepository.UpdateUserAvatarUrl(blobClient.Uri.ToString(), userId);
+            await _userInfoRepository.UpdateUserAvatarUrl(blobClient.Uri.OriginalString, userId);
+
+            var userInfo = (await GetUserInformation(userId)).Value!;
             
-            return Result.Success();
+            return Result.Success(userInfo);
         }
         catch (Exception e)
         {
             Log.Error("An error occured while uploading avatar. Exception : {Exception}, Stacktrace: {StackTrace}", e.GetType().FullName, e.StackTrace);
             
-            return Result.Error(e);
+            return Result.Error<UserInformation>(e);
         }
     }
 
