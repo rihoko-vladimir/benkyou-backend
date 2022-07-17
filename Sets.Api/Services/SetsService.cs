@@ -99,7 +99,7 @@ public class SetsService : ISetsService
         if (!setsResult.IsSuccess) return Result.Error<PagedSetsResponse>(setsResult.Message);
         
         var mappedSets = _mapper.Map<List<SetResponse>>(setsResult.Value);
-        var allCount = await _setsRepository.GetAllSetsPagesCountAsync(userId, pageSize);
+        var allCount = await _setsRepository.GetAllSetsPagesCountAsync(userId, pageSize, searchQuery);
         
         var pagedSetResponse = new PagedSetsResponse
         {

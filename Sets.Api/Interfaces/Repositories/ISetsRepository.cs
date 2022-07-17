@@ -19,7 +19,7 @@ public interface ISetsRepository
 
     public Task<Result> ChangeSetsVisibilityAsync(Guid userId, bool arePublic);
 
-    public Task<int> GetAllSetsPagesCountAsync(Guid userId, int pageSize);
+    public Task<int> GetAllSetsPagesCountAsync(Guid userId, int pageSize, string searchQuery);
     
     public Task<int> GetUserSetsPagesCountAsync(Guid userId, int pageSize);
 }

@@ -185,12 +185,16 @@ public class SetsRepository : ISetsRepository
         }
     }
 
-    public async Task<int> GetAllSetsPagesCountAsync(Guid userId, int pageSize)
+    public async Task<int> GetAllSetsPagesCountAsync(Guid userId, int pageSize, string searchQuery)
     {
-        var count = await _dbContext.Sets
+        var allSetsCountQuery = _dbContext.Sets
             .Where(set => set.IsPublic)
-            .Where(set => set.UserId != userId)
-            .CountAsync() / pageSize + 1;
+            .Where(set => set.UserId != userId);
+        
+        if (searchQuery != string.Empty)
+            allSetsCountQuery = allSetsCountQuery.Where(set => set.Name.Contains(searchQuery));
+
+        var count = await allSetsCountQuery.CountAsync() / pageSize + 1;
 
         return count;
     }
