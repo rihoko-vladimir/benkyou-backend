@@ -147,4 +147,17 @@ public class SetsController : ControllerBase
 
         return Ok(setResult.Value);
     }
+
+    [HttpPost]
+    [Route("finish-learning")]
+    public async Task<ActionResult> FinishSetLearning([FromQuery] string setId, [FromBody] FinishLearningRequest finishLearningRequest)
+    {
+        var token = await this.GetAccessTokenFromCookieAsync();
+        _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+        var result = await _setsService.FinishSetLearning(userId, Guid.Parse(setId), finishLearningRequest);
+        
+        if (!result.IsSuccess) return BadRequest(result.Message);
+
+        return Ok();
+    }
 }

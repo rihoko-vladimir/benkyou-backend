@@ -20,4 +20,6 @@ public interface ISetsService
     public Task<Result<Set>> GetSetAsync(Guid setId);
 
     public Task<Result> ChangeSetsVisibilityAsync(Guid userId, bool arePublic);
+
+    public Task<Result> FinishSetLearning(Guid userId, Guid setId, FinishLearningRequest finishLearningRequest);
 }

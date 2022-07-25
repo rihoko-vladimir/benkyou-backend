@@ -71,6 +71,7 @@ public static class DiExtensions
         var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         var blobUri = configuration.GetConnectionString("AzureStorageBlobConnectionString");
         var containerName = configuration.GetSection(AzureBlobConfiguration.Key).GetValue<string>("ContainerName");
+        
         services.AddHealthChecks()
             .AddCheck<DbHealthCheck>("User information database",
                 tags: new List<string> { "Database" })

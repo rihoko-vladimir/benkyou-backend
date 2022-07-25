@@ -68,6 +68,25 @@
         "Patch",
         "Delete"
       ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/statistics/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "172.17.0.1",
+          "Port": 1080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Jwt",
+        "AllowedScopes": []
+      },
+      "UpstreamPathTemplate": "/statistics/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post"
+      ]
     }
   ],
   "GlobalConfiguration": {

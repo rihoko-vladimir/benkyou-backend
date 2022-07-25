@@ -97,6 +97,23 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+        
+        
+  statistics-api:
+    build:
+      context: .
+      dockerfile: Statistics.Api/Dockerfile
+    ports:
+      - "1080:80"
+      - "1081:443"
+    environment:
+      ASPNETCORE_URLS: "https://+:443;http://+:80"
+      ASPNETCORE_HTTPS_PORT: 1081
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - "./Certificates:/Certificates"
+    depends_on:
+      - rabbitmq
   
   gateway-api:
     build:
@@ -116,6 +133,7 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+        
       
   rabbitmq:
     image: rabbitmq:3-management-alpine

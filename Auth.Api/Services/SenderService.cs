@@ -53,15 +53,20 @@ public class SenderService : ISenderService
     {
         Log.Information("Sending registered user info: {Id}, {FirstName}, {LastName}, {UserName} via message broker", userId, firstName, lastName, userName);
 
+        var message = new RegisterUserMessage
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            UserId = userId,
+            UserName = userName,
+            IsTermsAccepted = isTermsAccepted
+        };
+
+        await SendMessage(new Uri($"queue:{QueueNames.RegistrationTimeQueue}"),
+            message);
+        
         var result = await SendMessage(new Uri($"queue:{QueueNames.RegistrationQueue}"),
-            new RegisterUserMessage
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                UserId = userId,
-                UserName = userName,
-                IsTermsAccepted = isTermsAccepted
-            });
+            message);
 
         return result;
     }
@@ -74,8 +79,8 @@ public class SenderService : ISenderService
                 await _sendEndpointProvider.GetSendEndpoint(endpointUri);
 
             Log.Information("Sending to {Uri}", endpointUri.ToString());
-
-            await endpoint.Send(message);
+            
+            await endpoint.Send(message!);
 
             return Result.Success();
         }
