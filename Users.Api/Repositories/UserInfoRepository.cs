@@ -39,7 +39,7 @@ public class UserInfoRepository : IUserInfoRepository
             userInformation.IsAccountPublic,
             userInformation.About);
 
-        await connection.ExecuteAsync(SqlCommand.UpdateUserQuery, queryParams);
+        await connection.ExecuteAsync(SqlCommand.UpdateUserQuery, queryParams, commandTimeout: 5000);
     }
 
     public async Task<UserInformation> GetUserInfoAsync(Guid userId)
@@ -51,7 +51,7 @@ public class UserInfoRepository : IUserInfoRepository
 
         Log.Information("Querying for user info with id {UserId}", userId);
         
-        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(SqlCommand.GetUserQuery, queryParams);
+        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(SqlCommand.GetUserQuery, queryParams, commandTimeout: 5000);
 
         return userInfo;
     }
@@ -72,7 +72,7 @@ public class UserInfoRepository : IUserInfoRepository
             userInformation.FirstName,
             userInformation.LastName);
         
-        await connection.ExecuteAsync(SqlCommand.CreateUserQuery, queryParams);
+        await connection.ExecuteAsync(SqlCommand.CreateUserQuery, queryParams, commandTimeout: 5000);
     }
 
     public async Task UpdateUserAvatarUrl(string avatarUrl, Guid userId)
@@ -87,6 +87,6 @@ public class UserInfoRepository : IUserInfoRepository
             userId,
             avatarUrl);
         
-        await connection.ExecuteAsync(SqlCommand.UpdateUserAvatarQuery, queryParams);
+        await connection.ExecuteAsync(SqlCommand.UpdateUserAvatarQuery, queryParams, commandTimeout: 5000);
     }
 }
