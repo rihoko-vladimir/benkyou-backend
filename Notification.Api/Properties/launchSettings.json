@@ -17,9 +17,9 @@
       "applicationUrl": "https://localhost:8081;http://localhost:8080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Local",
-        "APP_EMAILCONFIGURATION__APIKEY" : "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",
-        "APP_EMAILCONFIGURATION__SOURCE" : "support@benkyou.me",
-        "APP_EMAILCONFIGURATION__SOURCENAME" : "Benkyou! Support"
+        "APP_EMAILCONFIGURATION__APIKEY": "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",
+        "APP_EMAILCONFIGURATION__SOURCE": "support@benkyou.me",
+        "APP_EMAILCONFIGURATION__SOURCENAME": "Benkyou! Support"
       }
     },
     "IIS Express": {

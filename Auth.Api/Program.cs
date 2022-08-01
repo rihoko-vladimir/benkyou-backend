@@ -9,57 +9,54 @@ var logger = new LoggerConfiguration()
     .WriteTo.Console().CreateLogger();
 Log.Logger = logger;
 Log.Information("Application is starting up...");
-try
+
+builder.Host.UseSerilog((ctx, lc) =>
 {
-    builder.Host.UseSerilog((ctx, lc) =>
-    {
-        lc.WriteTo.Console()
-            .ReadFrom.Configuration(ctx.Configuration);
-    });
+    lc.WriteTo.Console()
+        .ReadFrom.Configuration(ctx.Configuration);
+});
 
-    builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
-    {
-        configurationBuilder.AddJsonFile("appsettings.json", true, true);
-        if (context.HostingEnvironment.EnvironmentName != "Production")
-            configurationBuilder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
-    });
+builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
+{
+    configurationBuilder.AddJsonFile("appsettings.json", true, true);
+    if (context.HostingEnvironment.EnvironmentName != "Production")
+        configurationBuilder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json");
+});
 
-    var startup = new Startup(builder.Configuration);
-    
-    startup.ConfigureServices(builder.Services);
+var startup = new Startup(builder.Configuration);
 
-    var app = builder.Build();
-    
-    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-    
-    startup.Configure(app, app.Environment, provider);
+startup.ConfigureServices(builder.Services);
+
+var app = builder.Build();
+
+var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+startup.Configure(app, app.Environment, provider);
 
 
-    app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging();
 
-    app.UseHealthChecks("/hc", new HealthCheckOptions
-    {
-        Predicate = _ => true,
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-    });
+app.UseHealthChecks("/hc", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
-    if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
-
-    //app.UseHttpsRedirection();
-
-    app.Run();
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local")
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
-catch (Exception e)
+
+//app.UseHttpsRedirection();
+
+app.Run();
+
+
+Log.Information("Application is shutting down...");
+Log.CloseAndFlush();
+
+
+public partial class Program
 {
-    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
-        e.Message, e.StackTrace);
-}
-finally
-{
-    Log.Information("Application is shutting down...");
-    Log.CloseAndFlush();
 }

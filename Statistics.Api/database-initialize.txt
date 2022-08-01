@@ -1,0 +1,19 @@
+﻿db.generalStatistics.insertOne({
+    userId : "hello world",
+    registrationDateTime : Date("2022-07-18"),
+    lastTimeOnline : Date("2022-07-18T18:31:41"),
+})
+
+db.studyResultStatistics.insertOne({
+    setId : "test id",
+    userId : "user id",
+    startDate : Date(),
+    endDate : Date(),
+    studyResult : {
+        kanji : "A",
+        selectedKunyomi : [],
+        selectedOnyomi : [],
+        correctKunyomi : [],
+        correctOnyomi : []
+    }
+})

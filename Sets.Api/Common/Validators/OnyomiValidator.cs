@@ -9,6 +9,6 @@ public class OnyomiValidator : AbstractValidator<OnyomiRequest>
     {
         RuleFor(request => request.Reading)
             .MaximumLength(10)
-            .Matches(@"[ァ-ン]");
+            .Matches(@"[ァ-ン]+");
     }
 }

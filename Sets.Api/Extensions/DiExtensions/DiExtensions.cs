@@ -31,14 +31,14 @@ public static class DiExtensions
         {
             builder.UseSqlServer(configuration.GetConnectionString("SetsSqlServerConnectionString"),
                 serverOptions =>
-                    serverOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                {
+                    serverOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    serverOptions.EnableRetryOnFailure(40);
+                });
         });
 
-        services.AddAutoMapper(expression =>
-        {
-            expression.AddProfile<ApplicationProfile>();
-        });
-        
+        services.AddAutoMapper(expression => { expression.AddProfile<ApplicationProfile>(); });
+
         services.AddEndpointsApiExplorer();
 
         services.AddApiVersioning(setup =>
@@ -47,22 +47,22 @@ public static class DiExtensions
             setup.AssumeDefaultVersionWhenUnspecified = true;
             setup.ReportApiVersions = true;
         });
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options => { options.ConfigureJwtBearer(configuration); });
-        
+
         services.AddVersionedApiExplorer(setup =>
         {
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
-        
+
         services.AddConfiguredMassTransit(configuration);
-        
+
         services.AddValidatorsFromAssemblyContaining<KanjiValidator>();
         services.AddValidatorsFromAssemblyContaining<SetValidator>();
         services.AddValidatorsFromAssemblyContaining<OnyomiValidator>();
@@ -76,10 +76,11 @@ public static class DiExtensions
                 _ => { },
                 "Azure Key vault",
                 HealthStatus.Unhealthy,
-                new List<string> {"Azure Key Vault"});
+                new List<string> { "Azure Key Vault" });
 
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<ISetsService, SetsService>();
+        services.AddTransient<ISenderService, SenderService>();
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddSingleton<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
     }
@@ -89,7 +90,7 @@ public static class DiExtensions
         services.AddMassTransit(configurator =>
         {
             configurator.AddConsumer<UpdateAccountVisibilityConsumer>();
-            
+
             if (ext.IsDevelopment() || ext.IsLocal())
                 configurator.UsingRabbitMq((context, factoryConfigurator) =>
                 {

@@ -11,18 +11,17 @@ using Sets.Api.Models.Requests;
 
 namespace Sets.Api.Controllers;
 
-
 [ApiController]
 [Route("/api/v{version:apiVersion}/sets")]
 [Authorize]
 public class SetsController : ControllerBase
 {
-    private readonly ISetsService _setsService;
     private readonly IAccessTokenService _accessTokenService;
-    private readonly IValidator<SetRequest> _setRequestValidator;
     private readonly IMapper _mapper;
+    private readonly IValidator<SetRequest> _setRequestValidator;
+    private readonly ISetsService _setsService;
 
-    public SetsController(ISetsService setsService, 
+    public SetsController(ISetsService setsService,
         IAccessTokenService accessTokenService,
         IValidator<SetRequest> setRequestValidator,
         IMapper mapper)
@@ -41,7 +40,7 @@ public class SetsController : ControllerBase
 
         var token = await this.GetAccessTokenFromCookieAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
-        
+
         if (!validationResult.IsValid)
         {
             Log.Warning("Set info validation failed while creating new one, user : {UserId}", userId);
@@ -67,10 +66,10 @@ public class SetsController : ControllerBase
         if (!setResult.IsSuccess)
         {
             Log.Warning("No set with id : {Id} was found", setId);
-            
+
             return BadRequest(setResult.Message);
         }
-        
+
         var setValue = setResult.Value!;
         var setRequestDto = _mapper.Map<SetRequest>(setValue);
         try
@@ -88,11 +87,12 @@ public class SetsController : ControllerBase
 
         var token = await this.GetAccessTokenFromCookieAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
-        
+
         if (!validationResult.IsValid)
         {
-            Log.Warning("Set info validation failed while attempting to patch, set: {SetId}, user : {UserId}", setId, userId);
-            
+            Log.Warning("Set info validation failed while attempting to patch, set: {SetId}, user : {UserId}", setId,
+                userId);
+
             return BadRequest(validationResult.ToString("~"));
         }
 
@@ -122,7 +122,7 @@ public class SetsController : ControllerBase
 
     [HttpGet]
     [Route("my-sets")]
-    public async Task<ActionResult> GetMySetsAsync([FromQuery] int pageNumber, int pageSize)
+    public async Task<ActionResult> GetMySetsAsync([FromQuery] int pageNumber = 1, int pageSize = 9)
     {
         var token = await this.GetAccessTokenFromCookieAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
@@ -133,10 +133,10 @@ public class SetsController : ControllerBase
 
         return Ok(setResult.Value);
     }
-    
+
     [HttpGet]
     [Route("all-sets")]
-    public async Task<ActionResult> GetAllSetsAsync([FromQuery] int pageNumber, int pageSize, string? searchQuery)
+    public async Task<ActionResult> GetAllSetsAsync([FromQuery] int pageNumber = 1, int pageSize = 9, string? searchQuery = "")
     {
         var token = await this.GetAccessTokenFromCookieAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
@@ -146,5 +146,24 @@ public class SetsController : ControllerBase
         if (!setResult.IsSuccess) return BadRequest(setResult.Message);
 
         return Ok(setResult.Value);
+    }
+
+    [HttpPost]
+    [Route("finish-learning")]
+    public async Task<ActionResult> FinishSetLearning([FromQuery] string setId,
+        [FromBody] FinishLearningRequest finishLearningRequest)
+    {
+        var token = await this.GetAccessTokenFromCookieAsync();
+
+        _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+
+        if (!Guid.TryParse(setId, out var id))
+            return BadRequest("Incorrect id provided");
+
+        var result = await _setsService.FinishSetLearning(userId, id, finishLearningRequest);
+
+        if (!result.IsSuccess) return BadRequest(result.Message);
+
+        return Ok();
     }
 }
