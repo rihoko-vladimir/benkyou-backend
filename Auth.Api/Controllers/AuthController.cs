@@ -11,13 +11,15 @@ namespace Auth.Api.Controllers;
 [Route("api/v{version:apiVersion}/auth")]
 public class AuthController : ControllerBase
 {
-    //TODO Fix results, so they'll also send error codes back
-    private readonly IUserService _userService;
-    private readonly IValidator<RegistrationRequest> _registrationValidator;
     private readonly IValidator<ResetPasswordConfirmationRequest> _passwordConfirmationValidator;
 
-    public AuthController(IUserService userService, 
-        IValidator<RegistrationRequest> registrationValidator, 
+    private readonly IValidator<RegistrationRequest> _registrationValidator;
+
+    //TODO Fix results, so they'll also send error codes back
+    private readonly IUserService _userService;
+
+    public AuthController(IUserService userService,
+        IValidator<RegistrationRequest> registrationValidator,
         IValidator<ResetPasswordConfirmationRequest> passwordConfirmationValidator)
     {
         _userService = userService;
@@ -45,13 +47,12 @@ public class AuthController : ControllerBase
         var validationResult = await _registrationValidator.ValidateAsync(registrationRequest);
 
         if (!validationResult.IsValid) return BadRequest(validationResult.ToString("~"));
-        
+
         var result = await _userService.RegisterAsync(registrationRequest);
 
         if (!result.IsSuccess) return BadRequest(result.Message);
 
         return Ok(result.Value);
-
     }
 
     [HttpPost]
@@ -98,7 +99,7 @@ public class AuthController : ControllerBase
         var validationResult = await _passwordConfirmationValidator.ValidateAsync(confirmationRequest);
 
         if (!validationResult.IsValid) return BadRequest(validationResult.ToString("~"));
-        
+
         var result = await _userService.ConfirmPasswordResetAsync(email, token, confirmationRequest.Password);
 
         if (!result.IsSuccess) return BadRequest(result.Message);

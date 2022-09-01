@@ -48,7 +48,7 @@ public class EmailSenderService : IEmailSenderService
         var to = new EmailAddress(emailAddress, userName);
         var mailString =
             await _templateGenerator.GetForgottenPasswordMailAsync(userName,
-                $"https://benkyou.me/{passwordResetToken}");
+                $"http://localhost:4200/auth/forgot-password/new-password?token={passwordResetToken}&email={emailAddress}");
         var message = new SendGridMessage
         {
             From = from,

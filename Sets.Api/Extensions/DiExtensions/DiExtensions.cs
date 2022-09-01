@@ -80,6 +80,7 @@ public static class DiExtensions
 
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<ISetsService, SetsService>();
+        services.AddTransient<ISenderService, SenderService>();
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddSingleton<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
     }

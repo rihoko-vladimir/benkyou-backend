@@ -5,32 +5,36 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+          "Host": "172.17.0.1",
           "Port": 7080
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
-      "UpstreamHttpMethod": [ "Post" ]
+      "UpstreamHttpMethod": [
+        "Post"
+      ]
     },
     {
       "DownstreamPathTemplate": "/health-ui",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+          "Host": "172.17.0.1",
           "Port": 9080
         }
       ],
       "UpstreamPathTemplate": "/health",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [
+        "Get"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/v1/user/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5080
+          "Host": "172.17.0.1",
+          "Port": 6080
         }
       ],
       "AuthenticationOptions": {
@@ -38,14 +42,18 @@
         "AllowedScopes": []
       },
       "UpstreamPathTemplate": "/user/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Patch", "Put" ]
+      "UpstreamHttpMethod": [
+        "Get",
+        "Patch",
+        "Put"
+      ]
     },
     {
       "DownstreamPathTemplate": "/api/v1/sets/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
+          "Host": "172.17.0.1",
           "Port": 10080
         }
       ],
@@ -54,7 +62,31 @@
         "AllowedScopes": []
       },
       "UpstreamPathTemplate": "/sets/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post", "Patch", "Delete" ]
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Patch",
+        "Delete"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/statistics/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "172.17.0.1",
+          "Port": 1080
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Jwt",
+        "AllowedScopes": []
+      },
+      "UpstreamPathTemplate": "/statistics/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post"
+      ]
     }
   ],
   "GlobalConfiguration": {

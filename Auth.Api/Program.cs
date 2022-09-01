@@ -25,13 +25,13 @@ try
     });
 
     var startup = new Startup(builder.Configuration);
-    
+
     startup.ConfigureServices(builder.Services);
 
     var app = builder.Build();
-    
+
     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-    
+
     startup.Configure(app, app.Environment, provider);
 
 
@@ -55,7 +55,7 @@ try
 }
 catch (Exception e)
 {
-    Log.Fatal("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
+    Log.Error("Unhandled exception: {Type} Message: {Message} Stacktrace: {Stacktrace}", e.GetType().FullName,
         e.Message, e.StackTrace);
 }
 finally

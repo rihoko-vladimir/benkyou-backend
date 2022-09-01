@@ -46,7 +46,7 @@ public class SetsServiceTest
             expression.AddProfile<ApplicationProfile>();
         }).CreateMapper();
         
-        _service = new SetsService(new MockedSetsRepo(), _mapper);
+        _service = new SetsService(new MockedSetsRepo(), _mapper, new SenderService(null!));
     }
 
     [Fact]

@@ -38,16 +38,14 @@ public static class DiExtensions
         services.AddSingleton(new DbHealthCheck(configuration));
         services.AddSingleton<IAccessTokenService, AccessTokenService>();
         services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
+        services.AddTransient<ISenderService, SenderService>();
         services.AddScoped<IUserInfoRepository, UserInfoRepository>();
         services.AddScoped<IUserInformationService, UserInformationService>();
-        
+
         services.AddConfiguredMassTransit(configuration);
-        
-        services.AddAutoMapper(expression =>
-        {
-            expression.AddProfile<AutoMappingProfile>();
-        });
-        
+
+        services.AddAutoMapper(expression => { expression.AddProfile<AutoMappingProfile>(); });
+
         services.AddEndpointsApiExplorer();
 
         services.AddApiVersioning(setup =>
@@ -56,7 +54,7 @@ public static class DiExtensions
             setup.AssumeDefaultVersionWhenUnspecified = true;
             setup.ReportApiVersions = true;
         });
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,35 +67,33 @@ public static class DiExtensions
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
-        
+
         var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         var blobUri = configuration.GetConnectionString("AzureStorageBlobConnectionString");
         var containerName = configuration.GetSection(AzureBlobConfiguration.Key).GetValue<string>("ContainerName");
+        
         services.AddHealthChecks()
             .AddCheck<DbHealthCheck>("User information database",
-                tags: new List<string>{"Database"})
+                tags: new List<string> { "Database" })
             .AddAzureKeyVault(vaultUri,
                 new DefaultAzureCredential(),
                 _ => { },
                 "Azure Key vault",
                 HealthStatus.Unhealthy,
-                new List<string> {"Azure Key Vault"})
+                new List<string> { "Azure Key Vault" })
             .AddAzureBlobStorage(
                 blobUri,
-                containerName: containerName,
-                name:"Storage Blob",
-                failureStatus:HealthStatus.Unhealthy,
-                tags:new List<string>{"Storage Blob"});
+                containerName,
+                name: "Storage Blob",
+                failureStatus: HealthStatus.Unhealthy,
+                tags: new List<string> { "Storage Blob" });
 
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
 
         services.AddValidatorsFromAssemblyContaining<UserInfoValidator>();
 
         services.AddOptions<MassTransitHostOptions>()
-            .Configure(options =>
-            {
-                options.WaitUntilStarted = true;
-            });
+            .Configure(options => { options.WaitUntilStarted = true; });
     }
 
     private static void AddConfiguredMassTransit(this IServiceCollection services, IConfiguration configuration)

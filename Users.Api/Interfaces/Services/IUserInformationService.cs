@@ -7,9 +7,9 @@ namespace Users.Api.Interfaces.Services;
 
 public interface IUserInformationService
 {
-    public Task<Result> UpdateUserInfoAsync(JsonPatchDocument<UpdateUserInfoRequest> updateRequest, Guid userId);
+    public Task<Result<UserInformation>> UpdateUserInfoAsync(JsonPatchDocument<UpdateUserInfoRequest> updateRequest, Guid userId);
 
-    public Task<Result> UpdateUserAvatarAsync(IFormFile file, Guid userId);
+    public Task<Result<UserInformation>> UpdateUserAvatarAsync(IFormFile file, Guid userId);
 
     public Task<Result> CreateUserAsync(UserInformation userInformation);
 

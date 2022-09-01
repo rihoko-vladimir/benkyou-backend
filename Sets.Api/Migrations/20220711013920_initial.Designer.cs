@@ -12,7 +12,7 @@ using Sets.Api.Models.DbContext;
 namespace Sets.Api.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220616133803_initial")]
+    [Migration("20220711013920_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
