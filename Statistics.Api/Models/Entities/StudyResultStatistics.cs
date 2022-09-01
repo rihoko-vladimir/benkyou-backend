@@ -22,4 +22,22 @@ public class StudyResultStatistics
     
     [BsonElement("endDate")]
     public DateTime EndDate { get; set; }
+
+    protected bool Equals(StudyResultStatistics other)
+    {
+        return SetId.Equals(other.SetId) && UserId.Equals(other.UserId) && StudyResults.Equals(other.StudyResults) && StartDate.ToString("yyyyMMddHHmmss")== other.StartDate.ToString("yyyyMMddHHmmss") && EndDate.ToString("yyyyMMddHHmmss") == other.EndDate.ToString("yyyyMMddHHmmss");
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((StudyResultStatistics)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(SetId, UserId, StudyResults, StartDate, EndDate);
+    }
 }

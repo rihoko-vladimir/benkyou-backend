@@ -43,7 +43,11 @@ public static class DiExtensions
         services.AddDbContext<ApplicationContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString("AuthSqlServerConnectionString") ?? "",
-                builder => builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
+                builder =>
+                {
+                    builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    builder.EnableRetryOnFailure(40);
+                });
         });
 
         services.AddAuthentication(options =>

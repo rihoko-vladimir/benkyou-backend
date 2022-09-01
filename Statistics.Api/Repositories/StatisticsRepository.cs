@@ -42,7 +42,7 @@ public class StatisticsRepository : IStatisticsRepository
         {
             await _client.GetDatabase("benkyou_statistics")
                 .GetCollection<GeneralStatistics>("generalStatistics")
-                .InsertOneAsync(new GeneralStatistics()
+                .InsertOneAsync(new GeneralStatistics
                 {
                     UserId = userId,
                     LastTimeOnline = DateTime.Now,
@@ -67,6 +67,8 @@ public class StatisticsRepository : IStatisticsRepository
                 {
                     UserId = userId,
                     SetId = setId,
+                    StartDate = startDate,
+                    EndDate = endDate,
                     StudyResults = studyResult,
                 });
             return Result.Success();
@@ -105,7 +107,7 @@ public class StatisticsRepository : IStatisticsRepository
         {
             return Result.Success(await (await _client.GetDatabase("benkyou_statistics")
                 .GetCollection<GeneralStatistics>("generalStatistics")
-                .FindAsync(statistics => true)).FirstAsync());
+                .FindAsync(statistics => statistics.UserId == userId)).FirstAsync());
         }
         catch (Exception e)
         {
