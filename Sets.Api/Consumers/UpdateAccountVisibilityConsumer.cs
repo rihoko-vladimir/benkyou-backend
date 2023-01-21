@@ -18,7 +18,7 @@ public class UpdateAccountVisibilityConsumer : IConsumer<UpdateUserVisibilityMes
     {
         var message = context.Message;
         Log.Information("Received visibility change message: {UserId}, {IsVisible}", message.UserId, message.IsVisible);
-        
+
         await _setsService.ChangeSetsVisibilityAsync(message.UserId, message.IsVisible);
     }
 }

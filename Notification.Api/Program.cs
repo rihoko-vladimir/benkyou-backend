@@ -1,6 +1,7 @@
 using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Notification.Api.Clients;
 using Notification.Api.Extensions;
 using Notification.Api.Extensions.DIExtensions;
 using Serilog;
@@ -13,10 +14,17 @@ Log.Logger = logger;
 Log.Information("Application is starting up...");
 try
 {
+    var loggerUri = builder.Configuration.GetConnectionString("LogStashConnectionString");
+    var serviceName = builder.Configuration.GetSection("ServiceInfo")?["ServiceName"];
+
     builder.Host.UseSerilog((ctx, lc) =>
     {
-        lc.WriteTo.Console()
+        lc.Enrich.WithProperty("ServiceName", serviceName);
+        lc.WriteTo.Console(outputTemplate:
+                "[{ServiceName} {Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
             .ReadFrom.Configuration(ctx.Configuration);
+
+        if (loggerUri is not null) lc.WriteTo.Http(loggerUri, null, httpClient: new CustomHttpClient());
     });
 
     if (EnvironmentExtensions.IsProduction())
@@ -38,7 +46,7 @@ try
     app.UseSerilogRequestLogging();
 
     app.UseRouting();
-    
+
     app.UseHealthChecks("/hc", new HealthCheckOptions
     {
         Predicate = _ => true,

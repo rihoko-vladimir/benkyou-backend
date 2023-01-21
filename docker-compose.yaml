@@ -142,3 +142,15 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
+    
+#  logstash:
+#    image: logstash:8.6.0
+#    container_name: LogStash
+#    ports:
+#      - "9600:9600"
+#      - "9700:9700"
+#      - "9602:9602"
+#    volumes:
+#      - "./ELK/LogStash/PipelineConfig/http-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf"
+#      - "./ELK/LogStash/LogStashConfig/logstash.yml:/usr/share/logstash/config/logstash.yml"
+#    restart: always

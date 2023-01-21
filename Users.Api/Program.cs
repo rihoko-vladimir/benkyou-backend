@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Users.Api.Common.Clients;
 using Users.Api.Extensions.DiExtensions;
 using ext = Users.Api.Extensions.EnvironmentExtensions;
 
@@ -44,10 +45,17 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication(builder.Configuration);
 
+var loggerUri = builder.Configuration.GetConnectionString("LogStashConnectionString");
+var serviceName = builder.Configuration.GetSection("ServiceInfo")?["ServiceName"];
+
 builder.Host.UseSerilog((ctx, lc) =>
 {
-    lc.WriteTo.Console()
+    lc.Enrich.WithProperty("ServiceName", serviceName);
+    lc.WriteTo.Console(outputTemplate:
+            "[{ServiceName} {Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
         .ReadFrom.Configuration(ctx.Configuration);
+
+    if (loggerUri is not null) lc.WriteTo.Http(loggerUri, null, httpClient: new CustomHttpClient());
 });
 
 var app = builder.Build();
@@ -89,4 +97,6 @@ app.Run();
 Log.Information("Application is shutting down...");
 Log.CloseAndFlush();
 
-public partial class Program {}
+public partial class Program
+{
+}

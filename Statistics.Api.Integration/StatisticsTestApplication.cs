@@ -12,10 +12,10 @@ public class StatisticsTestApplication : WebApplicationFactory<Program>
         .WithImage("mongo")
         .WithEnvironment("MONGO_INITDB_ROOT_USERNAME", "test_rihoko")
         .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", "testtesttesttest1A")
-        .WithPortBinding(30341,27017)
+        .WithPortBinding(30341, 27017)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(30341))
         .Build();
-    
+
     public StatisticsTestApplication()
     {
         _dbContainer.StartAsync();
@@ -24,10 +24,7 @@ public class StatisticsTestApplication : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
-        builder.ConfigureServices(collection =>
-        {
-            collection.AddMassTransitTestHarness();
-        });
+        builder.ConfigureServices(collection => { collection.AddMassTransitTestHarness(); });
     }
 
     public override async ValueTask DisposeAsync()

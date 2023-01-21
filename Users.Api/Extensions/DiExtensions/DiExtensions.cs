@@ -4,7 +4,6 @@ using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -72,7 +71,7 @@ public static class DiExtensions
         var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
         var blobUri = configuration.GetConnectionString("AzureStorageBlobConnectionString");
         var containerName = configuration.GetSection(AzureBlobConfiguration.Key).GetValue<string>("ContainerName");
-        
+
         services.AddHealthChecks()
             .AddCheck<DbHealthCheck>("User information database",
                 tags: new List<string> { "Database" })

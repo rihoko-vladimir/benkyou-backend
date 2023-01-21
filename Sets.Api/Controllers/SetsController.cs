@@ -136,7 +136,8 @@ public class SetsController : ControllerBase
 
     [HttpGet]
     [Route("all-sets")]
-    public async Task<ActionResult> GetAllSetsAsync([FromQuery] int pageNumber = 1, int pageSize = 9, string? searchQuery = "")
+    public async Task<ActionResult> GetAllSetsAsync([FromQuery] int pageNumber = 1, int pageSize = 9,
+        string? searchQuery = "")
     {
         var token = await this.GetAccessTokenFromCookieAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);

@@ -1,3 +1,4 @@
+using Gateway.Api.Clients;
 using Gateway.Api.Extensions.JWTExtensions;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
@@ -11,27 +12,30 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+    var loggerUri = builder.Configuration.GetConnectionString("LogStashConnectionString");
+    var serviceName = builder.Configuration.GetSection("ServiceInfo")?["ServiceName"];
+
     builder.Host.UseSerilog((ctx, lc) =>
     {
+        lc.Enrich.WithProperty("ServiceName", serviceName);
         lc.WriteTo.Console()
             .ReadFrom.Configuration(ctx.Configuration);
+
+        if (loggerUri is not null) lc.WriteTo.Http(loggerUri, null, httpClient: new CustomHttpClient());
     });
-    
+
     builder.Configuration
         .AddJsonFile("appsettings.json", true, true)
-        .AddJsonFile($"appsettings.Development.json", true, true)
+        .AddJsonFile("appsettings.Development.json", true, true)
         .AddJsonFile("ocelot.json")
         .AddJsonFile("ocelot.Development.json")
         .AddEnvironmentVariables();
 
     builder.Services.AddAuthentication()
-        .AddJwtBearer("Jwt", options =>
-        {
-            options.ConfigureJwtBearer(builder.Configuration);
-        });
-    
+        .AddJwtBearer("Jwt", options => { options.ConfigureJwtBearer(builder.Configuration); });
+
     builder.Services.AddOcelot();
-    
+
     builder.Services.AddCors(builder =>
     {
         builder.AddDefaultPolicy(policyBuilder =>

@@ -37,7 +37,7 @@ public class SenderService : ISenderService
             };
 
             await endpoint.Send(message);
-            
+
             return Result.Success();
         }
         catch (Exception e)

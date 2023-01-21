@@ -24,7 +24,7 @@ public class SenderService : ISenderService
                 await _sendEndpointProvider.GetSendEndpoint(
                     new Uri($"queue:{QueueNames.AccountVisibilityChangeQueue}"));
 
-            var message = new UpdateUserVisibilityMessage()
+            var message = new UpdateUserVisibilityMessage
             {
                 IsVisible = isVisible,
                 UserId = userId

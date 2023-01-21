@@ -4,8 +4,7 @@ namespace Auth.Api.Models.Entities;
 
 public class UserCredential
 {
-    [Key] 
-    public Guid Id { get; set; } = new();
+    [Key] public Guid Id { get; set; } = new();
 
     public string Email { get; set; }
 
@@ -15,6 +14,5 @@ public class UserCredential
 
     public ICollection<Token>? Tokens { get; set; }
 
-    [MaxLength(6)] 
-    public string? EmailConfirmationCode { get; set; }
+    [MaxLength(6)] public string? EmailConfirmationCode { get; set; }
 }

@@ -18,8 +18,6 @@ public class SenderService : ISenderService
 
     public async Task<Result> SendEmailCodeMessageAsync(string emailCode, string emailAddress)
     {
-
-
         Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
 
         var result = await SendMessage(new Uri($"queue:{QueueNames.EmailConfirmationQueue}"),
@@ -28,11 +26,10 @@ public class SenderService : ISenderService
                 EmailCode = emailCode,
                 EmailAddress = emailAddress
             });
-        
+
         return result;
     }
 
-    
 
     public async Task<Result> SendResetPasswordMessageAsync(string resetToken, string emailAddress)
     {
@@ -51,7 +48,8 @@ public class SenderService : ISenderService
     public async Task<Result> SendRegistrationMessageAsync(Guid userId, string firstName, string lastName,
         string userName, bool isTermsAccepted)
     {
-        Log.Information("Sending registered user info: {Id}, {FirstName}, {LastName}, {UserName} via message broker", userId, firstName, lastName, userName);
+        Log.Information("Sending registered user info: {Id}, {FirstName}, {LastName}, {UserName} via message broker",
+            userId, firstName, lastName, userName);
 
         var message = new RegisterUserMessage
         {
@@ -64,7 +62,7 @@ public class SenderService : ISenderService
 
         await SendMessage(new Uri($"queue:{QueueNames.RegistrationTimeQueue}"),
             message);
-        
+
         var result = await SendMessage(new Uri($"queue:{QueueNames.RegistrationQueue}"),
             message);
 
@@ -79,7 +77,7 @@ public class SenderService : ISenderService
                 await _sendEndpointProvider.GetSendEndpoint(endpointUri);
 
             Log.Information("Sending to {Uri}", endpointUri.ToString());
-            
+
             await endpoint.Send(message!);
 
             return Result.Success();

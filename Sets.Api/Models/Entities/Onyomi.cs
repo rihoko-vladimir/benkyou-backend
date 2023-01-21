@@ -4,11 +4,9 @@ namespace Sets.Api.Models.Entities;
 
 public class Onyomi
 {
-    [Key] 
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
 
-    [MaxLength(10)] 
-    public string Reading { get; set; }
+    [MaxLength(10)] public string Reading { get; set; }
 
     public Guid KanjiId { get; set; }
 

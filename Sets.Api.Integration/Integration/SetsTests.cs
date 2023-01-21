@@ -12,9 +12,9 @@ namespace Sets.Api.Integration.Integration;
 [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
 public class SetsTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly ApplicationContext _dbContext;
     private readonly SetsTestApplication _factory;
+    private readonly ITestOutputHelper _testOutputHelper;
 
     public SetsTests(ITestOutputHelper testOutputHelper)
     {
@@ -135,8 +135,9 @@ public class SetsTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
@@ -144,13 +145,14 @@ public class SetsTests
         //Act
 
         var response = await client.PostAsync(url, new StringContent(setSerialized, Encoding.UTF8, "application/json"));
-        
+
 
         //Assert
 
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
 
         Assert.True(response.IsSuccessStatusCode);
     }
@@ -170,7 +172,7 @@ public class SetsTests
                 value = "Test12"
             }
         };
-        
+
         var loginRequest = new
         {
             Login = "test@test.com",
@@ -189,22 +191,25 @@ public class SetsTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
-        
+
         //Act
-        
-        var response = await client.PatchAsync($"{url}?setId={setId}", new StringContent(patchSerialized, Encoding.UTF8, "application/json"));
+
+        var response = await client.PatchAsync($"{url}?setId={setId}",
+            new StringContent(patchSerialized, Encoding.UTF8, "application/json"));
 
         //Assert
-        
+
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
     }
 
@@ -214,7 +219,7 @@ public class SetsTests
     public async Task Test_MySets_IsCorrect(string url)
     {
         //Arrange
-        
+
         var loginRequest = new
         {
             Login = "test@test.com",
@@ -229,32 +234,34 @@ public class SetsTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
-        
+
         //Act
 
         var response = await client.GetAsync($"{url}?pageNumber={1}&pageSize={9}");
 
         //Assert
-        
+
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
     }
-    
+
     [Theory]
     [Priority(4)]
     [InlineData("/api/v1/sets/all-sets")]
     public async Task Test_AllSets_IsCorrect(string url)
     {
         //Arrange
-        
+
         var loginRequest = new
         {
             Login = "test@test.com",
@@ -269,24 +276,24 @@ public class SetsTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
-        
+
         //Act
 
         var response = await client.GetAsync($"{url}?pageNumber={1}&pageSize={9}");
 
         //Assert
-        
+
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
     }
-
-
 }

@@ -5,7 +5,7 @@ using Users.Api.Models.Requests;
 
 namespace Users.Api.Common.MapperProfiles;
 
-public class AutoMappingProfile : Profile 
+public class AutoMappingProfile : Profile
 {
     public AutoMappingProfile()
     {
@@ -13,7 +13,7 @@ public class AutoMappingProfile : Profile
             .ReverseMap();
         CreateMap<RegisterUserMessage, UserInformation>()
             .ForMember(
-                information => information.Id, 
+                information => information.Id,
                 expression => expression.MapFrom(message => message.UserId));
     }
 }

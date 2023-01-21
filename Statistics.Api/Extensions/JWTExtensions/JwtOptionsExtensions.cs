@@ -32,7 +32,7 @@ public static class JwtOptionsExtensions
             OnMessageReceived = context =>
             {
                 context.Token = context.Request.Cookies["access"];
-                
+
                 return Task.CompletedTask;
             }
         };

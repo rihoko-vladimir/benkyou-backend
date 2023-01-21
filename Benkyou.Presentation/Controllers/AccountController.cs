@@ -30,7 +30,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+            UserNotFoundException => NotFound(new { errorMessage = exception.Message }),
             _ => StatusCode(500)
         };
     }
@@ -45,8 +45,8 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
-            PasswordChangeException => BadRequest(new {errorMessage = exception.Message}),
+            UserNotFoundException => NotFound(new { errorMessage = exception.Message }),
+            PasswordChangeException => BadRequest(new { errorMessage = exception.Message }),
             _ => StatusCode(500)
         };
     }
@@ -61,7 +61,7 @@ public class AccountController : ControllerBase
         var exception = result.Exception!;
         return exception switch
         {
-            UserNotFoundException => NotFound(new {errorMessage = exception.Message}),
+            UserNotFoundException => NotFound(new { errorMessage = exception.Message }),
             _ => StatusCode(500)
         };
     }

@@ -1,4 +1,5 @@
 using Auth.Api;
+using Auth.Api.Clients;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -10,10 +11,19 @@ var logger = new LoggerConfiguration()
 Log.Logger = logger;
 Log.Information("Application is starting up...");
 
+var loggerUri = builder.Configuration.GetConnectionString("LogStashConnectionString");
+var serviceName = builder.Configuration.GetSection("ServiceInfo")?["ServiceName"];
+
 builder.Host.UseSerilog((ctx, lc) =>
 {
-    lc.WriteTo.Console()
+    lc.Enrich.WithProperty("ServiceName", serviceName);
+    lc.WriteTo.Console(
+            outputTemplate:
+            "[{ServiceName} {Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
         .ReadFrom.Configuration(ctx.Configuration);
+
+    if (loggerUri is not null)
+        lc.WriteTo.Http(loggerUri, null, httpClient: new CustomHttpClient());
 });
 
 builder.Host.ConfigureAppConfiguration((context, configurationBuilder) =>
