@@ -57,7 +57,8 @@ public class StatisticsRepository : IStatisticsRepository
         }
     }
 
-    public async Task<Result> AddSetLearnResult(Guid userId, Guid setId, DateTime startDate, DateTime endDate, StudyResult[] studyResult)
+    public async Task<Result> AddSetLearnResult(Guid userId, Guid setId, DateTime startDate, DateTime endDate,
+        StudyResult[] studyResult)
     {
         try
         {
@@ -69,7 +70,7 @@ public class StatisticsRepository : IStatisticsRepository
                     SetId = setId,
                     StartDate = startDate,
                     EndDate = endDate,
-                    StudyResults = studyResult,
+                    StudyResults = studyResult
                 });
             return Result.Success();
         }

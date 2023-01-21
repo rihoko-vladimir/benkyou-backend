@@ -102,7 +102,7 @@ public class SetsRepository : ISetsRepository
             .Where(set => set.User.IsAccountPublic)
             .Where(set => set.UserId != userId);
         decimal count = await sets.CountAsync();
-        var pageCount = (int) Math.Ceiling(count / pageSize);
+        var pageCount = (int)Math.Ceiling(count / pageSize);
         return Result.Success(pageCount);
     }
 
@@ -116,7 +116,7 @@ public class SetsRepository : ISetsRepository
         decimal count = await sets.CountAsync();
         try
         {
-            var pageCount = (int) Math.Ceiling(count / pageSize);
+            var pageCount = (int)Math.Ceiling(count / pageSize);
             return Result.Success(pageCount);
         }
         catch (Exception)

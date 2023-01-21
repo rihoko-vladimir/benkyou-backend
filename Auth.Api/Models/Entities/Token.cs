@@ -4,8 +4,7 @@ namespace Auth.Api.Models.Entities;
 
 public class Token
 {
-    [Key] 
-    public Guid RecordId { get; set; }
+    [Key] public Guid RecordId { get; set; }
 
     public string RefreshToken { get; set; }
 

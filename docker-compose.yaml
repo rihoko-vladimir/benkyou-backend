@@ -15,7 +15,7 @@ services:
       AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
       AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
       AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
-      APP_EMAILCONFIGURATION__APIKEY: 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
+      APP_EMAILCONFIGURATION__APIKEY: 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
       APP_EMAILCONFIGURATION__SOURCE: support@benkyou.me
       APP_EMAILCONFIGURATION__SOURCENAME: "Benkyou! Support"
     volumes:
@@ -142,3 +142,15 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
+    
+#  logstash:
+#    image: logstash:8.6.0
+#    container_name: LogStash
+#    ports:
+#      - "9600:9600"
+#      - "9700:9700"
+#      - "9602:9602"
+#    volumes:
+#      - "./ELK/LogStash/PipelineConfig/http-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf"
+#      - "./ELK/LogStash/LogStashConfig/logstash.yml:/usr/share/logstash/config/logstash.yml"
+#    restart: always

@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "4ySo5kRijY4k+hn2sG3w3ZKV0CaBF7SUh6FlNwl8Zfn1pk0at6oGhZsU35fybIu6Po3IK28i1Mba9+V9T+ltJg==",
+  "dgSpecHash": "GpStFWQCtfEEO9U0FB8AmGMcRB0Jn1O4nMHTvHNAnn5tFn3DRP1D09c9fkV+5p/fVr+wCE5LhenXOgPZ/q7MuA==",
   "success": true,
   "projectFilePath": "C:\\Users\\vovak\\RiderProjects\\benkyou-backend\\Benkyou.Presentation\\Benkyou.Presentation.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\vovak\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
+    "C:\\Users\\vovak\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\vovak\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",
     "C:\\Users\\vovak\\.nuget\\packages\\azure.core\\1.6.0\\azure.core.1.6.0.nupkg.sha512",
     "C:\\Users\\vovak\\.nuget\\packages\\azure.identity\\1.3.0\\azure.identity.1.3.0.nupkg.sha512",

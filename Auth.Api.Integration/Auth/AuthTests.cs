@@ -3,7 +3,6 @@ using Auth.Api.Generators;
 using Auth.Api.Models.DbContext;
 using Auth.Api.Models.Requests;
 using Auth.Api.Services;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -14,7 +13,9 @@ using Xunit.Priority;
 namespace Auth.Api.Integration.Auth;
 
 [CollectionDefinition("Non-Parallel Collection", DisableParallelization = true)]
-public class SystemTestCollectionDefinition { }
+public class SystemTestCollectionDefinition
+{
+}
 
 public static class Configs
 {
@@ -122,9 +123,9 @@ public class RefreshTokenTests
 [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
 public class UserTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly ApplicationContext _dbContext;
     private readonly AuthTestApplication _factory;
+    private readonly ITestOutputHelper _testOutputHelper;
 
     public UserTests(ITestOutputHelper testOutputHelper)
     {
@@ -135,7 +136,8 @@ public class UserTests
         _dbContext.Database.EnsureCreated();
     }
 
-    [Theory, Priority(1)]
+    [Theory]
+    [Priority(1)]
     [InlineData("/api/v1/auth/register")]
     public async Task Test_Registration_IsCorrect(string url)
     {
@@ -156,7 +158,8 @@ public class UserTests
 
         //Act
 
-        var response = await client.PostAsync(url, new StringContent(credsSerialized, Encoding.UTF8, "application/json"));
+        var response =
+            await client.PostAsync(url, new StringContent(credsSerialized, Encoding.UTF8, "application/json"));
 
         var queriedUser =
             await _dbContext.UserCredentials.FirstOrDefaultAsync(
@@ -165,8 +168,9 @@ public class UserTests
         //Assert
 
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
 
         Assert.True(response.IsSuccessStatusCode);
 
@@ -175,14 +179,19 @@ public class UserTests
         Assert.Equal(queriedUser?.Email, userCredentials.Email);
     }
 
-    [Theory, Priority(2)]
+    [Theory]
+    [Priority(2)]
     [InlineData("/api/v1/auth/confirm-email")]
     public async Task Test_Confirm_IsCorrect(string url)
     {
         //Arrange
-        var confirmationCode = (await _dbContext.UserCredentials.FirstOrDefaultAsync(credential => credential.Email == "test@test.com"))!.EmailConfirmationCode;
-        
-        var userId = (await _dbContext.UserCredentials.FirstOrDefaultAsync(credential => credential.Email == "test@test.com"))!.Id;
+        var confirmationCode =
+            (await _dbContext.UserCredentials.FirstOrDefaultAsync(credential => credential.Email == "test@test.com"))!
+            .EmailConfirmationCode;
+
+        var userId =
+            (await _dbContext.UserCredentials.FirstOrDefaultAsync(credential => credential.Email == "test@test.com"))!
+            .Id;
 
         var confirmationRequest = new ConfirmEmailRequest
         {
@@ -191,18 +200,20 @@ public class UserTests
         };
 
         var requestSerialised = JsonConvert.SerializeObject(confirmationRequest);
-        
+
         var client = _factory.CreateClient();
         //Act
-        
-        var response = await client.PostAsync(url, new StringContent(requestSerialised, Encoding.UTF8, "application/json"));
+
+        var response =
+            await client.PostAsync(url, new StringContent(requestSerialised, Encoding.UTF8, "application/json"));
 
         //Assert
-        
+
         Assert.True(response.IsSuccessStatusCode);
     }
-    
-    [Theory, Priority(3)]
+
+    [Theory]
+    [Priority(3)]
     [InlineData("/api/v1/auth/login")]
     public async Task Test_Login_IsCorrect(string url)
     {
@@ -212,45 +223,47 @@ public class UserTests
             Login = "test@test.com",
             Password = "testtetstest1A"
         };
-        
+
         var requestSerialised = JsonConvert.SerializeObject(loginRequest);
-        
+
         var client = _factory.CreateClient();
-        
+
         //Act
-        
-        var response = await client.PostAsync(url, new StringContent(requestSerialised, Encoding.UTF8, "application/json"));
+
+        var response =
+            await client.PostAsync(url, new StringContent(requestSerialised, Encoding.UTF8, "application/json"));
 
         var tokensCount = await _dbContext.Tokens.CountAsync();
 
         //Assert
-        
+
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
-        
+
         Assert.True(tokensCount > 0);
     }
 
-    [Theory, Priority(4)]
+    [Theory]
+    [Priority(4)]
     [InlineData("/api/v1/auth/reset-password")]
     public async Task Test_ResetPassword_IsCorrect(string url)
     {
         //Arrange
-        
+
         var email = "test@test.com";
-        
+
         var client = _factory.CreateClient();
-        
+
         //Act
 
         var response = await client.PostAsync($"{url}?email={email}", null);
-        
+
         //Assert
-        
+
         Assert.True(response.IsSuccessStatusCode);
     }
-
 }

@@ -15,7 +15,8 @@ public interface ISetsService
 
     public Task<Result<PagedSetsResponse>> GetUserSetsAsync(Guid userId, int pageNumber, int pageSize);
 
-    public Task<Result<PagedSetsResponse>> GetAllSetsAsync(Guid userId, int pageNumber, int pageSize, string searchQuery);
+    public Task<Result<PagedSetsResponse>> GetAllSetsAsync(Guid userId, int pageNumber, int pageSize,
+        string searchQuery);
 
     public Task<Result<Set>> GetSetAsync(Guid setId);
 

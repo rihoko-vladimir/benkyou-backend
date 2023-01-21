@@ -12,10 +12,10 @@ public class AuthTestApplication : WebApplicationFactory<Program>
         .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
         .WithEnvironment("ACCEPT_EULA", "Y")
         .WithEnvironment("SA_PASSWORD", "nandesukaanatawa1A")
-        .WithPortBinding(13752,1433)
+        .WithPortBinding(13752, 1433)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(13752))
         .Build();
-    
+
     public AuthTestApplication()
     {
         _dbContainer.StartAsync();
@@ -24,10 +24,7 @@ public class AuthTestApplication : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
-        builder.ConfigureServices(collection =>
-        {
-            collection.AddMassTransitTestHarness();
-        });
+        builder.ConfigureServices(collection => { collection.AddMassTransitTestHarness(); });
     }
 
     public override async ValueTask DisposeAsync()

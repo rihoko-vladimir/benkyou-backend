@@ -8,15 +8,15 @@ namespace Users.Api.Integration.Users;
 [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
 public class UsersTests
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly UsersTestApplication _factory;
+    private readonly ITestOutputHelper _testOutputHelper;
     private Guid _userId;
 
     public UsersTests(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
         _factory = new UsersTestApplication();
-        
+
         Guid.TryParse("7970497D-2359-42CF-E4D3-08DA70A125B6", out _userId);
     }
 
@@ -26,7 +26,7 @@ public class UsersTests
     public async Task Test_GetInfo_IsCorrect(string url)
     {
         //Arrange
-        
+
         var loginRequest = new
         {
             Login = "test@test.com",
@@ -41,12 +41,13 @@ public class UsersTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
-        
+
         //Act
 
         var response = await client.GetAsync(url);
@@ -54,9 +55,10 @@ public class UsersTests
         //Assert
 
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
     }
 
@@ -66,7 +68,7 @@ public class UsersTests
     public async Task Test_UpdateInfo_IsCorrect(string url)
     {
         //Arrange
-        
+
         var loginRequest = new
         {
             Login = "test@test.com",
@@ -84,7 +86,7 @@ public class UsersTests
         };
 
         var loginSerialized = JsonConvert.SerializeObject(loginRequest);
-        
+
         var patchSerialized = JsonConvert.SerializeObject(patchRequest);
 
         var client = _factory.CreateClient();
@@ -93,23 +95,25 @@ public class UsersTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
-        
+
         //Act
 
         var response =
             await client.PatchAsync(url, new StringContent(patchSerialized, Encoding.UTF8, "application/json"));
-        
+
         //Assert
-        
+
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
     }
 
@@ -119,7 +123,7 @@ public class UsersTests
     public async Task Test_UploadAvatar_IsCorrect(string url)
     {
         //Arrange
-        
+
         var loginRequest = new
         {
             Login = "test@test.com",
@@ -134,33 +138,35 @@ public class UsersTests
 
         var loginResponse = await httpClient.PostAsync("http://host.docker.internal:7080/api/v1/auth/login",
             new StringContent(loginSerialized, Encoding.UTF8, "application/json"));
-        
-        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value.Single(value => value.Contains("access"));
+
+        var accessToken = loginResponse.Headers.Single(header => header.Key == "Set-Cookie").Value
+            .Single(value => value.Contains("access"));
 
         client.DefaultRequestHeaders.Add("Cookie",
             accessToken);
 
         await using var stream = File.OpenRead("../../../Users/maxresdefault.jpg");
-        
+
         using var request = new HttpRequestMessage(HttpMethod.Put, url);
-        
+
         using var content = new MultipartFormDataContent
         {
             { new StreamContent(stream), "formFile", "maxresdefault.jpg" }
         };
-        
+
         request.Content = content;
 
         //Act
-        
+
         var response = await client.SendAsync(request);
-        
+
         //Assert
-        
+
         _testOutputHelper.WriteLine(response.StatusCode.ToString());
-        
-        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync()).ReadToEndAsync());
-        
+
+        _testOutputHelper.WriteLine(await new StreamReader(await response.Content.ReadAsStreamAsync())
+            .ReadToEndAsync());
+
         Assert.True(response.IsSuccessStatusCode);
     }
 }

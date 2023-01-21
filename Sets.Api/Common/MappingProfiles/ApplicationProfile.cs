@@ -25,11 +25,11 @@ public class ApplicationProfile : Profile
             .ReverseMap();
         CreateMap<Set, SetResponse>()
             .ForMember(
-                response => 
-                    response.AuthorId, 
-                expression => 
+                response =>
+                    response.AuthorId,
+                expression =>
                     expression.MapFrom(
-                        set => 
+                        set =>
                             set.UserId));
         CreateMap<SetResponse, Set>()
             .ForMember(

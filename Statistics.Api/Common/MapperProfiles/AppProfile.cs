@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Shared.Models.Messages;
 using Shared.Models.Models;
 using Statistics.Api.Models.Entities;
 

@@ -9,7 +9,8 @@ public interface IStatisticsRepository
 
     public Task SetRegistrationDate(Guid userId, DateTime registrationDateTime);
 
-    public Task<Result> AddSetLearnResult(Guid userId, Guid setId, DateTime startDate, DateTime endDate, StudyResult[] studyResults);
+    public Task<Result> AddSetLearnResult(Guid userId, Guid setId, DateTime startDate, DateTime endDate,
+        StudyResult[] studyResults);
 
     public Task<Result<List<StudyResultStatistics>>> GetSetStudyResults(Guid userId, Guid setId);
 

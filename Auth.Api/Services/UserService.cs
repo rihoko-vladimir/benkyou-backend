@@ -66,10 +66,7 @@ public class UserService : IUserService
         if (user.Tokens.Count >= 3)
         {
             var oldestSessions = user.Tokens.OrderBy(token => token.IssuedDateTime).Take(user.Tokens.Count - 3);
-            foreach (var oldSession in oldestSessions)
-            {
-                user.Tokens.Remove(oldSession);
-            }
+            foreach (var oldSession in oldestSessions) user.Tokens.Remove(oldSession);
         }
 
         var token = new Token
@@ -118,7 +115,9 @@ public class UserService : IUserService
             await _senderService.SendRegistrationMessageAsync(user.Id, registrationRequest.FirstName,
                 registrationRequest.LastName, registrationRequest.UserName, registrationRequest.IsTermsAccepted);
 
-        return !result.IsSuccess && !registrationCredResult.IsSuccess ? Result.Error<Guid>("Message broker error") : Result.Success(user.Id);
+        return !result.IsSuccess && !registrationCredResult.IsSuccess
+            ? Result.Error<Guid>("Message broker error")
+            : Result.Success(user.Id);
     }
 
     public async Task<Result<TokensResponse>> RefreshTokensAsync(string refreshToken)
@@ -184,7 +183,7 @@ public class UserService : IUserService
         var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
 
         var isCodeCorrect = _emailCodeGenerator.VerifyCode(confirmationCode, user);
-        
+
         if (!isCodeCorrect)
         {
             Log.Warning("Provided confirmation code is incorrect. User : {User}, EmailCode: {Code}", userId,

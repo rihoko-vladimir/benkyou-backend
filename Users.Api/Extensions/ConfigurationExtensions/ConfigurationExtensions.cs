@@ -27,6 +27,7 @@ public static class ConfigurationExtensions
 
         return blobConfiguration;
     }
+
     public static RabbitMqConfiguration GetRabbitMqConfiguration(this IConfiguration configuration)
     {
         var section = configuration.GetSection(RabbitMqConfiguration.Key);
@@ -51,7 +52,7 @@ public static class ConfigurationExtensions
         RabbitMqConfiguration rabbitConfig)
     {
         factoryConfigurator.ConfigureEndpoints(context);
-        
+
         factoryConfigurator.Host(rabbitConfig.Host, rabbitConfig.VirtualHost, hostConfigurator =>
         {
             hostConfigurator.Username(rabbitConfig.UserName);
@@ -74,9 +75,6 @@ public static class ConfigurationExtensions
         IBusRegistrationContext context)
     {
         factoryConfigurator.ReceiveEndpoint(QueueNames.RegistrationQueue,
-            endpointConfigurator =>
-            {
-                endpointConfigurator.ConfigureConsumer<RegisterUserMessageConsumer>(context);
-            });
+            endpointConfigurator => { endpointConfigurator.ConfigureConsumer<RegisterUserMessageConsumer>(context); });
     }
 }

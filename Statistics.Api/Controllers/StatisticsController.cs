@@ -25,7 +25,7 @@ public class StatisticsController : ControllerBase
     {
         var token = await this.GetAccessTokenAsync();
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
-        
+
         if (!Guid.TryParse(setId, out var id))
             return BadRequest("Incorrect id provided");
 
@@ -41,7 +41,7 @@ public class StatisticsController : ControllerBase
     public async Task<ActionResult> GetUserStats()
     {
         var token = await this.GetAccessTokenAsync();
-        
+
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
 
         var result = await _statisticsService.GetGeneralStatistics(userId);
@@ -56,9 +56,9 @@ public class StatisticsController : ControllerBase
     public async Task<ActionResult> SetLastOnlineStatus()
     {
         var token = await this.GetAccessTokenAsync();
-        
+
         _accessTokenService.GetGuidFromAccessToken(token, out var userId);
-        
+
         var result = await _statisticsService.SetLastOnlineStatus(userId);
 
         if (!result.IsSuccess) return BadRequest(result.Message);

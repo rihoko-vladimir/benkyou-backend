@@ -20,7 +20,6 @@ public static class ConfigurationExtensions
 
     public static MassTransitConfiguration GetMassTransitConfiguration(this IConfiguration configuration)
     {
-
         if (ext.IsDevelopment() || ext.IsLocal())
         {
             var configurationSection = configuration.GetSection(MassTransitConfiguration.Key);
@@ -34,7 +33,8 @@ public static class ConfigurationExtensions
         var configurationSectionAzure = configuration.GetSection("AzureServiceBusConfiguration");
         return new MassTransitConfiguration
         {
-            AzureServiceBusConnectionString = configurationSectionAzure.GetValue<string>("AzureServiceBusConnectionString")
+            AzureServiceBusConnectionString =
+                configurationSectionAzure.GetValue<string>("AzureServiceBusConnectionString")
         };
     }
 

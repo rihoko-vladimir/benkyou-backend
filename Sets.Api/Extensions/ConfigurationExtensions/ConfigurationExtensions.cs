@@ -15,7 +15,7 @@ public static class ConfigurationExtensions
 
         return jwtConfiguration;
     }
-    
+
     public static RabbitMqConfiguration GetRabbitMqConfiguration(this IConfiguration configuration)
     {
         var section = configuration.GetSection(RabbitMqConfiguration.Key);
@@ -55,7 +55,7 @@ public static class ConfigurationExtensions
         factoryConfigurator.ConfigureEndpoints(context);
         factoryConfigurator.Host(busConfig.AzureServiceBusConnectionString);
     }
-    
+
     private static void ConfigureEndpoints(
         this IBusFactoryConfigurator factoryConfigurator,
         IBusRegistrationContext context)

@@ -190,7 +190,7 @@ public class SetsRepository : ISetsRepository
         var allSetsCountQuery = _dbContext.Sets
             .Where(set => set.IsPublic)
             .Where(set => set.UserId != userId);
-        
+
         if (searchQuery != string.Empty)
             allSetsCountQuery = allSetsCountQuery.Where(set => set.Name.Contains(searchQuery));
 

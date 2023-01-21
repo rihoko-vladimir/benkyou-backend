@@ -5,8 +5,7 @@ namespace Sets.Api.Models.Entities;
 
 public class Kanji
 {
-    [Key] 
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
 
     [MaxLength(1)]
     [MinLength(1)]

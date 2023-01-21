@@ -3,9 +3,9 @@ using Dapper;
 using Serilog;
 using Users.Api.Interfaces.Factories;
 using Users.Api.Interfaces.Repositories;
+using Users.Api.Models.Constants;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
-using SqlCommand = Users.Api.Models.Constants.SqlCommand;
 
 namespace Users.Api.Repositories;
 
@@ -22,7 +22,7 @@ public class UserInfoRepository : IUserInfoRepository
     {
         await using var connection = _connectionFactory.GetConnection();
         var queryParams = new DynamicParameters();
-        
+
         queryParams.Add("userId", id, DbType.Guid);
         queryParams.Add("firstName", userInformation.FirstName, DbType.StringFixedLength);
         queryParams.Add("lastName", userInformation.LastName, DbType.StringFixedLength);
@@ -30,8 +30,8 @@ public class UserInfoRepository : IUserInfoRepository
         queryParams.Add("birthDay", userInformation.BirthDay, DbType.DateTime2);
         queryParams.Add("isAccountPublic", userInformation.IsAccountPublic, DbType.Byte);
         queryParams.Add("about", userInformation.About, DbType.StringFixedLength);
-        
-        Log.Information("Updating user info: {FirstName}, {LastName}, {UserName}, {BirthDay}, {IsPublic}, {About}", 
+
+        Log.Information("Updating user info: {FirstName}, {LastName}, {UserName}, {BirthDay}, {IsPublic}, {About}",
             userInformation.FirstName,
             userInformation.LastName,
             userInformation.UserName,
@@ -45,13 +45,15 @@ public class UserInfoRepository : IUserInfoRepository
     public async Task<UserInformation> GetUserInfoAsync(Guid userId)
     {
         await using var connection = _connectionFactory.GetConnection();
-        
+
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
 
         Log.Information("Querying for user info with id {UserId}", userId);
-        
-        var userInfo = await connection.QueryFirstOrDefaultAsync<UserInformation>(SqlCommand.GetUserQuery, queryParams, commandTimeout: 5000);
+
+        var userInfo =
+            await connection.QueryFirstOrDefaultAsync<UserInformation>(SqlCommand.GetUserQuery, queryParams,
+                commandTimeout: 5000);
 
         return userInfo;
     }
@@ -65,13 +67,13 @@ public class UserInfoRepository : IUserInfoRepository
         queryParams.Add("userName", userInformation.UserName, DbType.StringFixedLength);
         queryParams.Add("firstName", userInformation.FirstName, DbType.StringFixedLength);
         queryParams.Add("lastName", userInformation.LastName, DbType.StringFixedLength);
-        
-        Log.Information("Creating new user: {Id}, {UserName}, {FirstName}, {LastName}", 
+
+        Log.Information("Creating new user: {Id}, {UserName}, {FirstName}, {LastName}",
             userInformation.Id,
             userInformation.UserName,
             userInformation.FirstName,
             userInformation.LastName);
-        
+
         await connection.ExecuteAsync(SqlCommand.CreateUserQuery, queryParams, commandTimeout: 5000);
     }
 
@@ -82,11 +84,11 @@ public class UserInfoRepository : IUserInfoRepository
         var queryParams = new DynamicParameters();
         queryParams.Add("userId", userId, DbType.Guid);
         queryParams.Add("avatarUrl", avatarUrl, DbType.StringFixedLength);
-        
-        Log.Information("Changing user's {Id} avatar url with new value : {AvatarUrl}", 
+
+        Log.Information("Changing user's {Id} avatar url with new value : {AvatarUrl}",
             userId,
             avatarUrl);
-        
+
         await connection.ExecuteAsync(SqlCommand.UpdateUserAvatarQuery, queryParams, commandTimeout: 5000);
     }
 }
