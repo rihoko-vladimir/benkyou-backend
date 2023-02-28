@@ -1,8 +1,10 @@
 using Auth.Api;
 using Auth.Api.Clients;
+using Auth.Api.Models.DbContext;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,6 +58,16 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Local
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+
+// Migrate latest database changes during startup
+    using var scope = app.Services.CreateScope();
+    
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<ApplicationContext>();
+
+// Here is the migration executed
+    dbContext.Database.Migrate();
 }
 
 //app.UseHttpsRedirection();

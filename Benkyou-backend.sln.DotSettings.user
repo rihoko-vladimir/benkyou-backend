@@ -1,25 +1,25 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3f7e86fb_002D2e28_002D4072_002D9798_002D5f11947119aa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetUserInfo_Test_Returns_Correct_User_Information" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Or&gt;&#xD;
-    &lt;TestAncestor&gt;&#xD;
-      &lt;TestId&gt;xUnit::66797A97-289B-4B75-9E4D-38A5FD20BB3C::net6.0::Users.Tests.RepositoryTest&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::C05B19E6-F958-4E3B-98DB-156D7E838237::net6.0::Sets.Tests.SetsServiceTest&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests.Test_LastOnlineStatus_IsCorrect&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests.Test_SetRegistrationDate&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests.Test_AddSetLearnResult_IsCorrect&lt;/TestId&gt;&#xD;
-      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests&lt;/TestId&gt;&#xD;
-    &lt;/TestAncestor&gt;&#xD;
-    &lt;ProjectFile&gt;D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE/f:StatisticsTests.cs&lt;/ProjectFile&gt;&#xD;
-    &lt;ProjectFolder&gt;D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE/d:Auth&lt;/ProjectFolder&gt;&#xD;
-  &lt;/Or&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3f7e86fb_002D2e28_002D4072_002D9798_002D5f11947119aa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetUserInfo_Test_Returns_Correct_User_Information" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Or&gt;
+    &lt;TestAncestor&gt;
+      &lt;TestId&gt;xUnit::66797A97-289B-4B75-9E4D-38A5FD20BB3C::net6.0::Users.Tests.RepositoryTest&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::C05B19E6-F958-4E3B-98DB-156D7E838237::net6.0::Sets.Tests.SetsServiceTest&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests.Test_LastOnlineStatus_IsCorrect&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests.Test_SetRegistrationDate&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests.Test_AddSetLearnResult_IsCorrect&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE::net6.0::Statistics.Tests.StatisticsTests&lt;/TestId&gt;
+    &lt;/TestAncestor&gt;
+    &lt;ProjectFile&gt;D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE/f:StatisticsTests.cs&lt;/ProjectFile&gt;
+    &lt;ProjectFolder&gt;D9C39AFE-E89D-4D23-9670-DC0FAF79A1BE/d:Auth&lt;/ProjectFolder&gt;
+  &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=545d5f2d_002D263b_002D4804_002Da166_002Da0d4a2653b04/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test_Confirm_IsCorrect" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Or&gt;&#xD;
-    &lt;Project Location="C:\Users\vovak\RiderProjects\benkyou-backend\Auth.Api.Integration" Presentation="&amp;lt;Auth.Api.Integration&amp;gt;" /&gt;&#xD;
-    &lt;Project Location="C:\Users\vovak\RiderProjects\benkyou-backend\Sets.Api.Integration" Presentation="&amp;lt;Sets.Api.Integration&amp;gt;" /&gt;&#xD;
-    &lt;Project Location="C:\Users\vovak\RiderProjects\benkyou-backend\Users.Api.Integration" Presentation="&amp;lt;Users.Api.Integration&amp;gt;" /&gt;&#xD;
-  &lt;/Or&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=545d5f2d_002D263b_002D4804_002Da166_002Da0d4a2653b04/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test_Confirm_IsCorrect" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Or&gt;
+    &lt;Project Location="C:\Users\vovak\RiderProjects\benkyou-backend\Auth.Api.Integration" Presentation="&amp;lt;Auth.Api.Integration&amp;gt;" /&gt;
+    &lt;Project Location="C:\Users\vovak\RiderProjects\benkyou-backend\Sets.Api.Integration" Presentation="&amp;lt;Sets.Api.Integration&amp;gt;" /&gt;
+    &lt;Project Location="C:\Users\vovak\RiderProjects\benkyou-backend\Users.Api.Integration" Presentation="&amp;lt;Users.Api.Integration&amp;gt;" /&gt;
+  &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f85b064e_002D8d7b_002D4238_002Da877_002D8d843f83e807/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="UserTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Solution /&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f85b064e_002D8d7b_002D4238_002Da877_002D8d843f83e807/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="UserTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

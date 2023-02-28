@@ -22,6 +22,8 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
 
 
   health-api:
@@ -37,6 +39,9 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     volumes:
       - "./Certificates:/Certificates"
+    networks:
+      - broker
+      - database
 
 
   auth-api:
@@ -57,6 +62,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
   
   
   users-api:
@@ -77,6 +85,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
     
     
   sets-api:
@@ -97,6 +108,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
         
         
   statistics-api:
@@ -114,6 +128,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
   
   gateway-api:
     build:
@@ -133,6 +150,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
         
       
   rabbitmq:
@@ -142,6 +162,46 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
+    networks:
+      - broker
+      - database
+        
+  server-initializer:
+    container_name: DatabaseInitializer
+    image: mcr.microsoft.com/mssql-tools
+    volumes:
+      - ./Scripts/:/usr/src/sql/
+    command: ["/bin/sh", "/usr/src/sql/initialize.sh"]
+    network_mode: service:sql-server
+    
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Database
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: nandesukaanatawa1A
+    networks:
+      - database
+  
+  mongo-db:
+    image: mongo:latest
+    container_name: StatisticsDatabase
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rihoko
+      MONGO_INITDB_ROOT_PASSWORD: nandesukaanatawa1A
+    networks:
+      - database
+    
+networks:
+  broker:
+    external: false
+  
+  database:
+    external: false
     
 #  logstash:
 #    image: logstash:8.6.0
