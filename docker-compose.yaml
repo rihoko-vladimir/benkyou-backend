@@ -184,6 +184,15 @@ services:
       MSSQL_SA_PASSWORD: nandesukaanatawa1A
     networks:
       - database
+      
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "10000:1000"
+      - "10001:10001"
+      - "10002:10002"
+    restart: unless-stopped
   
   mongo-db:
     image: mongo:latest
@@ -195,6 +204,47 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: nandesukaanatawa1A
     networks:
       - database
+        
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.6.2
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      - es-net
+    ports:
+      - "9200:9200"
+    volumes:
+      - "./ELK/ElasticSearch/roles.yml:/usr/share/elasticsearch/config/roles.yml"
+      - "./ELK/ElasticSearch/users:/usr/share/elasticsearch/config/users"
+      - "./ELK/ElasticSearch/users_roles:/usr/share/elasticsearch/config/users_roles"
+  
+  
+  kibana:
+    container_name: kibana
+    image: kibana:8.6.2
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - es-net
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    
+  logstash:
+    image: logstash:8.6.2
+    container_name: logstash
+    ports:
+      - "9600:9600"
+      - "9700:9700"
+      - "9602:9602"
+    networks:
+      - es-net
+    volumes:
+      - "./ELK/LogStash/PipelineConfig/http-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf"
+      - "./ELK/LogStash/LogStashConfig/logstash.yml:/usr/share/logstash/config/logstash.yml"
     
 networks:
   broker:
@@ -203,14 +253,5 @@ networks:
   database:
     external: false
     
-#  logstash:
-#    image: logstash:8.6.0
-#    container_name: LogStash
-#    ports:
-#      - "9600:9600"
-#      - "9700:9700"
-#      - "9602:9602"
-#    volumes:
-#      - "./ELK/LogStash/PipelineConfig/http-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf"
-#      - "./ELK/LogStash/LogStashConfig/logstash.yml:/usr/share/logstash/config/logstash.yml"
-#    restart: always
+  es-net:
+    external: false
