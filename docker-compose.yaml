@@ -22,6 +22,8 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
 
 
   health-api:
@@ -37,6 +39,9 @@ services:
       ASPNETCORE_ENVIRONMENT : Development
     volumes:
       - "./Certificates:/Certificates"
+    networks:
+      - broker
+      - database
 
 
   auth-api:
@@ -57,6 +62,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
   
   
   users-api:
@@ -77,6 +85,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
     
     
   sets-api:
@@ -97,6 +108,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
         
         
   statistics-api:
@@ -114,6 +128,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
   
   gateway-api:
     build:
@@ -133,6 +150,9 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+    networks:
+      - broker
+      - database
         
       
   rabbitmq:
@@ -142,15 +162,96 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: always
+    networks:
+      - broker
+      - database
+        
+  server-initializer:
+    container_name: DatabaseInitializer
+    image: mcr.microsoft.com/mssql-tools
+    volumes:
+      - ./Scripts/:/usr/src/sql/
+    command: ["/bin/sh", "/usr/src/sql/initialize.sh"]
+    network_mode: service:sql-server
     
-#  logstash:
-#    image: logstash:8.6.0
-#    container_name: LogStash
-#    ports:
-#      - "9600:9600"
-#      - "9700:9700"
-#      - "9602:9602"
-#    volumes:
-#      - "./ELK/LogStash/PipelineConfig/http-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf"
-#      - "./ELK/LogStash/LogStashConfig/logstash.yml:/usr/share/logstash/config/logstash.yml"
-#    restart: always
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Database
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: nandesukaanatawa1A
+    networks:
+      - database
+      
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "10000:1000"
+      - "10001:10001"
+      - "10002:10002"
+    restart: unless-stopped
+  
+  mongo-db:
+    image: mongo:latest
+    container_name: StatisticsDatabase
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rihoko
+      MONGO_INITDB_ROOT_PASSWORD: nandesukaanatawa1A
+    networks:
+      - database
+        
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.6.2
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    networks:
+      - es-net
+    ports:
+      - "9200:9200"
+    volumes:
+      - "./ELK/ElasticSearch/roles.yml:/usr/share/elasticsearch/config/roles.yml"
+      - "./ELK/ElasticSearch/users:/usr/share/elasticsearch/config/users"
+      - "./ELK/ElasticSearch/users_roles:/usr/share/elasticsearch/config/users_roles"
+  
+  
+  kibana:
+    container_name: kibana
+    image: kibana:8.6.2
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - es-net
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    
+  logstash:
+    image: logstash:8.6.2
+    container_name: logstash
+    ports:
+      - "9600:9600"
+      - "9700:9700"
+      - "9602:9602"
+    networks:
+      - es-net
+    volumes:
+      - "./ELK/LogStash/PipelineConfig/http-pipeline.conf:/usr/share/logstash/pipeline/logstash.conf"
+      - "./ELK/LogStash/LogStashConfig/logstash.yml:/usr/share/logstash/config/logstash.yml"
+    
+networks:
+  broker:
+    external: false
+  
+  database:
+    external: false
+    
+  es-net:
+    external: false

@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,6 +41,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Auth.Api\Auth.Api.csproj"/>
         <ProjectReference Include="..\Shared.Models\Shared.Models.csproj"/>
     </ItemGroup>
 

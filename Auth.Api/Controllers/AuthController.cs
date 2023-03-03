@@ -3,6 +3,7 @@ using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Requests;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models.Models.Configurations;
 
 namespace Auth.Api.Controllers;
 
@@ -12,6 +13,7 @@ namespace Auth.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IValidator<ResetPasswordConfirmationRequest> _passwordConfirmationValidator;
+    private readonly JwtConfiguration _jwtConfiguration;
 
     private readonly IValidator<RegistrationRequest> _registrationValidator;
 
@@ -20,11 +22,14 @@ public class AuthController : ControllerBase
 
     public AuthController(IUserService userService,
         IValidator<RegistrationRequest> registrationValidator,
-        IValidator<ResetPasswordConfirmationRequest> passwordConfirmationValidator)
+        IValidator<ResetPasswordConfirmationRequest> passwordConfirmationValidator,
+        JwtConfiguration jwtConfiguration
+        )
     {
         _userService = userService;
         _registrationValidator = registrationValidator;
         _passwordConfirmationValidator = passwordConfirmationValidator;
+        _jwtConfiguration = jwtConfiguration;
     }
 
     [HttpPost]
@@ -35,7 +40,7 @@ public class AuthController : ControllerBase
 
         if (!result.IsSuccess) return BadRequest(result.Message);
 
-        this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken);
+        this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken, _jwtConfiguration);
 
         return Ok();
     }
@@ -64,7 +69,7 @@ public class AuthController : ControllerBase
 
         if (!result.IsSuccess) return BadRequest(result.Message);
 
-        this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken);
+        this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken, _jwtConfiguration);
 
         return Ok();
     }

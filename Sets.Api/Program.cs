@@ -1,9 +1,11 @@
 using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Sets.Api.Common.Clients;
 using Sets.Api.Extensions.DiExtensions;
+using Sets.Api.Models.DbContext;
 using ext = Sets.Api.Extensions.EnvironmentExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +57,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<ApplicationContext>();
+
+    // Here is the migration executed
+    dbContext.Database.Migrate();
 }
 
 //app.UseHttpsRedirection();
