@@ -10,7 +10,11 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
     public async Task<string> GetEmailCodeMailAsync(string userFirstName, string emailCode)
     {
         var templateFilePath = $"{Environment.CurrentDirectory}/Resources/EmailTemplates/EmailCodeTemplate.mustache";
-        var dataObject = new { name = userFirstName, confirmationCode = emailCode };
+        var dataObject = new
+        {
+            name = userFirstName,
+            confirmationCode = emailCode
+        };
 
         var result = await GetRenderedEmailAsync(templateFilePath, dataObject);
 
@@ -21,7 +25,11 @@ public class EmailTemplateGenerator : IEmailTemplateGenerator
     {
         var templateFilePath =
             $"{Environment.CurrentDirectory}/Resources/EmailTemplates/EmailForgottenPasswordTemplate.mustache";
-        var dataObject = new { name = userFirstName, resetLink = url };
+        var dataObject = new
+        {
+            name = userFirstName,
+            resetLink = url
+        };
 
         var result = await GetRenderedEmailAsync(templateFilePath, dataObject);
 

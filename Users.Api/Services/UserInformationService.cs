@@ -90,7 +90,7 @@ public class UserInformationService : IUserInformationService
 
             await _userInfoRepository.UpdateUserAvatarUrl(
                 blobClient.Uri.OriginalString.Contains("host.docker.internal")
-                    ? blobClient.Uri.OriginalString.Replace("host.docker.internal", "localhost") 
+                    ? blobClient.Uri.OriginalString.Replace("host.docker.internal", "localhost")
                     : blobClient.Uri.OriginalString, userId);
 
             var userInfo = (await GetUserInformation(userId)).Value!;

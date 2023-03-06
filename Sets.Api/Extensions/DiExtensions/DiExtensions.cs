@@ -76,7 +76,10 @@ public static class DiExtensions
                 _ => { },
                 "Azure Key vault",
                 HealthStatus.Unhealthy,
-                new List<string> { "Azure Key Vault" });
+                new List<string>
+                {
+                    "Azure Key Vault"
+                });
 
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<ISetsService, SetsService>();

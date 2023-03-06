@@ -151,7 +151,9 @@ public class UsersTests
 
         using var content = new MultipartFormDataContent
         {
-            { new StreamContent(stream), "formFile", "maxresdefault.jpg" }
+            {
+                new StreamContent(stream), "formFile", "maxresdefault.jpg"
+            }
         };
 
         request.Content = content;

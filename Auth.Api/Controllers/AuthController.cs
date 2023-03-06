@@ -12,8 +12,8 @@ namespace Auth.Api.Controllers;
 [Route("api/v{version:apiVersion}/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IValidator<ResetPasswordConfirmationRequest> _passwordConfirmationValidator;
     private readonly JwtConfiguration _jwtConfiguration;
+    private readonly IValidator<ResetPasswordConfirmationRequest> _passwordConfirmationValidator;
 
     private readonly IValidator<RegistrationRequest> _registrationValidator;
 
@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
         IValidator<RegistrationRequest> registrationValidator,
         IValidator<ResetPasswordConfirmationRequest> passwordConfirmationValidator,
         JwtConfiguration jwtConfiguration
-        )
+    )
     {
         _userService = userService;
         _registrationValidator = registrationValidator;
