@@ -45,8 +45,14 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                UserNotFoundException => NotFound(new { errorMessage = exception.Message }),
-                KanjiCountException => BadRequest(new { errorMessage = exception.Message }),
+                UserNotFoundException => NotFound(new
+                {
+                    errorMessage = exception.Message
+                }),
+                KanjiCountException => BadRequest(new
+                {
+                    errorMessage = exception.Message
+                }),
                 _ => StatusCode(500)
             };
         }
@@ -66,8 +72,14 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                InvalidSetIdException => NotFound(new { errorMessage = exception.Message }),
-                CardRemoveException => Unauthorized(new { errorMessage = exception.Message }),
+                InvalidSetIdException => NotFound(new
+                {
+                    errorMessage = exception.Message
+                }),
+                CardRemoveException => Unauthorized(new
+                {
+                    errorMessage = exception.Message
+                }),
                 _ => StatusCode(500)
             };
         }
@@ -87,9 +99,18 @@ public class SetsController : ControllerBase
             var exception = result.Exception!;
             return exception switch
             {
-                UserNotFoundException => NotFound(new { errorMessage = exception.Message }),
-                KanjiCountException => BadRequest(new { errorMessage = exception.Message }),
-                SetUpdateException => NotFound(new { errorMessage = exception.Message }),
+                UserNotFoundException => NotFound(new
+                {
+                    errorMessage = exception.Message
+                }),
+                KanjiCountException => BadRequest(new
+                {
+                    errorMessage = exception.Message
+                }),
+                SetUpdateException => NotFound(new
+                {
+                    errorMessage = exception.Message
+                }),
                 _ => StatusCode(500)
             };
         }
@@ -132,7 +153,11 @@ public class SetsController : ControllerBase
         var userIdResult = Guid.TryParse(reportRequest.UserId, out var userIdGuid);
         if (!setIdResult || !userIdResult) return BadRequest();
         var result = await _unitOfWork.SetsRepository.ReportSetAsync(userIdGuid, setIdGuid, reportRequest.ReportReason);
-        if (!result.IsSuccess) return BadRequest(new { errorMessage = result.Exception!.Message });
+        if (!result.IsSuccess)
+            return BadRequest(new
+            {
+                errorMessage = result.Exception!.Message
+            });
         await _unitOfWork.SetsRepository.SaveChangesAsync();
         return Ok();
     }

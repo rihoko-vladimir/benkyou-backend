@@ -37,6 +37,13 @@ services:
       ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 9081
       ASPNETCORE_ENVIRONMENT : Development
+    depends_on:
+      - users-api
+      - auth-api
+      - statistics-api
+      - gateway-api
+      - sets-api
+      - notification-api
     volumes:
       - "./Certificates:/Certificates"
     networks:
@@ -62,6 +69,7 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+      - sql-server
     networks:
       - broker
       - database
@@ -85,6 +93,8 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+      - sql-server
+      - azurite
     networks:
       - broker
       - database
@@ -108,6 +118,7 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+      - sql-server
     networks:
       - broker
       - database
@@ -128,6 +139,7 @@ services:
       - "./Certificates:/Certificates"
     depends_on:
       - rabbitmq
+      - mongo-db
     networks:
       - broker
       - database
@@ -189,7 +201,7 @@ services:
     container_name: azurite
     image: mcr.microsoft.com/azure-storage/azurite:latest
     ports:
-      - "10000:1000"
+      - "10000:10000"
       - "10001:10001"
       - "10002:10002"
     restart: unless-stopped
@@ -240,6 +252,8 @@ services:
       - "9600:9600"
       - "9700:9700"
       - "9602:9602"
+    depends_on:
+      - elasticsearch
     networks:
       - es-net
     volumes:

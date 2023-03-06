@@ -29,7 +29,7 @@ public static class DiExtensions
 
         var mongoConfig = new MongoConfig
         {
-            ConnectionString = configuration.GetConnectionString("StatisticsMongoDbConnectionString")
+            ConnectionString = configuration.GetConnectionString("StatisticsMongoDbConnectionString") ?? throw new InvalidOperationException()
         };
         services.AddSingleton(mongoConfig);
 

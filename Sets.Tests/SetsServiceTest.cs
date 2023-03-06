@@ -17,22 +17,64 @@ public class SetsServiceTest
         {
             Id = Guid.NewGuid(),
             KanjiChar = "A",
-            KunyomiReadings = new List<Kunyomi> { new() { Id = Guid.NewGuid(), Reading = "P" } },
-            OnyomiReadings = new List<Onyomi> { new() { Id = Guid.NewGuid(), Reading = "P" } }
+            KunyomiReadings = new List<Kunyomi>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Reading = "P"
+                }
+            },
+            OnyomiReadings = new List<Onyomi>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Reading = "P"
+                }
+            }
         },
         new Kanji
         {
             Id = Guid.NewGuid(),
             KanjiChar = "B",
-            KunyomiReadings = new List<Kunyomi> { new() { Id = Guid.NewGuid(), Reading = "P" } },
-            OnyomiReadings = new List<Onyomi> { new() { Id = Guid.NewGuid(), Reading = "P" } }
+            KunyomiReadings = new List<Kunyomi>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Reading = "P"
+                }
+            },
+            OnyomiReadings = new List<Onyomi>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Reading = "P"
+                }
+            }
         },
         new Kanji
         {
             Id = Guid.NewGuid(),
             KanjiChar = "C",
-            KunyomiReadings = new List<Kunyomi> { new() { Id = Guid.NewGuid(), Reading = "P" } },
-            OnyomiReadings = new List<Onyomi> { new() { Id = Guid.NewGuid(), Reading = "P" } }
+            KunyomiReadings = new List<Kunyomi>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Reading = "P"
+                }
+            },
+            OnyomiReadings = new List<Onyomi>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Reading = "P"
+                }
+            }
         }
     };
 

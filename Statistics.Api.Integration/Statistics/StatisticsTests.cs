@@ -134,10 +134,22 @@ public class StatisticsTests
             new()
             {
                 Kanji = 'A',
-                CorrectKunyomi = new[] { "A" },
-                CorrectOnyomi = new[] { "A" },
-                SelectedKunyomi = new[] { "A" },
-                SelectedOnyomi = new[] { "A" }
+                CorrectKunyomi = new[]
+                {
+                    "A"
+                },
+                CorrectOnyomi = new[]
+                {
+                    "A"
+                },
+                SelectedKunyomi = new[]
+                {
+                    "A"
+                },
+                SelectedOnyomi = new[]
+                {
+                    "A"
+                }
             }
         };
 

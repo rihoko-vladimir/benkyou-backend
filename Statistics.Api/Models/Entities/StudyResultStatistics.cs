@@ -7,15 +7,15 @@ public class StudyResultStatistics
 {
     [BsonId] public ObjectId Id { get; set; }
 
-    [BsonElement("setId")] public Guid SetId { get; set; }
+    [BsonElement("setId")] public Guid SetId { get; init; }
 
-    [BsonElement("userId")] public Guid UserId { get; set; }
+    [BsonElement("userId")] public Guid UserId { get; init; }
 
-    [BsonElement("studyResults")] public StudyResult[] StudyResults { get; set; }
+    [BsonElement("studyResults")] public StudyResult[] StudyResults { get; init; }
 
-    [BsonElement("startDate")] public DateTime StartDate { get; set; }
+    [BsonElement("startDate")] public DateTime StartDate { get; init; }
 
-    [BsonElement("endDate")] public DateTime EndDate { get; set; }
+    [BsonElement("endDate")] public DateTime EndDate { get; init; }
 
     protected bool Equals(StudyResultStatistics other)
     {

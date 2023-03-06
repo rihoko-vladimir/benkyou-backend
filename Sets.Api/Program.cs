@@ -2,6 +2,7 @@ using Azure.Identity;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using Serilog;
 using Sets.Api.Common.Clients;
 using Sets.Api.Extensions.DiExtensions;
@@ -62,8 +63,15 @@ if (app.Environment.IsDevelopment())
     var dbContext = scope.ServiceProvider
         .GetRequiredService<ApplicationContext>();
 
-    // Here is the migration executed
-    dbContext.Database.Migrate();
+    var migrateDbPolicy = Policy
+        .Handle<Exception>()
+        .WaitAndRetry(10, retryAttempt => TimeSpan.FromSeconds(retryAttempt));
+
+    migrateDbPolicy.Execute(() =>
+    {
+        // Here is the migration executed
+        dbContext.Database.Migrate();
+    });
 }
 
 //app.UseHttpsRedirection();

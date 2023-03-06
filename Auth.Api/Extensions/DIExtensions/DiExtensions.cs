@@ -61,13 +61,19 @@ public static class DiExtensions
 
         services.AddHealthChecks()
             .AddDbContextCheck<ApplicationContext>("Users database",
-                tags: new List<string> { "Database" })
+                tags: new List<string>
+                {
+                    "Database"
+                })
             .AddAzureKeyVault(uri,
                 new DefaultAzureCredential(),
                 _ => { },
                 "Azure Key vault",
                 HealthStatus.Unhealthy,
-                new List<string> { "Azure Key Vault" });
+                new List<string>
+                {
+                    "Azure Key Vault"
+                });
 
         services.AddEndpointsApiExplorer();
 

@@ -39,7 +39,11 @@ public class AdminController : ControllerBase
     public async Task<ActionResult> GetUsersCount()
     {
         var result = await _userService.GetAllUsersAsync();
-        if (result.IsSuccess) return Ok(new { count = result.Value!.Count });
+        if (result.IsSuccess)
+            return Ok(new
+            {
+                count = result.Value!.Count
+            });
         return StatusCode(500);
     }
 
@@ -57,7 +61,11 @@ public class AdminController : ControllerBase
     public async Task<ActionResult> GetSetsCount()
     {
         var result = await _unitOfWork.SetsRepository.GetAllSetsAsync();
-        if (result.IsSuccess) return Ok(new { count = result.Value!.Count });
+        if (result.IsSuccess)
+            return Ok(new
+            {
+                count = result.Value!.Count
+            });
         return StatusCode(500);
     }
 

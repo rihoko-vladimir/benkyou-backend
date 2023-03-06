@@ -74,19 +74,28 @@ public static class DiExtensions
 
         services.AddHealthChecks()
             .AddCheck<DbHealthCheck>("User information database",
-                tags: new List<string> { "Database" })
+                tags: new List<string>
+                {
+                    "Database"
+                })
             .AddAzureKeyVault(vaultUri,
                 new DefaultAzureCredential(),
                 _ => { },
                 "Azure Key vault",
                 HealthStatus.Unhealthy,
-                new List<string> { "Azure Key Vault" })
+                new List<string>
+                {
+                    "Azure Key Vault"
+                })
             .AddAzureBlobStorage(
                 blobUri,
                 containerName,
                 name: "Storage Blob",
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new List<string> { "Storage Blob" });
+                tags: new List<string>
+                {
+                    "Storage Blob"
+                });
 
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
 
