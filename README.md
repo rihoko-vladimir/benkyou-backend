@@ -1,4 +1,9 @@
 
+# Benkyou! Backend
+
+Benkyou! helps you create kanji sets and learn new kanji with readings by matching correct ones
+
+
 ## Changing project configuration
 
 Firstly you need to change API keys for SendGrid, Azure services, change Connection strings for database at [docker-compose.yml](https://github.com/rihoko-vladimir/benkyou-backend/blob/main/docker-compose.yaml)
@@ -284,4 +289,14 @@ Type the following to run the project:
 ```bash
 docker compose up --build
 ```
+
+
+## Tech Stack
+
+**Server:** .NET 7, EF Core, Azure Services, Docker, Docker-Compose, Dapper, Fluent Validation, Automapper, MassTransit, MongoDB, Ocelot, Polly, SendGrid, TestContainers, Moq, xUnit
+
+
+## Authors
+
+- [@rihoko-vladimir](https://github.com/rihoko-vladimir)
 
