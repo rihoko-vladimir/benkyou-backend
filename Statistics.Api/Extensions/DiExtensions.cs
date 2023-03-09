@@ -34,8 +34,7 @@ public static class DiExtensions
         services.AddSingleton(mongoConfig);
 
         services.AddHealthChecks()
-            .AddMongoHealthCheck("Statistics database",
-                mongoConfig.ConnectionString);
+            .AddMongoHealthCheck(mongoConfig.ConnectionString, "Statistics database");
 
         services.AddApiVersioning(setup =>
         {
