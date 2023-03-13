@@ -64,8 +64,9 @@ public static class DiExtensions
                 tags: new List<string>
                 {
                     "Database"
-                })
-            .AddAzureKeyVault(uri,
+                });
+        if (EnvironmentExtensions.IsDevelopment())
+            services.AddHealthChecks().AddAzureKeyVault(uri,
                 new DefaultAzureCredential(),
                 _ => { },
                 "Azure Key vault",

@@ -282,6 +282,8 @@ networks:
     external: false
 ```
 
+## It's important to configure your environment variables in [EnvironmentFiles](https://github.com/rihoko-vladimir/benkyou-backend/tree/main/EnvironmentFiles) folder
+
 ## Deploy project using docker-compose
 
 Type the following to run the project:

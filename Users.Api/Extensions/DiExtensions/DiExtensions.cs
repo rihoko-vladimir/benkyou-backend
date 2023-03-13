@@ -78,15 +78,6 @@ public static class DiExtensions
                 {
                     "Database"
                 })
-            .AddAzureKeyVault(vaultUri,
-                new DefaultAzureCredential(),
-                _ => { },
-                "Azure Key vault",
-                HealthStatus.Unhealthy,
-                new List<string>
-                {
-                    "Azure Key Vault"
-                })
             .AddAzureBlobStorage(
                 blobUri,
                 containerName,
@@ -95,6 +86,17 @@ public static class DiExtensions
                 tags: new List<string>
                 {
                     "Storage Blob"
+                });
+
+        if (EnvironmentExtensions.IsDevelopment())
+            services.AddHealthChecks().AddAzureKeyVault(vaultUri,
+                new DefaultAzureCredential(),
+                _ => { },
+                "Azure Key vault",
+                HealthStatus.Unhealthy,
+                new List<string>
+                {
+                    "Azure Key Vault"
                 });
 
         SqlMapper.AddTypeHandler(new TrimmedStringHandler());
