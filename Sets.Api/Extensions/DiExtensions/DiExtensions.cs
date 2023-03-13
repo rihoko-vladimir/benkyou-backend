@@ -69,17 +69,19 @@ public static class DiExtensions
         services.AddValidatorsFromAssemblyContaining<KunyomiValidator>();
 
         var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
-        services.AddHealthChecks()
-            .AddDbContextCheck<ApplicationContext>()
-            .AddAzureKeyVault(vaultUri,
-                new DefaultAzureCredential(),
-                _ => { },
-                "Azure Key vault",
-                HealthStatus.Unhealthy,
-                new List<string>
-                {
-                    "Azure Key Vault"
-                });
+        
+        if (EnvironmentExtensions.IsDevelopment())
+            services.AddHealthChecks()
+                .AddDbContextCheck<ApplicationContext>()
+                .AddAzureKeyVault(vaultUri,
+                    new DefaultAzureCredential(),
+                    _ => { },
+                    "Azure Key vault",
+                    HealthStatus.Unhealthy,
+                    new List<string>
+                    {
+                        "Azure Key Vault"
+                    });
 
         services.AddScoped<ISetsRepository, SetsRepository>();
         services.AddScoped<ISetsService, SetsService>();

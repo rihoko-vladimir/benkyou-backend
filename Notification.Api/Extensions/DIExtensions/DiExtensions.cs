@@ -25,8 +25,10 @@ public static class DiExtensions
                 "sendgrid",
                 "email",
                 "ready"
-            })
-            .AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
+            });
+
+        if (EnvironmentExtensions.IsDevelopment())
+            services.AddHealthChecks().AddAzureKeyVault(uri, new DefaultAzureCredential(), options => { }, "Azure Key vault",
                 HealthStatus.Unhealthy, new List<string>
                 {
                     "Azure Key Vault"
