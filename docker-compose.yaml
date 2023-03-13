@@ -8,16 +8,8 @@ services:
     ports:
       - "8080:80"
       - "8081:443"
-    environment:
-      ASPNETCORE_URLS : "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT : 8081
-      ASPNETCORE_ENVIRONMENT : Development
-      AZURE_TENANT_ID: *
-      AZURE_CLIENT_ID: *
-      AZURE_CLIENT_SECRET: *
-      APP_EMAILCONFIGURATION__APIKEY: *
-      APP_EMAILCONFIGURATION__SOURCE: support@benkyou.me
-      APP_EMAILCONFIGURATION__SOURCENAME: "Benkyou! Support"
+    env_file:
+      EnvironmentFiles/notification.env
     volumes:
       - "./Certificates:/Certificates"
     depends_on:
@@ -33,10 +25,8 @@ services:
     ports:
       - "9080:80"
       - "9081:443"
-    environment:
-      ASPNETCORE_URLS: "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT: 9081
-      ASPNETCORE_ENVIRONMENT : Development
+    env_file:
+      EnvironmentFiles/health.env
     depends_on:
       - users-api
       - auth-api
@@ -58,13 +48,8 @@ services:
     ports:
       - "7080:80"
       - "7081:443"
-    environment:
-      ASPNETCORE_URLS: "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT: 7081
-      AZURE_TENANT_ID: *
-      AZURE_CLIENT_ID: *
-      AZURE_CLIENT_SECRET: *
-      ASPNETCORE_ENVIRONMENT : Development
+    env_file:
+      EnvironmentFiles/auth.env
     volumes:
       - "./Certificates:/Certificates"
     depends_on:
@@ -82,13 +67,8 @@ services:
     ports:
       - "6080:80"
       - "6081:443"
-    environment:
-      ASPNETCORE_URLS: "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT: 6081
-      AZURE_TENANT_ID: *
-      AZURE_CLIENT_ID: *
-      AZURE_CLIENT_SECRET: *
-      ASPNETCORE_ENVIRONMENT: Development
+    env_file:
+      EnvironmentFiles/users.env
     volumes:
       - "./Certificates:/Certificates"
     depends_on:
@@ -107,13 +87,8 @@ services:
     ports:
       - "10080:80"
       - "10081:443"
-    environment:
-      ASPNETCORE_URLS: "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT: 10081
-      AZURE_TENANT_ID: *
-      AZURE_CLIENT_ID: *
-      AZURE_CLIENT_SECRET: *
-      ASPNETCORE_ENVIRONMENT: Development
+    env_file:
+      EnvironmentFiles/sets.env
     volumes:
       - "./Certificates:/Certificates"
     depends_on:
@@ -131,10 +106,8 @@ services:
     ports:
       - "1080:80"
       - "1081:443"
-    environment:
-      ASPNETCORE_URLS: "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT: 1081
-      ASPNETCORE_ENVIRONMENT: Development
+    env_file:
+      EnvironmentFiles/statistics.env
     volumes:
       - "./Certificates:/Certificates"
     depends_on:
@@ -151,13 +124,8 @@ services:
     ports:
       - "3080:80"
       - "3081:443"
-    environment:
-      ASPNETCORE_URLS: "https://+:443;http://+:80"
-      ASPNETCORE_HTTPS_PORT: 3081
-      AZURE_TENANT_ID: *
-      AZURE_CLIENT_ID: *
-      AZURE_CLIENT_SECRET: *
-      ASPNETCORE_ENVIRONMENT: Development
+    env_file:
+      EnvironmentFiles/gateway.env
     volumes:
       - "./Certificates:/Certificates"
     depends_on:
@@ -191,9 +159,8 @@ services:
     container_name: Database
     ports:
       - "1433:1433"
-    environment:
-      ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: nandesukaanatawa123AAA
+    env_file:
+      EnvironmentFiles/sqlserver.env
     networks:
       - database
       
@@ -211,18 +178,16 @@ services:
     container_name: StatisticsDatabase
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: rihoko
-      MONGO_INITDB_ROOT_PASSWORD: nandesukaanatawa123AAA
+    env_file:
+      EnvironmentFiles/mongodb.env
     networks:
       - database
         
   elasticsearch:
     container_name: elasticsearch
     image: elasticsearch:8.6.2
-    environment:
-      - xpack.security.enabled=false
-      - "discovery.type=single-node"
+    env_file:
+      EnvironmentFiles/elasticsearch.env
     networks:
       - es-net
     ports:
@@ -236,8 +201,8 @@ services:
   kibana:
     container_name: kibana
     image: kibana:8.6.2
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    env_file:
+      EnvironmentFiles/kibana.env
     networks:
       - es-net
     depends_on:
