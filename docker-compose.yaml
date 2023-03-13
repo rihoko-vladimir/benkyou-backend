@@ -12,10 +12,10 @@ services:
       ASPNETCORE_URLS : "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT : 8081
       ASPNETCORE_ENVIRONMENT : Development
-      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
-      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
-      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
-      APP_EMAILCONFIGURATION__APIKEY: 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
+      AZURE_TENANT_ID: *
+      AZURE_CLIENT_ID: *
+      AZURE_CLIENT_SECRET: *
+      APP_EMAILCONFIGURATION__APIKEY: *
       APP_EMAILCONFIGURATION__SOURCE: support@benkyou.me
       APP_EMAILCONFIGURATION__SOURCENAME: "Benkyou! Support"
     volumes:
@@ -61,9 +61,9 @@ services:
     environment:
       ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 7081
-      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
-      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
-      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
+      AZURE_TENANT_ID: *
+      AZURE_CLIENT_ID: *
+      AZURE_CLIENT_SECRET: *
       ASPNETCORE_ENVIRONMENT : Development
     volumes:
       - "./Certificates:/Certificates"
@@ -85,9 +85,9 @@ services:
     environment:
       ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 6081
-      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
-      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
-      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
+      AZURE_TENANT_ID: *
+      AZURE_CLIENT_ID: *
+      AZURE_CLIENT_SECRET: *
       ASPNETCORE_ENVIRONMENT: Development
     volumes:
       - "./Certificates:/Certificates"
@@ -110,9 +110,9 @@ services:
     environment:
       ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 10081
-      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
-      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
-      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
+      AZURE_TENANT_ID: *
+      AZURE_CLIENT_ID: *
+      AZURE_CLIENT_SECRET: *
       ASPNETCORE_ENVIRONMENT: Development
     volumes:
       - "./Certificates:/Certificates"
@@ -154,9 +154,9 @@ services:
     environment:
       ASPNETCORE_URLS: "https://+:443;http://+:80"
       ASPNETCORE_HTTPS_PORT: 3081
-      AZURE_TENANT_ID: c0ab88e5-7624-4c0c-ac14-2ffc48b685e9
-      AZURE_CLIENT_ID: b8c7b5f0-58cd-48d7-a596-245b30e1bfe2
-      AZURE_CLIENT_SECRET: f1b8Q~lWYqms3V1eV3Y.azjWn5V5cG6HOf9pzbB1
+      AZURE_TENANT_ID: *
+      AZURE_CLIENT_ID: *
+      AZURE_CLIENT_SECRET: *
       ASPNETCORE_ENVIRONMENT: Development
     volumes:
       - "./Certificates:/Certificates"
@@ -193,7 +193,7 @@ services:
       - "1433:1433"
     environment:
       ACCEPT_EULA: Y
-      MSSQL_SA_PASSWORD: nandesukaanatawa1A
+      MSSQL_SA_PASSWORD: nandesukaanatawa123AAA
     networks:
       - database
       
@@ -213,7 +213,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: rihoko
-      MONGO_INITDB_ROOT_PASSWORD: nandesukaanatawa1A
+      MONGO_INITDB_ROOT_PASSWORD: nandesukaanatawa123AAA
     networks:
       - database
         
