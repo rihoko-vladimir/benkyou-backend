@@ -109,7 +109,7 @@ public class UserService : IUserService
 
         await _userCredentialsRepository.CreateUserCredentialAsync(user);
 
-        var result = await _senderService.SendEmailCodeMessageAsync(emailCode, registrationRequest.Email);
+        var result = await _senderService.SendEmailCodeMessageAsync(emailCode, registrationRequest.Email, registrationRequest.FirstName);
 
         var registrationCredResult =
             await _senderService.SendRegistrationMessageAsync(user.Id, registrationRequest.FirstName,
@@ -213,7 +213,7 @@ public class UserService : IUserService
 
         var resetCode = _resetTokenService.GetToken(user.Id);
 
-        var result = await _senderService.SendResetPasswordMessageAsync(resetCode, email);
+        var result = await _senderService.SendResetPasswordMessageAsync(resetCode, email, user.Email);
 
         return !result.IsSuccess ? Result.Error("Message broker error") : Result.Success();
     }

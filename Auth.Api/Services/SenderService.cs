@@ -16,7 +16,7 @@ public class SenderService : ISenderService
         _sendEndpointProvider = sendEndpointProvider;
     }
 
-    public async Task<Result> SendEmailCodeMessageAsync(string emailCode, string emailAddress)
+    public async Task<Result> SendEmailCodeMessageAsync(string emailCode, string emailAddress, string firstName)
     {
         Log.Information("Sending confirmation {EmailCode} to {Email} via message broker", emailCode, emailAddress);
 
@@ -24,14 +24,15 @@ public class SenderService : ISenderService
             new SendEmailConfirmationCodeMessage
             {
                 EmailCode = emailCode,
-                EmailAddress = emailAddress
+                EmailAddress = emailAddress,
+                FirstName = firstName
             });
 
         return result;
     }
 
 
-    public async Task<Result> SendResetPasswordMessageAsync(string resetToken, string emailAddress)
+    public async Task<Result> SendResetPasswordMessageAsync(string resetToken, string emailAddress, string firstName)
     {
         Log.Information("Sending reset token {Reset} to {Email} via message broker", resetToken, emailAddress);
 
@@ -39,7 +40,8 @@ public class SenderService : ISenderService
             new SendEmailResetLinkMessage
             {
                 ResetToken = resetToken,
-                EmailAddress = emailAddress
+                EmailAddress = emailAddress,
+                FirstName = firstName
             });
 
         return result;

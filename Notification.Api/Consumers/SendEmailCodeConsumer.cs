@@ -19,7 +19,7 @@ public class SendEmailCodeConsumer : IConsumer<SendEmailConfirmationCodeMessage>
         Log.Information("Received confirmation code: {Code} And email to send: {Email}", context.Message.EmailCode,
             context.Message.EmailAddress);
 
-        await _emailSenderService.SendAccountConfirmationCodeAsync("Test", context.Message.EmailAddress,
+        await _emailSenderService.SendAccountConfirmationCodeAsync(context.Message.FirstName, context.Message.EmailAddress,
             context.Message.EmailCode);
     }
 }

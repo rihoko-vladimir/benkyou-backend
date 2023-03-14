@@ -19,7 +19,7 @@ public class SendPasswordResetConsumer : IConsumer<SendEmailResetLinkMessage>
         Log.Information("Received reset token: {Code} And email to send: {Email}", context.Message.ResetToken,
             context.Message.EmailAddress);
 
-        await _emailSenderService.SendForgottenPasswordResetLinkAsync("Test", context.Message.EmailAddress,
+        await _emailSenderService.SendForgottenPasswordResetLinkAsync(context.Message.FirstName, context.Message.EmailAddress,
             context.Message.ResetToken);
     }
 }
