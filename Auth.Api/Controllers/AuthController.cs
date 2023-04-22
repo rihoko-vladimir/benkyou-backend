@@ -1,6 +1,7 @@
 using Auth.Api.Extensions.ControllerExtensions;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Requests;
+using Auth.Api.Models.Responses;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Models.Configurations;
@@ -40,9 +41,18 @@ public class AuthController : ControllerBase
 
         if (!result.IsSuccess) return BadRequest(result.Message);
 
-        this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken, _jwtConfiguration);
+        switch (result.Value!)
+        {
+            case TokensResponse tokensResponse:
+                this.SetAccessAndRefreshCookie(tokensResponse.AccessToken, tokensResponse.RefreshToken, _jwtConfiguration);
 
-        return Ok();
+                return Ok();
+            case EmailNotConfirmedResponse value:
+                
+                return Unauthorized(value);
+        }
+
+        return NotFound();
     }
 
     [HttpPost]

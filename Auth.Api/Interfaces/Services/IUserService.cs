@@ -6,7 +6,7 @@ namespace Auth.Api.Interfaces.Services;
 
 public interface IUserService
 {
-    public Task<Result<TokensResponse>> LoginAsync(string email, string password);
+    public Task<Result<dynamic>> LoginAsync(string email, string password);
 
     public Task<Result<Guid>> RegisterAsync(RegistrationRequest registrationRequest);
 
