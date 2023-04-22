@@ -1,3 +1,4 @@
+using System.Net;
 using Auth.Api.Extensions.ControllerExtensions;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Requests;
@@ -48,8 +49,8 @@ public class AuthController : ControllerBase
 
                 return Ok();
             case EmailNotConfirmedResponse value:
-                
-                return Unauthorized(value);
+
+                return StatusCode((int)HttpStatusCode.Forbidden, value);
         }
 
         return NotFound();
