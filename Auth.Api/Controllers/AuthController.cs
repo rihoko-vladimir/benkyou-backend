@@ -1,6 +1,9 @@
+using System.Net;
 using Auth.Api.Extensions.ControllerExtensions;
 using Auth.Api.Interfaces.Services;
+using Auth.Api.Models.Exceptions;
 using Auth.Api.Models.Requests;
+using Auth.Api.Models.Responses;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Models.Models.Configurations;
@@ -38,7 +41,13 @@ public class AuthController : ControllerBase
     {
         var result = await _userService.LoginAsync(loginRequest.Email, loginRequest.Password);
 
-        if (!result.IsSuccess) return BadRequest(result.Message);
+        if (!result.IsSuccess)
+        {
+            if (result.Exception is EmailNotConfirmedException ex)
+                return StatusCode((int)HttpStatusCode.Forbidden, new EmailNotConfirmedResponse(ex.UserId));
+
+            return BadRequest(result.Message);
+        }
 
         this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken, _jwtConfiguration);
 

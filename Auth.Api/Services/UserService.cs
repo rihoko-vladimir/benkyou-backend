@@ -2,6 +2,7 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Repositories;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Entities;
+using Auth.Api.Models.Exceptions;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using Serilog;
@@ -49,7 +50,7 @@ public class UserService : IUserService
         {
             Log.Warning("User tried to log in when email is not confirmed. Email: {Email}", email);
 
-            return Result.Error<TokensResponse>("Email is not confirmed");
+            return Result.Error<TokensResponse>(new EmailNotConfirmedException(user.Id));
         }
 
         var isSuccess = Bcrypt.Verify(password, user.PasswordHash);
@@ -63,7 +64,7 @@ public class UserService : IUserService
         var access = _accessTokenService.GetToken(user.Id);
         var refresh = _refreshTokenService.GetToken(user.Id);
 
-        if (user.Tokens.Count >= 3)
+        if (user.Tokens is { Count: >= 3 })
         {
             var oldestSessions = user.Tokens.OrderBy(token => token.IssuedDateTime).Take(user.Tokens.Count - 3);
             foreach (var oldSession in oldestSessions) user.Tokens.Remove(oldSession);
@@ -75,7 +76,7 @@ public class UserService : IUserService
             UserCredentialId = user.Id
         };
 
-        user.Tokens.Add(token);
+        user.Tokens?.Add(token);
 
         await _userCredentialsRepository.UpdateUserAsync(user);
 
@@ -134,18 +135,21 @@ public class UserService : IUserService
 
         var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
 
-        var token = user.Tokens.FirstOrDefault(token1 => token1.RefreshToken == refreshToken);
-
-        if (token is null)
+        if (user.Tokens != null)
         {
-            Log.Warning("Someone tried to refresh token that doesn't exist as registered session. Token: {Token}",
-                refreshToken);
+            var token = user.Tokens.FirstOrDefault(token1 => token1.RefreshToken == refreshToken);
 
-            return Result.Error<TokensResponse>(
-                "You can not refresh tokens, that are not registered as trusted sessions");
+            if (token is null)
+            {
+                Log.Warning("Someone tried to refresh token that doesn't exist as registered session. Token: {Token}",
+                    refreshToken);
+
+                return Result.Error<TokensResponse>(
+                    "You can not refresh tokens, that are not registered as trusted sessions");
+            }
+
+            user.Tokens.Remove(token);
         }
-
-        user.Tokens.Remove(token);
 
         var isRefreshCorrect = _refreshTokenService.VerifyToken(userId, refreshToken);
 
@@ -165,7 +169,7 @@ public class UserService : IUserService
             UserCredentialId = userId
         };
 
-        user.Tokens.Add(newToken);
+        user.Tokens?.Add(newToken);
         await _userCredentialsRepository.UpdateUserAsync(user);
 
         return Result.Success(new TokensResponse(access, refresh));

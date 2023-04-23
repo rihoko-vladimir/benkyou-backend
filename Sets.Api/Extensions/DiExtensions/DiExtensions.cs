@@ -69,7 +69,7 @@ public static class DiExtensions
         services.AddValidatorsFromAssemblyContaining<KunyomiValidator>();
 
         var vaultUri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
-        
+
         if (EnvironmentExtensions.IsDevelopment())
             services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationContext>()
