@@ -1,6 +1,7 @@
 using System.Net;
 using Auth.Api.Extensions.ControllerExtensions;
 using Auth.Api.Interfaces.Services;
+using Auth.Api.Models.Exceptions;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using FluentValidation;
@@ -40,20 +41,17 @@ public class AuthController : ControllerBase
     {
         var result = await _userService.LoginAsync(loginRequest.Email, loginRequest.Password);
 
-        if (!result.IsSuccess) return BadRequest(result.Message);
-
-        switch (result.Value!)
+        if (!result.IsSuccess)
         {
-            case TokensResponse tokensResponse:
-                this.SetAccessAndRefreshCookie(tokensResponse.AccessToken, tokensResponse.RefreshToken, _jwtConfiguration);
+            if (result.Exception is EmailNotConfirmedException ex)
+                return StatusCode((int)HttpStatusCode.Forbidden, new EmailNotConfirmedResponse(ex.UserId));
 
-                return Ok();
-            case EmailNotConfirmedResponse value:
-
-                return StatusCode((int)HttpStatusCode.Forbidden, value);
+            return BadRequest(result.Message);
         }
 
-        return NotFound();
+        this.SetAccessAndRefreshCookie(result.Value!.AccessToken, result.Value!.RefreshToken, _jwtConfiguration);
+
+        return Ok();
     }
 
     [HttpPost]

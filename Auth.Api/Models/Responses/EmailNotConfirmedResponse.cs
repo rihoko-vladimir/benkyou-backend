@@ -2,13 +2,10 @@ namespace Auth.Api.Models.Responses;
 
 public class EmailNotConfirmedResponse
 {
-    public Guid Id { get; set; }
-    
-    public string Message { get; set; }
-
-    public EmailNotConfirmedResponse(Guid id, string message)
+    public EmailNotConfirmedResponse(Guid id)
     {
         Id = id;
-        Message = message;
     }
+
+    public Guid Id { get; set; }
 }

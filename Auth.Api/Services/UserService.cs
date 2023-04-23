@@ -2,6 +2,7 @@ using Auth.Api.Interfaces.Generators;
 using Auth.Api.Interfaces.Repositories;
 using Auth.Api.Interfaces.Services;
 using Auth.Api.Models.Entities;
+using Auth.Api.Models.Exceptions;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using Serilog;
@@ -33,14 +34,14 @@ public class UserService : IUserService
         _userCredentialsRepository = userCredentialsRepository;
     }
 
-    public async Task<Result<dynamic>> LoginAsync(string email, string password)
+    public async Task<Result<TokensResponse>> LoginAsync(string email, string password)
     {
         if (!await _userCredentialsRepository.IsUserExistsByEmailAsync(email))
         {
             Log.Warning("Login attempt with incorrect email address. Email: {Email}, Password: {Password}", email,
                 password);
 
-            return Result.Error<dynamic>("User not found");
+            return Result.Error<TokensResponse>("User not found");
         }
 
         var user = await _userCredentialsRepository.GetUserByEmailAsync(email);
@@ -49,9 +50,7 @@ public class UserService : IUserService
         {
             Log.Warning("User tried to log in when email is not confirmed. Email: {Email}", email);
 
-            var emailNotConfirmedResponse = new EmailNotConfirmedResponse(user.Id, "Email is not confirmed");
-
-            return Result.Success<dynamic>(emailNotConfirmedResponse);
+            return Result.Error<TokensResponse>(new EmailNotConfirmedException(user.Id));
         }
 
         var isSuccess = Bcrypt.Verify(password, user.PasswordHash);
@@ -59,7 +58,7 @@ public class UserService : IUserService
         {
             Log.Warning("Sign in attempt with incorrect password. Email: {Email}", email);
 
-            return Result.Error<dynamic>("Password is incorrect");
+            return Result.Error<TokensResponse>("Password is incorrect");
         }
 
         var access = _accessTokenService.GetToken(user.Id);
@@ -81,7 +80,7 @@ public class UserService : IUserService
 
         await _userCredentialsRepository.UpdateUserAsync(user);
 
-        return Result.Success(new TokensResponse(access, refresh) as dynamic);
+        return Result.Success(new TokensResponse(access, refresh));
     }
 
     public async Task<Result<Guid>> RegisterAsync(RegistrationRequest registrationRequest)
