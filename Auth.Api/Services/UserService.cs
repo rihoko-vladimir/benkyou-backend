@@ -61,6 +61,11 @@ public class UserService : IUserService
             return Result.Error<TokensResponse>("Password is incorrect");
         }
 
+        if (user.IsAccountLocked)
+        {
+            return Result.Error<TokensResponse>("User is locked");
+        }
+
         var access = _accessTokenService.GetToken(user.Id);
         var refresh = _refreshTokenService.GetToken(user.Id);
 

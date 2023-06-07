@@ -8,7 +8,7 @@ namespace Sets.Api.Integration;
 
 public class SetsTestApplication : WebApplicationFactory<Program>
 {
-    private readonly TestcontainersContainer _dbContainer = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _dbContainer = new ContainerBuilder()
         .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
         .WithEnvironment("ACCEPT_EULA", "Y")
         .WithEnvironment("SA_PASSWORD", "nandesukaanatawa1A")
@@ -30,7 +30,6 @@ public class SetsTestApplication : WebApplicationFactory<Program>
     public override async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
-        await _dbContainer.CleanUpAsync();
         await _dbContainer.StopAsync();
     }
 }

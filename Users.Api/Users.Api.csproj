@@ -23,6 +23,7 @@
         <PackageReference Include="FluentValidation" Version="11.5.2" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
+        <PackageReference Include="IronPdf" Version="2023.5.8" />
         <PackageReference Include="MassTransit" Version="8.0.15" />
         <PackageReference Include="MassTransit.Azure.ServiceBus.Core" Version="8.0.15" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.15" />

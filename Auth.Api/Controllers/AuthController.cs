@@ -1,11 +1,14 @@
 using System.Net;
 using Auth.Api.Extensions.ControllerExtensions;
 using Auth.Api.Interfaces.Services;
+using Auth.Api.Models.DbContext;
 using Auth.Api.Models.Exceptions;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Shared.Models.Constants;
 using Shared.Models.Models.Configurations;
 
 namespace Auth.Api.Controllers;
@@ -16,6 +19,8 @@ namespace Auth.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly JwtConfiguration _jwtConfiguration;
+    private readonly ApplicationContext _context;
+    private readonly IAccessTokenService _accessTokenService;
     private readonly IValidator<ResetPasswordConfirmationRequest> _passwordConfirmationValidator;
 
     private readonly IValidator<RegistrationRequest> _registrationValidator;
@@ -26,13 +31,15 @@ public class AuthController : ControllerBase
     public AuthController(IUserService userService,
         IValidator<RegistrationRequest> registrationValidator,
         IValidator<ResetPasswordConfirmationRequest> passwordConfirmationValidator,
-        JwtConfiguration jwtConfiguration
+        JwtConfiguration jwtConfiguration, ApplicationContext context, IAccessTokenService accessTokenService
     )
     {
         _userService = userService;
         _registrationValidator = registrationValidator;
         _passwordConfirmationValidator = passwordConfirmationValidator;
         _jwtConfiguration = jwtConfiguration;
+        _context = context;
+        _accessTokenService = accessTokenService;
     }
 
     [HttpPost]
@@ -119,5 +126,21 @@ public class AuthController : ControllerBase
         if (!result.IsSuccess) return BadRequest(result.Message);
 
         return Ok(result);
+    }
+
+    [HttpPost]
+    [Route("change-lock")]
+    public async Task<IActionResult> ChangeUserLockedStatus([FromQuery] Guid userId)
+    {
+        var user = await _context.UserCredentials.FirstOrDefaultAsync(credential => credential.Id == userId);
+        
+        var role = _accessTokenService.GetRole(await this.GetAccessTokenAsync());
+        
+        if (user is not null && role == Role.Admin)
+        {
+            user.IsAccountLocked = !user.IsAccountLocked;      
+        }
+        
+        return Ok();
     }
 }

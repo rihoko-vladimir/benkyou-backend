@@ -1,3 +1,4 @@
+using Auth.Api.Models.DbContext;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -77,5 +78,25 @@ public class UsersController : ControllerBase
         if (result.IsSuccess) return Ok(result.Value);
 
         return BadRequest();
+    }
+
+    [HttpGet]
+    [Route("export")]
+    public async Task<IActionResult> ExportUserAsync()
+    {
+        var token = await this.GetAccessTokenAsync();
+        _accessTokenService.GetGuidFromAccessToken(token, out var userId);
+
+        var user = (await _userInformationService.GetUserInformation(userId)).Value;
+
+        var renderer = new ChromePdfRenderer();
+
+        return File(renderer.RenderHtmlAsPdf("" +
+                                             $"<h1>UserName {user!.UserName}<h1>" +
+                                             $"<h1>FirstName {user!.FirstName}<h1>" +
+                                             $"<h1>LastName {user!.LastName}<h1>" +
+                                             $"<h1>Role {user!.UserRole}<h1>" +
+                                             $"<h1>AvatarUrl {user!.AvatarUrl}<h1>")
+            .Stream, "application/octet-stream", "export.pdf");
     }
 }
