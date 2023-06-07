@@ -8,7 +8,7 @@ namespace Statistics.Api.Integration;
 
 public class StatisticsTestApplication : WebApplicationFactory<Program>
 {
-    private readonly TestcontainersContainer _dbContainer = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _dbContainer = new ContainerBuilder()
         .WithImage("mongo")
         .WithEnvironment("MONGO_INITDB_ROOT_USERNAME", "test_rihoko")
         .WithEnvironment("MONGO_INITDB_ROOT_PASSWORD", "testtesttesttest1A")
@@ -30,7 +30,6 @@ public class StatisticsTestApplication : WebApplicationFactory<Program>
     public override async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
-        await _dbContainer.CleanUpAsync();
         await _dbContainer.StopAsync();
     }
 }

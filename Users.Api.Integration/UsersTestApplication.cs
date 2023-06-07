@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Users.Api.Integration;
 
-public class UsersTestApplication : WebApplicationFactory<Program>, IAsyncLifetime
+public class UsersTestApplication : IAsyncLifetime
 {
-    private readonly TestcontainersContainer _blobContainer = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _blobContainer = new ContainerBuilder()
         .WithImage("mcr.microsoft.com/azure-storage/azurite")
         .WithPortBinding(10123, 10000)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(10123))
         .Build();
 
-    private readonly TestcontainersContainer _dbContainer = new TestcontainersBuilder<TestcontainersContainer>()
+    private readonly IContainer _dbContainer = new ContainerBuilder()
         .WithImage("rihoko/benkyou_users_test")
         .WithPortBinding(15220, 1433)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(15220))
@@ -34,20 +34,5 @@ public class UsersTestApplication : WebApplicationFactory<Program>, IAsyncLifeti
     Task IAsyncLifetime.DisposeAsync()
     {
         return Task.CompletedTask;
-    }
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseEnvironment("Test");
-        builder.ConfigureServices(collection => { collection.AddMassTransitTestHarness(); });
-    }
-
-    public override async ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-        await _dbContainer.CleanUpAsync();
-        await _dbContainer.StopAsync();
-        await _blobContainer.CleanUpAsync();
-        await _blobContainer.StopAsync();
     }
 }

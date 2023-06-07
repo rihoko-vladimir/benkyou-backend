@@ -11,6 +11,8 @@ public class UserCredential
     public string PasswordHash { get; set; }
 
     public bool IsEmailConfirmed { get; set; }
+    
+    public bool IsAccountLocked { get; set; }
 
     public ICollection<Token>? Tokens { get; set; }
 
