@@ -57,7 +57,15 @@ public static class DiExtensions
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options => { options.ConfigureJwtBearer(configuration); });
 
-        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri"));
+        services.AddFido2(options =>
+        {
+            options.ServerDomain = configuration["webauthn:domain"];
+            options.ServerName = "Benkyou Auth";
+            options.Origins = configuration.GetSection("webauthn:origins").Get<HashSet<string>>();
+            options.TimestampDriftTolerance = configuration.GetValue<int>("webauthn:timestampDriftTolerance");
+        });
+
+        var uri = new Uri(configuration.GetSection("KeyVault").GetValue<string>("VaultUri")!);
 
         services.AddHealthChecks()
             .AddDbContextCheck<ApplicationContext>("Users database",

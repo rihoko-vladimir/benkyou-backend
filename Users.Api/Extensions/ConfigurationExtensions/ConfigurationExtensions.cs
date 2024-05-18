@@ -3,7 +3,6 @@ using Shared.Models.Models.Configurations;
 using Shared.Models.QueueNames;
 using Users.Api.Consumers;
 using Users.Api.Models.Configurations;
-using ext = Users.Api.Extensions.EnvironmentExtensions;
 
 namespace Users.Api.Extensions.ConfigurationExtensions;
 

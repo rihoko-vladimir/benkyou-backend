@@ -2,5 +2,5 @@
 
 public class OnyomiResponse
 {
-    public string Reading { get; set; }
+    public string Reading { get; init; }
 }

@@ -9,7 +9,6 @@ using Users.Api.Interfaces.Repositories;
 using Users.Api.Models.Entities;
 using Users.Api.Models.Requests;
 using Users.Api.Repositories;
-using SqlCommands = Users.Api.Models.Constants.SqlCommand;
 
 namespace Users.Tests;
 

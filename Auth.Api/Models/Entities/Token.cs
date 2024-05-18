@@ -4,10 +4,10 @@ namespace Auth.Api.Models.Entities;
 
 public class Token
 {
-    [Key] public Guid RecordId { get; set; }
+    [Key] public Guid RecordId { get; init; }
 
-    public string RefreshToken { get; set; }
+    public string RefreshToken { get; init; }
 
-    public Guid UserCredentialId { get; set; }
-    public DateTime IssuedDateTime { get; set; } = DateTime.Now;
+    public Guid UserCredentialId { get; init; }
+    public DateTime IssuedDateTime { get; init; } = DateTime.Now;
 }

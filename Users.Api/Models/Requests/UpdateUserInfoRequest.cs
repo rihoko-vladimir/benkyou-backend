@@ -2,15 +2,15 @@ namespace Users.Api.Models.Requests;
 
 public class UpdateUserInfoRequest
 {
-    public string FirstName { get; set; }
+    public string FirstName { get; init; }
 
-    public string LastName { get; set; }
+    public string LastName { get; init; }
 
-    public string UserName { get; set; }
+    public string UserName { get; init; }
 
-    public DateTime? BirthDay { get; set; }
+    public DateTime? BirthDay { get; init; }
 
-    public bool IsAccountPublic { get; set; }
+    public bool IsAccountPublic { get; init; }
 
-    public string About { get; set; }
+    public string About { get; init; }
 }

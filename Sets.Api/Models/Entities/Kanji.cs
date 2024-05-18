@@ -5,23 +5,23 @@ namespace Sets.Api.Models.Entities;
 
 public class Kanji
 {
-    [Key] public Guid Id { get; set; }
+    [Key] public Guid Id { get; init; }
 
     [MaxLength(1)]
     [MinLength(1)]
     [Required]
     [JsonPropertyName("kanji")]
-    public string KanjiChar { get; set; }
+    public string KanjiChar { get; init; }
 
     [Required]
     [JsonPropertyName("kunyoumiReadings")]
-    public ICollection<Kunyomi> KunyomiReadings { get; set; }
+    public ICollection<Kunyomi> KunyomiReadings { get; init; }
 
     [Required]
     [JsonPropertyName("onyoumiReadings")]
-    public ICollection<Onyomi> OnyomiReadings { get; set; }
+    public ICollection<Onyomi> OnyomiReadings { get; init; }
 
-    public Guid SetId { get; set; }
+    public Guid SetId { get; init; }
 
-    public Set Set { get; set; }
+    public Set Set { get; init; }
 }

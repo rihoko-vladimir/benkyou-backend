@@ -5,6 +5,9 @@ using Auth.Api.Models.Entities;
 using Auth.Api.Models.Exceptions;
 using Auth.Api.Models.Requests;
 using Auth.Api.Models.Responses;
+using Fido2NetLib;
+using Fido2NetLib.Development;
+using Fido2NetLib.Objects;
 using Serilog;
 using Shared.Models.Models;
 using Bcrypt = BCrypt.Net.BCrypt;
@@ -15,6 +18,7 @@ public class UserService : IUserService
 {
     private readonly IAccessTokenService _accessTokenService;
     private readonly IEmailCodeGenerator _emailCodeGenerator;
+    private readonly IFido2 _fido2;
     private readonly IRefreshTokenService _refreshTokenService;
     private readonly IResetTokenService _resetTokenService;
     private readonly ISenderService _senderService;
@@ -24,7 +28,9 @@ public class UserService : IUserService
         IRefreshTokenService refreshTokenService, IResetTokenService resetTokenService,
         IEmailCodeGenerator emailCodeGenerator,
         ISenderService senderService,
-        IUserCredentialsRepository userCredentialsRepository)
+        IUserCredentialsRepository userCredentialsRepository,
+        IFido2 fido2
+    )
     {
         _accessTokenService = accessTokenService;
         _refreshTokenService = refreshTokenService;
@@ -32,6 +38,7 @@ public class UserService : IUserService
         _emailCodeGenerator = emailCodeGenerator;
         _senderService = senderService;
         _userCredentialsRepository = userCredentialsRepository;
+        _fido2 = fido2;
     }
 
     public async Task<Result<TokensResponse>> LoginAsync(string email, string password)
@@ -61,10 +68,7 @@ public class UserService : IUserService
             return Result.Error<TokensResponse>("Password is incorrect");
         }
 
-        if (user.IsAccountLocked)
-        {
-            return Result.Error<TokensResponse>("User is locked");
-        }
+        if (user.IsAccountLocked) return Result.Error<TokensResponse>("User is locked");
 
         var access = _accessTokenService.GetToken(user.Id);
         var refresh = _refreshTokenService.GetToken(user.Id);
@@ -254,5 +258,96 @@ public class UserService : IUserService
         await _userCredentialsRepository.UpdateUserAsync(user);
 
         return Result.Success();
+    }
+
+    public async Task<Result<CredentialCreateOptions>> CreateCredentialOptionsAsync(Guid userId)
+    {
+        var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
+
+        var existingKeys = await _userCredentialsRepository.GetUserCredentialsAsync(userId);
+
+        var credentialOptions = _fido2.RequestNewCredential(user.ToFidoUser(), existingKeys);
+
+        return Result.Success(credentialOptions);
+    }
+
+    public async Task<Result<AssertionOptions>> GetAssertionOptionsAsync(Guid userId)
+    {
+        var existingKeys = await _userCredentialsRepository.GetUserCredentialsAsync(userId);
+
+        var options = _fido2.GetAssertionOptions(
+            existingKeys,
+            UserVerificationRequirement.Discouraged
+        );
+
+        return Result.Success(options);
+    }
+
+    public async Task<Result<Fido2.CredentialMakeResult>> CreatePasskeyAsync(Guid userId, AuthenticatorAttestationRawResponse attestationResponse, CredentialCreateOptions options)
+    {
+        var success = await _fido2.MakeNewCredentialAsync(attestationResponse, options, Callback);
+
+        await _userCredentialsRepository.AddCredentialToUserAsync(userId, new StoredCredential
+        {
+            UserId = userId.ToByteArray(),
+            Descriptor = new PublicKeyCredentialDescriptor(success.Result!.CredentialId),
+            PublicKey = success.Result.PublicKey,
+            UserHandle = success.Result.User.Id,
+            RegDate = DateTime.UtcNow,
+            AaGuid = success.Result.Aaguid
+        });
+
+        return Result.Success(success);
+
+        async Task<bool> Callback(IsCredentialIdUniqueToUserParams args, CancellationToken _)
+        {
+            var users = await _userCredentialsRepository.GetUsersByCredentialIdAsync(args.CredentialId);
+
+            return users.Count == 0;
+        }
+    }
+
+    public async Task<Result<TokensResponse>> LoginPasskeyAsync(Guid userId, AuthenticatorAssertionRawResponse clientResponse, AssertionOptions options)
+    {
+        var credentials = await _userCredentialsRepository.GetCredentialById(userId, clientResponse.Id);
+
+        try
+        {
+            await _fido2.MakeAssertionAsync(clientResponse, options, credentials.PublicKey, credentials.SignatureCounter, Callback);
+        }
+        catch (Exception e)
+        {
+            return Result.Error<TokensResponse>(e.Message);
+        }
+
+        var user = await _userCredentialsRepository.GetUserByIdAsync(userId);
+
+        var access = _accessTokenService.GetToken(user.Id);
+        var refresh = _refreshTokenService.GetToken(user.Id);
+
+        if (user.Tokens is { Count: >= 3 })
+        {
+            var oldestSessions = user.Tokens.OrderBy(token => token.IssuedDateTime).Take(user.Tokens.Count - 3);
+            foreach (var oldSession in oldestSessions) user.Tokens.Remove(oldSession);
+        }
+
+        var token = new Token
+        {
+            RefreshToken = refresh,
+            UserCredentialId = user.Id
+        };
+
+        user.Tokens?.Add(token);
+
+        await _userCredentialsRepository.UpdateUserAsync(user);
+
+        return Result.Success(new TokensResponse(access, refresh));
+
+        async Task<bool> Callback(IsUserHandleOwnerOfCredentialIdParams args, CancellationToken _)
+        {
+            var storedCredentials = await _userCredentialsRepository.GetCredentialsByUserHandleAsync(userId, args.UserHandle);
+
+            return storedCredentials.Exists(c => c.Descriptor.Id.SequenceEqual(args.CredentialId));
+        }
     }
 }

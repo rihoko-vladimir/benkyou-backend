@@ -2,9 +2,9 @@ namespace Sets.Api.Models.Requests;
 
 public class KanjiRequest
 {
-    public string KanjiChar { get; set; }
+    public string KanjiChar { get; init; }
 
-    public ICollection<KunyomiRequest> KunyomiReadings { get; set; }
+    public ICollection<KunyomiRequest> KunyomiReadings { get; init; }
 
-    public ICollection<OnyomiRequest> OnyomiReadings { get; set; }
+    public ICollection<OnyomiRequest> OnyomiReadings { get; init; }
 }
