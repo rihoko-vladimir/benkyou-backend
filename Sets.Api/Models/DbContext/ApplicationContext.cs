@@ -9,8 +9,8 @@ public class ApplicationContext : Microsoft.EntityFrameworkCore.DbContext
     {
     }
 
-    public DbSet<Set> Sets { get; set; }
-    public DbSet<Kanji> Kanji { get; set; }
-    public DbSet<Kunyomi> Kunyomis { get; set; }
-    public DbSet<Onyomi> Onyomis { get; set; }
+    public DbSet<Set> Sets { get; init; }
+    public DbSet<Kanji> Kanji { get; init; }
+    public DbSet<Kunyomi> Kunyomis { get; init; }
+    public DbSet<Onyomi> Onyomis { get; init; }
 }

@@ -2,8 +2,8 @@ namespace Shared.Models.Messages;
 
 public class SendEmailConfirmationCodeMessage
 {
-    public string EmailCode { get; set; }
-    public string EmailAddress { get; set; }
+    public string EmailCode { get; init; }
+    public string EmailAddress { get; init; }
 
-    public string FirstName { get; set; }
+    public string FirstName { get; init; }
 }

@@ -3,12 +3,12 @@ namespace Shared.Models.Models.Configurations;
 public class JwtConfiguration
 {
     public const string Key = "JWTConfiguration";
-    public string Audience { get; set; }
-    public string Issuer { get; set; }
-    public string AccessSecret { get; set; }
-    public string RefreshSecret { get; set; }
-    public string ResetSecret { get; set; }
-    public int AccessExpiresIn { get; set; }
-    public int RefreshExpiresIn { get; set; }
-    public int ResetExpiresIn { get; set; }
+    public string Audience { get; init; }
+    public string Issuer { get; init; }
+    public string AccessSecret { get; init; }
+    public string RefreshSecret { get; init; }
+    public string ResetSecret { get; init; }
+    public int AccessExpiresIn { get; init; }
+    public int RefreshExpiresIn { get; init; }
+    public int ResetExpiresIn { get; init; }
 }

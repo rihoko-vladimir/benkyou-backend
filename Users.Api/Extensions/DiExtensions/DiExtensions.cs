@@ -44,7 +44,7 @@ public static class DiExtensions
 
         services.AddConfiguredMassTransit(configuration);
 
-        services.AddAutoMapper(expression => { expression.AddProfile<AutoMappingProfile>(); });
+        services.AddAutoMapper(expression => expression.AddProfile<AutoMappingProfile>());
 
         services.AddEndpointsApiExplorer();
 

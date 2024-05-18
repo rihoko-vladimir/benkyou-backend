@@ -1,4 +1,3 @@
-using Auth.Api.Models.DbContext;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;

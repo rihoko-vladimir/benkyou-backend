@@ -53,7 +53,14 @@ public class AccessTokenService : IAccessTokenService
 
         var role = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).FindFirst(claim => claim.Value == ClaimTypes.Role);
 
-       return role!.Value;
+        return role!.Value;
+    }
+
+    public Guid GetUserId(string accessToken)
+    {
+        GetGuidFromAccessToken(accessToken, out var userId);
+        
+        return userId;
     }
 
     public bool GetGuidFromAccessToken(string accessToken, out Guid userId)

@@ -136,7 +136,7 @@ services:
         
       
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3.13.1-management-alpine
     container_name: RabbitMQ
     ports:
       - "5672:5672"
@@ -187,7 +187,7 @@ services:
         
   elasticsearch:
     container_name: elasticsearch
-    image: elasticsearch:8.6.2
+    image: elasticsearch:8.13.0
     environment:
       - "xpack.security.enabled=false"
       - "discovery.type=single-node"
@@ -203,7 +203,7 @@ services:
   
   kibana:
     container_name: kibana
-    image: kibana:8.6.2
+    image: kibana:8.13.0
     environment:
       - "ELASTICSEARCH_HOSTS=http://elasticsearch:9200"
     networks:
@@ -214,7 +214,7 @@ services:
       - "5601:5601"
     
   logstash:
-    image: logstash:8.6.2
+    image: logstash:8.13.0
     container_name: logstash
     ports:
       - "9600:9600"

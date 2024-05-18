@@ -5,7 +5,7 @@ namespace Sets.Api.Models.Entities;
 
 public class Set
 {
-    [Key] public Guid Id { get; set; }
+    [Key] public Guid Id { get; init; }
 
     [MaxLength(15)]
     [MinLength(3)]

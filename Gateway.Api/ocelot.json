@@ -11,7 +11,8 @@
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [
-        "Post"
+        "Post",
+        "Get"
       ]
     },
     {

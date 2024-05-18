@@ -7,9 +7,9 @@ public class GeneralStatistics
 {
     [BsonId] public ObjectId Id { get; set; }
 
-    [BsonElement("userId")] public Guid UserId { get; set; }
+    [BsonElement("userId")] public Guid UserId { get; init; }
 
     [BsonElement("registrationDateTime")] public DateTime RegistrationDateTime { get; set; }
 
-    [BsonElement("lastTimeOnline")] public DateTime LastTimeOnline { get; set; }
+    [BsonElement("lastTimeOnline")] public DateTime LastTimeOnline { get; init; }
 }

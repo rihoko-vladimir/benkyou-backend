@@ -2,5 +2,5 @@ namespace Sets.Api.Models.Requests;
 
 public class OnyomiRequest
 {
-    public string Reading { get; set; }
+    public string Reading { get; init; }
 }

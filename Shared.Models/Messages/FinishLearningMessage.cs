@@ -4,12 +4,12 @@ namespace Shared.Models.Messages;
 
 public class FinishLearningMessage
 {
-    public Guid UserId { get; set; }
-    public Guid SetId { get; set; }
+    public Guid UserId { get; init; }
+    public Guid SetId { get; init; }
 
-    public DateTime StartDateTime { get; set; }
+    public DateTime StartDateTime { get; init; }
 
-    public DateTime EndDateTime { get; set; }
+    public DateTime EndDateTime { get; init; }
 
-    public KanjiResult[] KanjiResults { get; set; }
+    public KanjiResult[] KanjiResults { get; init; }
 }
